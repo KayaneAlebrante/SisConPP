@@ -1,0 +1,244 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ProvaCampeiraEsportiva {
+  CAMPEIRA
+  ESPORTIVA
+}
+
+model Candidato {
+  idCandidato                 Int                    @id @default(autoincrement())
+  nomeCompleto                String                 @db.VarChar(255)
+  cidade                      String                 @db.VarChar(50)
+  estado                      String                 @db.VarChar(50)
+  numCarteirinha              String                 @unique
+  CPF                         String                 @unique
+  RG                          String                 @db.VarChar(20)
+  endereco                    String                 @db.VarChar(255)
+  numEndereco                 Int
+  bairro                      String                 @db.VarChar(100)
+  escolaridade                String                 @db.VarChar(100)
+  filiacao                    String                 @db.VarChar(255)
+  provaCampeiraEsportiva      ProvaCampeiraEsportiva
+  anexoDocumento              Bytes
+  anexoCarteirinha            Bytes
+  anexoEscolaridade           Bytes
+  anexoResidencia             Bytes
+  anexoAtaConcurso            Bytes
+  fichaInscricao              Bytes
+  anexoTermoEntidade          Bytes
+  anexoTermoCandidato         Bytes
+  anexoRelatorioVivencia      Bytes
+  anexoResponsável           Bytes?
+  anexoProvaEsportivaCampeira Bytes
+
+  Categoria          Categoria @relation(fields: [categoriaId], references: [idCategoria])
+  categoriaId        Int
+  Concurso           Concurso  @relation(fields: [concursoIdConcurso], references: [idConcurso])
+  concursoIdConcurso Int
+  ctgCanditadoId     Int
+  CTG                CTG       @relation(fields: [ctgCanditadoId], references: [idCTG])
+
+  preferenciaSorteioDanca PreferenciaSorteioDanca[]
+  Avalicao                Avalicao[]
+  SorteioDanca            SorteioDanca[]
+}
+
+model CTG {
+  idCTG   Int    @id @default(autoincrement())
+  nomeCTG String @db.VarChar(100)
+
+  RTid       Int
+  RT         RT          @relation(fields: [RTid], references: [idRT])
+  candidatos Candidato[]
+  User       User[]
+}
+
+model RT {
+  idRT   Int    @id @default(autoincrement())
+  nomeRT String @db.VarChar(100)
+  CTGs   CTG[]
+}
+
+model PreferenciaSorteioDanca {
+  idPreferecnia Int       @id @default(autoincrement())
+  candidatoId   Int
+  Candidato     Candidato @relation(fields: [candidatoId], references: [idCandidato])
+}
+
+enum Funcao {
+  SECRETARIO
+  AVALIADOR
+  AUXILIAR
+}
+
+model User {
+  idUser            Int     @id @default(autoincrement())
+  nomeCompleto      String  @db.VarChar(255)
+  cidade            String  @db.VarChar(50)
+  estado            String  @db.VarChar(50)
+  numCarteirinha    String  @unique
+  login             String  @unique @db.VarChar(100)
+  senha             String  @db.VarChar(255)
+  funcao            Funcao
+  numCredenciamento String? @db.VarChar(50)
+
+  Concurso           Concurso       @relation(fields: [concursoIdConcurso], references: [idConcurso])
+  concursoIdConcurso Int
+  CTGUser            Int
+  CTG                CTG            @relation(fields: [CTGUser], references: [idCTG])
+  Avalicao           Avalicao[]
+  Recurso            Recurso[]
+  SorteioDanca       SorteioDanca[]
+  Comissao           Comissao       @relation(fields: [comissaoIdComissao], references: [idComissao])
+  comissaoIdComissao Int
+  ComissaoUser       ComissaoUser[]
+}
+
+model Concurso {
+  idConcurso         Int      @id @default(autoincrement())
+  nomeConcurso       String   @db.VarChar(100)
+  lancamentoEdital   DateTime
+  inscricoesInicio   DateTime
+  inscricoesFinal    DateTime
+  dataProvaEscrita   DateTime
+  dataProvasPraticas DateTime
+  dataResultado      DateTime
+  local              String   @db.VarChar(255)
+
+  candidatos Candidato[]
+  comissoes  Comissao[]
+  users      User[]
+}
+
+model Comissao {
+  idComissao   Int    @id @default(autoincrement())
+  nomeComissao String @db.VarChar(100)
+
+  concurso   Concurso       @relation(fields: [concursoId], references: [idConcurso])
+  concursoId Int
+  avalicao   Avalicao[]
+  users      ComissaoUser[]
+  User       User[]
+}
+
+model ComissaoUser {
+  id         Int      @id @default(autoincrement())
+  comissaoId Int
+  userId     Int
+  Comissao   Comissao @relation(fields: [comissaoId], references: [idComissao])
+  User       User     @relation(fields: [userId], references: [idUser])
+}
+
+model Categoria {
+  idCategoria   Int    @id @default(autoincrement())
+  nomeCategoria String @db.VarChar(50)
+  idadeInicial  Int
+  idadeLimite   Int?
+  escolaridade  String
+  sorteioDanca  Int
+
+  candidatos Candidato[]
+
+  provaTeoricaId Int
+  ProvaTeorica   ProvaTeorica @relation(fields: [provaTeoricaId], references: [idProvaTeorica])
+  provaPraticaId Int
+  ProvaPratica   ProvaPratica @relation(fields: [provaPraticaId], references: [idProvaPratica])
+}
+
+model Avalicao {
+  idAvalicao    Int      @id @default(autoincrement())
+  dataAvaliacao DateTime @default(now())
+
+  comissaoId Int
+  Comissao   Comissao @relation(fields: [comissaoId], references: [idComissao])
+
+  avaliadorId Int
+  User        User @relation(fields: [avaliadorId], references: [idUser])
+
+  candidatoId Int
+  Candidato   Candidato @relation(fields: [candidatoId], references: [idCandidato])
+}
+
+model ProvaTeorica {
+  idProvaTeorica Int    @id @default(autoincrement())
+  nomeProva      String
+
+  categorias Categoria[]
+}
+
+model ProvaPratica {
+  idProvaPratica Int    @id @default(autoincrement())
+  nomeProva      String
+
+  categorias   Categoria[]
+  blocosProvas BlocoProva[]
+}
+
+model BlocoProva {
+  idBloco                    Int           @id @default(autoincrement())
+  nomeBloco                  String
+  notaMaximaBloco            Float
+  ProvaPratica               ProvaPratica? @relation(fields: [provaPraticaIdProvaPratica], references: [idProvaPratica])
+  provaPraticaIdProvaPratica Int?
+}
+
+model Quesitos {
+  idQuesito             Int                   @id @default(autoincrement())
+  nomeQuesito           String
+  notaMaximaQuesito     Float
+  danca                 Boolean
+  dancaSalaoTradicional DancaSalaoTradicional
+
+  subeQuesitos SubQuesitos[]
+  Recurso      Recurso[]
+}
+
+model SubQuesitos {
+  idSubequestios  Int    @id @default(autoincrement())
+  nomeSubquesito  String
+  notaSubequesito Float
+
+  quesitoId Int
+  Quesito   Quesitos @relation(fields: [quesitoId], references: [idQuesito])
+
+  subequesitosFilhos SubQuesitos[] @relation("SubQuesitosSub")
+  subequesitosPai    SubQuesitos[] @relation("SubQuesitosSub")
+}
+
+model Recurso {
+  idRecurso     Int      @id @default(autoincrement())
+  nomeRecurso   String
+  justificativa String
+  status        Boolean
+  dataRecurso   DateTime @default(now())
+
+  avaliador Int
+  User      User @relation(fields: [avaliador], references: [idUser])
+
+  quesitoRecurso Int
+  Quesito        Quesitos @relation(fields: [quesitoRecurso], references: [idQuesito])
+}
+
+enum DancaSalaoTradicional {
+  DANCA_DE_SALAO
+  DANCA_TRADICIONAL
+}
+
+model SorteioDanca {
+  idSorteio        Int      @id @default(autoincrement())
+  resultadoSorteio Int
+  dataSorteio      DateTime @default(now())
+
+  candidatoId Int
+  Candidato   Candidato @relation(fields: [candidatoId], references: [idCandidato])
+
+  userId Int
+  User   User @relation(fields: [userId], references: [idUser])
+}
