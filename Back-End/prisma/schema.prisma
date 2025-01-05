@@ -63,6 +63,7 @@ model CTG {
 model RT {
   idRT   Int    @id @default(autoincrement())
   nomeRT String @db.VarChar(100)
+  numeroRT Int?
   CTGs   CTG[]
 }
 
