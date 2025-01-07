@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "ES6",                  // Define o alvo de compilação como ES2020
+    "module": "CommonJS",                // Define o sistema de módulos como CommonJS
+    "rootDir": "src",                    // Diretório de entrada para os arquivos TypeScript
+    "outDir": "dist",                    // Diretório de saída para os arquivos compilados
+    "strict": true,                      // Habilita todas as verificações estritas
+    "esModuleInterop": true,             // Facilita a importação de módulos CommonJS
+    "skipLibCheck": true,                // Ignora verificação de tipos de bibliotecas
+    "forceConsistentCasingInFileNames": true // Garante consistência nos nomes de arquivos
+  },
+  "include": ["src/**/*.ts"],                    // Inclui todos os arquivos na pasta src
+  "exclude": ["node_modules"]            // Exclui a pasta node_modules
+}

@@ -7,47 +7,71 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Pessoa {
+  idPessoa       Int        @id @default(autoincrement())
+  nomeCompleto   String
+  cidade         String
+  estado         String
+  numCarteirinha String
+  Candidato      Candidato?
+  User           User?
+  CTG            CTG[]
+}
+
+model Candidato {
+  idCandidato             Int                       @id @default(autoincrement())
+  pessoaId                Int                       @unique
+  Pessoa                  Pessoa                    @relation(fields: [pessoaId], references: [idPessoa])
+  categoria               Int
+  CPF                     String
+  RG                      String
+  endereco                String
+  numEndereco             Int
+  bairro                  String
+  escolaridade            String
+  filiacao                String
+  ProvaCampeiraEsportiva  ProvaCampeiraEsportiva?
+  anexoDocumento          Bytes
+  CTG                     CTG                       @relation(fields: [cTGIdCTG], references: [idCTG])
+  cTGIdCTG                Int
+  PreferenciaSorteioDanca PreferenciaSorteioDanca[]
+  Concurso                Concurso                  @relation(fields: [concursoIdConcurso], references: [idConcurso])
+  concursoIdConcurso      Int
+  Categoria               Categoria                 @relation(fields: [categoriaIdCategoria], references: [idCategoria])
+  categoriaIdCategoria    Int
+  Avalicao                Avalicao[]
+  SorteioDanca            SorteioDanca[]
+}
+
 enum ProvaCampeiraEsportiva {
   CAMPEIRA
   ESPORTIVA
 }
 
-model Candidato {
-  idCandidato                 Int                    @id @default(autoincrement())
-  nomeCompleto                String                 @db.VarChar(255)
-  cidade                      String                 @db.VarChar(50)
-  estado                      String                 @db.VarChar(50)
-  numCarteirinha              String                 @unique
-  CPF                         String                 @unique
-  RG                          String                 @db.VarChar(20)
-  endereco                    String                 @db.VarChar(255)
-  numEndereco                 Int
-  bairro                      String                 @db.VarChar(100)
-  escolaridade                String                 @db.VarChar(100)
-  filiacao                    String                 @db.VarChar(255)
-  provaCampeiraEsportiva      ProvaCampeiraEsportiva
-  anexoDocumento              Bytes
-  anexoCarteirinha            Bytes
-  anexoEscolaridade           Bytes
-  anexoResidencia             Bytes
-  anexoAtaConcurso            Bytes
-  fichaInscricao              Bytes
-  anexoTermoEntidade          Bytes
-  anexoTermoCandidato         Bytes
-  anexoRelatorioVivencia      Bytes
-  anexoResponsável           Bytes?
-  anexoProvaEsportivaCampeira Bytes
-
-  Categoria          Categoria @relation(fields: [categoriaId], references: [idCategoria])
-  categoriaId        Int
-  Concurso           Concurso  @relation(fields: [concursoIdConcurso], references: [idConcurso])
+model User {
+  idUser             Int            @id @default(autoincrement())
+  pessoaId           Int            @unique
+  Pessoa             Pessoa         @relation(fields: [pessoaId], references: [idPessoa])
+  login              String         @unique
+  senha              String
+  funcao             funcao
+  numCredenciamento  String?
+  CTG                CTG            @relation(fields: [cTGIdCTG], references: [idCTG])
+  cTGIdCTG           Int
+  Concurso           Concurso       @relation(fields: [concursoIdConcurso], references: [idConcurso])
   concursoIdConcurso Int
-  ctgCanditadoId     Int
-  CTG                CTG       @relation(fields: [ctgCanditadoId], references: [idCTG])
+  Comissao           Comissao       @relation(fields: [comissaoIdComissao], references: [idComissao])
+  comissaoIdComissao Int
+  ComissaoUser       ComissaoUser[]
+  Avalicao           Avalicao[]
+  Recurso            Recurso[]
+  SorteioDanca       SorteioDanca[]
+}
 
-  preferenciaSorteioDanca PreferenciaSorteioDanca[]
-  Avalicao                Avalicao[]
-  SorteioDanca            SorteioDanca[]
+enum funcao {
+  SECRETARIO
+  AVAVIADOR
+  AUXILIAR
 }
 
 model CTG {
@@ -58,48 +82,23 @@ model CTG {
   RT         RT          @relation(fields: [RTid], references: [idRT])
   candidatos Candidato[]
   User       User[]
+  Pessoa     Pessoa?     @relation(fields: [pessoaId], references: [idPessoa])
+  pessoaId   Int?
 }
 
 model RT {
-  idRT   Int    @id @default(autoincrement())
-  nomeRT String @db.VarChar(100)
+  idRT     Int    @id @default(autoincrement())
+  nomeRT   String @db.VarChar(100)
   numeroRT Int?
-  CTGs   CTG[]
+  CTGs     CTG[]
 }
 
 model PreferenciaSorteioDanca {
-  idPreferecnia Int       @id @default(autoincrement())
-  candidatoId   Int
-  Candidato     Candidato @relation(fields: [candidatoId], references: [idCandidato])
-}
-
-enum Funcao {
-  SECRETARIO
-  AVALIADOR
-  AUXILIAR
-}
-
-model User {
-  idUser            Int     @id @default(autoincrement())
-  nomeCompleto      String  @db.VarChar(255)
-  cidade            String  @db.VarChar(50)
-  estado            String  @db.VarChar(50)
-  numCarteirinha    String  @unique
-  login             String  @unique @db.VarChar(100)
-  senha             String  @db.VarChar(255)
-  funcao            Funcao
-  numCredenciamento String? @db.VarChar(50)
-
-  Concurso           Concurso       @relation(fields: [concursoIdConcurso], references: [idConcurso])
-  concursoIdConcurso Int
-  CTGUser            Int
-  CTG                CTG            @relation(fields: [CTGUser], references: [idCTG])
-  Avalicao           Avalicao[]
-  Recurso            Recurso[]
-  SorteioDanca       SorteioDanca[]
-  Comissao           Comissao       @relation(fields: [comissaoIdComissao], references: [idComissao])
-  comissaoIdComissao Int
-  ComissaoUser       ComissaoUser[]
+  idPreferecnia         Int           @id @default(autoincrement())
+  candidatoId           Int
+  Candidato             Candidato     @relation(fields: [candidatoId], references: [idCandidato])
+  SorteioDanca          SorteioDanca? @relation(fields: [sorteioDancaIdSorteio], references: [idSorteio])
+  sorteioDancaIdSorteio Int?
 }
 
 model Concurso {
@@ -148,7 +147,7 @@ model Categoria {
   candidatos Candidato[]
 
   provaTeoricaId Int
-  ProvaTeorica   ProvaTeorica @relation(fields: [provaTeoricaId], references: [idProvaTeorica])
+  ProvaTeorica   ProvaTeorica @relation(fields: [provaTeoricaId], references: [idprovaTeorica])
   provaPraticaId Int
   ProvaPratica   ProvaPratica @relation(fields: [provaPraticaId], references: [idProvaPratica])
 }
@@ -167,16 +166,34 @@ model Avalicao {
   Candidato   Candidato @relation(fields: [candidatoId], references: [idCandidato])
 }
 
+model Prova {
+  idProva      Int           @id @default(autoincrement())
+  nomeProva    String
+  tipo         TipoProva
+  ProvaPratica ProvaPratica?
+  ProvaTeorica ProvaTeorica?
+  Recurso      Recurso[]
+}
+
+enum TipoProva {
+  PRATICA
+  TEORICA
+}
+
 model ProvaTeorica {
-  idProvaTeorica Int    @id @default(autoincrement())
-  nomeProva      String
+  idprovaTeorica Int    @id @default(autoincrement())
+  nome           String
+  idProva        Int    @unique
+  Prova          Prova  @relation(fields: [idProva], references: [idProva])
 
   categorias Categoria[]
 }
 
 model ProvaPratica {
   idProvaPratica Int    @id @default(autoincrement())
-  nomeProva      String
+  nome           String
+  idProva        Int    @unique
+  Prova          Prova  @relation(fields: [idProva], references: [idProva])
 
   categorias   Categoria[]
   blocosProvas BlocoProva[]
@@ -225,6 +242,8 @@ model Recurso {
 
   quesitoRecurso Int
   Quesito        Quesitos @relation(fields: [quesitoRecurso], references: [idQuesito])
+  Prova          Prova?   @relation(fields: [provaIdProva], references: [idProva])
+  provaIdProva   Int?
 }
 
 enum DancaSalaoTradicional {
@@ -236,6 +255,8 @@ model SorteioDanca {
   idSorteio        Int      @id @default(autoincrement())
   resultadoSorteio Int
   dataSorteio      DateTime @default(now())
+
+  preferenciaSorteioDancaIds PreferenciaSorteioDanca[]
 
   candidatoId Int
   Candidato   Candidato @relation(fields: [candidatoId], references: [idCandidato])
