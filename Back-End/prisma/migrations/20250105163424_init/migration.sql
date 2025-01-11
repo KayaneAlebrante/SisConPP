@@ -66,8 +66,8 @@ CREATE TABLE "PreferenciaSorteioDanca" (
 );
 
 -- CreateTable
-CREATE TABLE "User" (
-    "idUser" SERIAL NOT NULL,
+CREATE TABLE "Usuario" (
+    "idUsuario" SERIAL NOT NULL,
     "nomeCompleto" VARCHAR(255) NOT NULL,
     "cidade" VARCHAR(50) NOT NULL,
     "estado" VARCHAR(50) NOT NULL,
@@ -77,10 +77,10 @@ CREATE TABLE "User" (
     "funcao" "Funcao" NOT NULL,
     "numCredenciamento" VARCHAR(50),
     "concursoIdConcurso" INTEGER NOT NULL,
-    "CTGUser" INTEGER NOT NULL,
+    "CTGUsuario" INTEGER NOT NULL,
     "comissaoIdComissao" INTEGER NOT NULL,
 
-    CONSTRAINT "User_pkey" PRIMARY KEY ("idUser")
+    CONSTRAINT "Usuario_pkey" PRIMARY KEY ("idUsuario")
 );
 
 -- CreateTable
@@ -108,12 +108,12 @@ CREATE TABLE "Comissao" (
 );
 
 -- CreateTable
-CREATE TABLE "ComissaoUser" (
+CREATE TABLE "ComissaoUsuario" (
     "id" SERIAL NOT NULL,
     "comissaoId" INTEGER NOT NULL,
-    "userId" INTEGER NOT NULL,
+    "UsuarioId" INTEGER NOT NULL,
 
-    CONSTRAINT "ComissaoUser_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "ComissaoUsuario_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -207,7 +207,7 @@ CREATE TABLE "SorteioDanca" (
     "resultadoSorteio" INTEGER NOT NULL,
     "dataSorteio" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "candidatoId" INTEGER NOT NULL,
-    "userId" INTEGER NOT NULL,
+    "UsuarioId" INTEGER NOT NULL,
 
     CONSTRAINT "SorteioDanca_pkey" PRIMARY KEY ("idSorteio")
 );
@@ -227,10 +227,10 @@ CREATE UNIQUE INDEX "Candidato_numCarteirinha_key" ON "Candidato"("numCarteirinh
 CREATE UNIQUE INDEX "Candidato_CPF_key" ON "Candidato"("CPF");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "User_numCarteirinha_key" ON "User"("numCarteirinha");
+CREATE UNIQUE INDEX "Usuario_numCarteirinha_key" ON "Usuario"("numCarteirinha");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "User_login_key" ON "User"("login");
+CREATE UNIQUE INDEX "Usuario_login_key" ON "Usuario"("login");
 
 -- CreateIndex
 CREATE INDEX "_SubQuesitosSub_B_index" ON "_SubQuesitosSub"("B");
@@ -251,22 +251,22 @@ ALTER TABLE "CTG" ADD CONSTRAINT "CTG_RTid_fkey" FOREIGN KEY ("RTid") REFERENCES
 ALTER TABLE "PreferenciaSorteioDanca" ADD CONSTRAINT "PreferenciaSorteioDanca_candidatoId_fkey" FOREIGN KEY ("candidatoId") REFERENCES "Candidato"("idCandidato") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "User" ADD CONSTRAINT "User_concursoIdConcurso_fkey" FOREIGN KEY ("concursoIdConcurso") REFERENCES "Concurso"("idConcurso") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Usuario" ADD CONSTRAINT "Usuario_concursoIdConcurso_fkey" FOREIGN KEY ("concursoIdConcurso") REFERENCES "Concurso"("idConcurso") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "User" ADD CONSTRAINT "User_CTGUser_fkey" FOREIGN KEY ("CTGUser") REFERENCES "CTG"("idCTG") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Usuario" ADD CONSTRAINT "Usuario_CTGUsuario_fkey" FOREIGN KEY ("CTGUsuario") REFERENCES "CTG"("idCTG") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "User" ADD CONSTRAINT "User_comissaoIdComissao_fkey" FOREIGN KEY ("comissaoIdComissao") REFERENCES "Comissao"("idComissao") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Usuario" ADD CONSTRAINT "Usuario_comissaoIdComissao_fkey" FOREIGN KEY ("comissaoIdComissao") REFERENCES "Comissao"("idComissao") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Comissao" ADD CONSTRAINT "Comissao_concursoId_fkey" FOREIGN KEY ("concursoId") REFERENCES "Concurso"("idConcurso") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ComissaoUser" ADD CONSTRAINT "ComissaoUser_comissaoId_fkey" FOREIGN KEY ("comissaoId") REFERENCES "Comissao"("idComissao") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "ComissaoUsuario" ADD CONSTRAINT "ComissaoUsuario_comissaoId_fkey" FOREIGN KEY ("comissaoId") REFERENCES "Comissao"("idComissao") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ComissaoUser" ADD CONSTRAINT "ComissaoUser_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("idUser") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "ComissaoUsuario" ADD CONSTRAINT "ComissaoUsuario_UsuarioId_fkey" FOREIGN KEY ("UsuarioId") REFERENCES "Usuario"("idUsuario") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Categoria" ADD CONSTRAINT "Categoria_provaTeoricaId_fkey" FOREIGN KEY ("provaTeoricaId") REFERENCES "ProvaTeorica"("idProvaTeorica") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -278,7 +278,7 @@ ALTER TABLE "Categoria" ADD CONSTRAINT "Categoria_provaPraticaId_fkey" FOREIGN K
 ALTER TABLE "Avalicao" ADD CONSTRAINT "Avalicao_comissaoId_fkey" FOREIGN KEY ("comissaoId") REFERENCES "Comissao"("idComissao") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Avalicao" ADD CONSTRAINT "Avalicao_avaliadorId_fkey" FOREIGN KEY ("avaliadorId") REFERENCES "User"("idUser") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Avalicao" ADD CONSTRAINT "Avalicao_avaliadorId_fkey" FOREIGN KEY ("avaliadorId") REFERENCES "Usuario"("idUsuario") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Avalicao" ADD CONSTRAINT "Avalicao_candidatoId_fkey" FOREIGN KEY ("candidatoId") REFERENCES "Candidato"("idCandidato") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -290,7 +290,7 @@ ALTER TABLE "BlocoProva" ADD CONSTRAINT "BlocoProva_provaPraticaIdProvaPratica_f
 ALTER TABLE "SubQuesitos" ADD CONSTRAINT "SubQuesitos_quesitoId_fkey" FOREIGN KEY ("quesitoId") REFERENCES "Quesitos"("idQuesito") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Recurso" ADD CONSTRAINT "Recurso_avaliador_fkey" FOREIGN KEY ("avaliador") REFERENCES "User"("idUser") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Recurso" ADD CONSTRAINT "Recurso_avaliador_fkey" FOREIGN KEY ("avaliador") REFERENCES "Usuario"("idUsuario") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Recurso" ADD CONSTRAINT "Recurso_quesitoRecurso_fkey" FOREIGN KEY ("quesitoRecurso") REFERENCES "Quesitos"("idQuesito") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -299,7 +299,7 @@ ALTER TABLE "Recurso" ADD CONSTRAINT "Recurso_quesitoRecurso_fkey" FOREIGN KEY (
 ALTER TABLE "SorteioDanca" ADD CONSTRAINT "SorteioDanca_candidatoId_fkey" FOREIGN KEY ("candidatoId") REFERENCES "Candidato"("idCandidato") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "SorteioDanca" ADD CONSTRAINT "SorteioDanca_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("idUser") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "SorteioDanca" ADD CONSTRAINT "SorteioDanca_UsuarioId_fkey" FOREIGN KEY ("UsuarioId") REFERENCES "Usuario"("idUsuario") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_SubQuesitosSub" ADD CONSTRAINT "_SubQuesitosSub_A_fkey" FOREIGN KEY ("A") REFERENCES "SubQuesitos"("idSubequestios") ON DELETE CASCADE ON UPDATE CASCADE;

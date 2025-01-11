@@ -14,33 +14,42 @@ model Pessoa {
   estado         String
   numCarteirinha String
   Candidato      Candidato?
-  User           User?
-  CTG            CTG[]
+  Usuario        Usuario?
+  CTG            CTG        @relation(fields: [CTGIdCTG], references: [idCTG])
+  CTGIdCTG       Int        @unique
 }
 
 model Candidato {
-  idCandidato             Int                       @id @default(autoincrement())
-  pessoaId                Int                       @unique
-  Pessoa                  Pessoa                    @relation(fields: [pessoaId], references: [idPessoa])
-  categoria               Int
-  CPF                     String
-  RG                      String
-  endereco                String
-  numEndereco             Int
-  bairro                  String
-  escolaridade            String
-  filiacao                String
-  ProvaCampeiraEsportiva  ProvaCampeiraEsportiva?
-  anexoDocumento          Bytes
-  CTG                     CTG                       @relation(fields: [cTGIdCTG], references: [idCTG])
-  cTGIdCTG                Int
-  PreferenciaSorteioDanca PreferenciaSorteioDanca[]
-  Concurso                Concurso                  @relation(fields: [concursoIdConcurso], references: [idConcurso])
-  concursoIdConcurso      Int
-  Categoria               Categoria                 @relation(fields: [categoriaIdCategoria], references: [idCategoria])
-  categoriaIdCategoria    Int
-  Avalicao                Avalicao[]
-  SorteioDanca            SorteioDanca[]
+  idCandidato                  Int                       @id @default(autoincrement())
+  pessoaId                     Int                       @unique
+  Pessoa                       Pessoa                    @relation(fields: [pessoaId], references: [idPessoa])
+  CPF                          String
+  RG                           String
+  endereco                     String
+  numEndereco                  Int
+  bairro                       String
+  escolaridade                 String
+  filiacao                     String
+  ProvaCampeiraEsportiva       ProvaCampeiraEsportiva?
+  anexoDocumento               Bytes
+  anexoCarteirinha             Bytes
+  anexoEscolaridade            Bytes
+  anexoResidencia              Bytes
+  anexoAtaConcurso             Bytes?
+  fichaInscricao               Bytes
+  anexoTermoCandidato          Bytes
+  anexoRelatorioVivencia       Bytes?
+  anexoResponsavel             Bytes?
+  anexoProvaEsportivaCampeira  Bytes?
+  CTG                          CTG                       @relation(fields: [cTGIdCTG], references: [idCTG])
+  cTGIdCTG                     Int
+  PreferenciaSorteioDanca      PreferenciaSorteioDanca[]
+  Concurso                     Concurso                  @relation(fields: [concursoIdConcurso], references: [idConcurso])
+  concursoIdConcurso           Int
+  Categoria                    Categoria                 @relation(fields: [categoriaIdCategoria], references: [idCategoria])
+  categoriaIdCategoria         Int
+  Avalicao                     Avaliacao[]
+  SorteioDanca                 SorteioDanca[]
 }
 
 enum ProvaCampeiraEsportiva {
@@ -48,27 +57,27 @@ enum ProvaCampeiraEsportiva {
   ESPORTIVA
 }
 
-model User {
-  idUser             Int            @id @default(autoincrement())
-  pessoaId           Int            @unique
-  Pessoa             Pessoa         @relation(fields: [pessoaId], references: [idPessoa])
-  login              String         @unique
+model Usuario {
+  idUsuario          Int               @id @default(autoincrement())
+  pessoaId           Int               @unique
+  Pessoa             Pessoa            @relation(fields: [pessoaId], references: [idPessoa])
+  login              String            @unique
   senha              String
-  funcao             funcao
+  funcao             Funcao
   numCredenciamento  String?
-  CTG                CTG            @relation(fields: [cTGIdCTG], references: [idCTG])
+  CTG                CTG               @relation(fields: [cTGIdCTG], references: [idCTG])
   cTGIdCTG           Int
-  Concurso           Concurso       @relation(fields: [concursoIdConcurso], references: [idConcurso])
+  Concurso           Concurso          @relation(fields: [concursoIdConcurso], references: [idConcurso])
   concursoIdConcurso Int
-  Comissao           Comissao       @relation(fields: [comissaoIdComissao], references: [idComissao])
+  Comissao           Comissao          @relation(fields: [comissaoIdComissao], references: [idComissao])
   comissaoIdComissao Int
-  ComissaoUser       ComissaoUser[]
-  Avalicao           Avalicao[]
+  ComissaoUsuario    ComissaoUsuario[]
+  Avalicao           Avaliacao[]
   Recurso            Recurso[]
   SorteioDanca       SorteioDanca[]
 }
 
-enum funcao {
+enum Funcao {
   SECRETARIO
   AVAVIADOR
   AUXILIAR
@@ -81,8 +90,8 @@ model CTG {
   RTid       Int
   RT         RT          @relation(fields: [RTid], references: [idRT])
   candidatos Candidato[]
-  User       User[]
-  Pessoa     Pessoa?     @relation(fields: [pessoaId], references: [idPessoa])
+  Usuario    Usuario[]
+  Pessoa     Pessoa[]
   pessoaId   Int?
 }
 
@@ -114,26 +123,26 @@ model Concurso {
 
   candidatos Candidato[]
   comissoes  Comissao[]
-  users      User[]
+  Usuarios   Usuario[]
 }
 
 model Comissao {
   idComissao   Int    @id @default(autoincrement())
   nomeComissao String @db.VarChar(100)
 
-  concurso   Concurso       @relation(fields: [concursoId], references: [idConcurso])
+  concurso   Concurso          @relation(fields: [concursoId], references: [idConcurso])
   concursoId Int
-  avalicao   Avalicao[]
-  users      ComissaoUser[]
-  User       User[]
+  avalicao   Avaliacao[]
+  Usuarios   ComissaoUsuario[]
+  Usuario    Usuario[]
 }
 
-model ComissaoUser {
+model ComissaoUsuario {
   id         Int      @id @default(autoincrement())
   comissaoId Int
-  userId     Int
+  usuarioId  Int
   Comissao   Comissao @relation(fields: [comissaoId], references: [idComissao])
-  User       User     @relation(fields: [userId], references: [idUser])
+  Usuario    Usuario  @relation(fields: [usuarioId], references: [idUsuario])
 }
 
 model Categoria {
@@ -152,7 +161,7 @@ model Categoria {
   ProvaPratica   ProvaPratica @relation(fields: [provaPraticaId], references: [idProvaPratica])
 }
 
-model Avalicao {
+model Avaliacao {
   idAvalicao    Int      @id @default(autoincrement())
   dataAvaliacao DateTime @default(now())
 
@@ -160,7 +169,7 @@ model Avalicao {
   Comissao   Comissao @relation(fields: [comissaoId], references: [idComissao])
 
   avaliadorId Int
-  User        User @relation(fields: [avaliadorId], references: [idUser])
+  Usuario     Usuario @relation(fields: [avaliadorId], references: [idUsuario])
 
   candidatoId Int
   Candidato   Candidato @relation(fields: [candidatoId], references: [idCandidato])
@@ -238,7 +247,7 @@ model Recurso {
   dataRecurso   DateTime @default(now())
 
   avaliador Int
-  User      User @relation(fields: [avaliador], references: [idUser])
+  Usuario   Usuario @relation(fields: [avaliador], references: [idUsuario])
 
   quesitoRecurso Int
   Quesito        Quesitos @relation(fields: [quesitoRecurso], references: [idQuesito])
@@ -261,6 +270,6 @@ model SorteioDanca {
   candidatoId Int
   Candidato   Candidato @relation(fields: [candidatoId], references: [idCandidato])
 
-  userId Int
-  User   User @relation(fields: [userId], references: [idUser])
+  UsuarioId Int
+  Usuario   Usuario @relation(fields: [UsuarioId], references: [idUsuario])
 }

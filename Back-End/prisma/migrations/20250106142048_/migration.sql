@@ -22,15 +22,15 @@
   - The primary key for the `ProvaTeorica` table will be changed. If it partially fails, the table could be left without primary key constraint.
   - You are about to drop the column `idProvaTeorica` on the `ProvaTeorica` table. All the data in the column will be lost.
   - You are about to drop the column `nomeProva` on the `ProvaTeorica` table. All the data in the column will be lost.
-  - You are about to drop the column `CTGUser` on the `User` table. All the data in the column will be lost.
-  - You are about to drop the column `cidade` on the `User` table. All the data in the column will be lost.
-  - You are about to drop the column `estado` on the `User` table. All the data in the column will be lost.
-  - You are about to drop the column `nomeCompleto` on the `User` table. All the data in the column will be lost.
-  - You are about to drop the column `numCarteirinha` on the `User` table. All the data in the column will be lost.
+  - You are about to drop the column `CTGUsuario` on the `Usuario` table. All the data in the column will be lost.
+  - You are about to drop the column `cidade` on the `Usuario` table. All the data in the column will be lost.
+  - You are about to drop the column `estado` on the `Usuario` table. All the data in the column will be lost.
+  - You are about to drop the column `nomeCompleto` on the `Usuario` table. All the data in the column will be lost.
+  - You are about to drop the column `numCarteirinha` on the `Usuario` table. All the data in the column will be lost.
   - A unique constraint covering the columns `[pessoaId]` on the table `Candidato` will be added. If there are existing duplicate values, this will fail.
   - A unique constraint covering the columns `[idProva]` on the table `ProvaPratica` will be added. If there are existing duplicate values, this will fail.
   - A unique constraint covering the columns `[idProva]` on the table `ProvaTeorica` will be added. If there are existing duplicate values, this will fail.
-  - A unique constraint covering the columns `[pessoaId]` on the table `User` will be added. If there are existing duplicate values, this will fail.
+  - A unique constraint covering the columns `[pessoaId]` on the table `Usuario` will be added. If there are existing duplicate values, this will fail.
   - Added the required column `cTGIdCTG` to the `Candidato` table without a default value. This is not possible if the table is not empty.
   - Added the required column `categoria` to the `Candidato` table without a default value. This is not possible if the table is not empty.
   - Added the required column `categoriaIdCategoria` to the `Candidato` table without a default value. This is not possible if the table is not empty.
@@ -39,9 +39,9 @@
   - Added the required column `nome` to the `ProvaPratica` table without a default value. This is not possible if the table is not empty.
   - Added the required column `idProva` to the `ProvaTeorica` table without a default value. This is not possible if the table is not empty.
   - Added the required column `nome` to the `ProvaTeorica` table without a default value. This is not possible if the table is not empty.
-  - Added the required column `cTGIdCTG` to the `User` table without a default value. This is not possible if the table is not empty.
-  - Added the required column `pessoaId` to the `User` table without a default value. This is not possible if the table is not empty.
-  - Changed the type of `funcao` on the `User` table. No cast exists, the column would be dropped and recreated, which cannot be done if there is data, since the column is required.
+  - Added the required column `cTGIdCTG` to the `Usuario` table without a default value. This is not possible if the table is not empty.
+  - Added the required column `pessoaId` to the `Usuario` table without a default value. This is not possible if the table is not empty.
+  - Changed the type of `funcao` on the `Usuario` table. No cast exists, the column would be dropped and recreated, which cannot be done if there is data, since the column is required.
 
 */
 -- CreateEnum
@@ -60,7 +60,7 @@ ALTER TABLE "Candidato" DROP CONSTRAINT "Candidato_ctgCanditadoId_fkey";
 ALTER TABLE "Categoria" DROP CONSTRAINT "Categoria_provaTeoricaId_fkey";
 
 -- DropForeignKey
-ALTER TABLE "User" DROP CONSTRAINT "User_CTGUser_fkey";
+ALTER TABLE "Usuario" DROP CONSTRAINT "Usuario_CTGUsuario_fkey";
 
 -- DropIndex
 DROP INDEX "Candidato_CPF_key";
@@ -69,7 +69,7 @@ DROP INDEX "Candidato_CPF_key";
 DROP INDEX "Candidato_numCarteirinha_key";
 
 -- DropIndex
-DROP INDEX "User_numCarteirinha_key";
+DROP INDEX "Usuario_numCarteirinha_key";
 
 -- AlterTable
 ALTER TABLE "CTG" ADD COLUMN     "pessoaId" INTEGER;
@@ -124,7 +124,7 @@ ADD CONSTRAINT "ProvaTeorica_pkey" PRIMARY KEY ("idprovaTeorica");
 ALTER TABLE "Recurso" ADD COLUMN     "provaIdProva" INTEGER;
 
 -- AlterTable
-ALTER TABLE "User" DROP COLUMN "CTGUser",
+ALTER TABLE "Usuario" DROP COLUMN "CTGUsuario",
 DROP COLUMN "cidade",
 DROP COLUMN "estado",
 DROP COLUMN "nomeCompleto",
@@ -170,7 +170,7 @@ CREATE UNIQUE INDEX "ProvaPratica_idProva_key" ON "ProvaPratica"("idProva");
 CREATE UNIQUE INDEX "ProvaTeorica_idProva_key" ON "ProvaTeorica"("idProva");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "User_pessoaId_key" ON "User"("pessoaId");
+CREATE UNIQUE INDEX "Usuario_pessoaId_key" ON "Usuario"("pessoaId");
 
 -- AddForeignKey
 ALTER TABLE "Candidato" ADD CONSTRAINT "Candidato_pessoaId_fkey" FOREIGN KEY ("pessoaId") REFERENCES "Pessoa"("idPessoa") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -182,10 +182,10 @@ ALTER TABLE "Candidato" ADD CONSTRAINT "Candidato_cTGIdCTG_fkey" FOREIGN KEY ("c
 ALTER TABLE "Candidato" ADD CONSTRAINT "Candidato_categoriaIdCategoria_fkey" FOREIGN KEY ("categoriaIdCategoria") REFERENCES "Categoria"("idCategoria") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "User" ADD CONSTRAINT "User_pessoaId_fkey" FOREIGN KEY ("pessoaId") REFERENCES "Pessoa"("idPessoa") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Usuario" ADD CONSTRAINT "Usuario_pessoaId_fkey" FOREIGN KEY ("pessoaId") REFERENCES "Pessoa"("idPessoa") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "User" ADD CONSTRAINT "User_cTGIdCTG_fkey" FOREIGN KEY ("cTGIdCTG") REFERENCES "CTG"("idCTG") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Usuario" ADD CONSTRAINT "Usuario_cTGIdCTG_fkey" FOREIGN KEY ("cTGIdCTG") REFERENCES "CTG"("idCTG") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "CTG" ADD CONSTRAINT "CTG_pessoaId_fkey" FOREIGN KEY ("pessoaId") REFERENCES "Pessoa"("idPessoa") ON DELETE SET NULL ON UPDATE CASCADE;
