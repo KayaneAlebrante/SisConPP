@@ -1,39 +1,47 @@
-import { PrismaClient } from "@prisma/client";
+import { CTG, PrismaClient } from "@prisma/client";
 import UsuarioService from "./usuario-service";
 import candidatoService from "./candidato-service";
+import { connect } from "http2";
 
 const prisma = new PrismaClient();
 
-class PessoaService{
-    constructor(protected prisma: PrismaClient){}
+class PessoaService {
+    constructor(protected prisma: PrismaClient) {}
 
-    async criarPessoa(nomeCompleto: string, cidade: string, estado: string, numCarteirinha?: string){
-        try{
+    async criarPessoa(
+        nomeCompleto: string,
+        cidade: string,
+        estado: string,
+        numCarteirinha?: string,
+        CTGId?: CTG["idCTG"]
+    ) {
+        try {
             const pessoa = await this.prisma.pessoa.create({
                 data: {
                     nomeCompleto: nomeCompleto,
                     cidade: cidade,
                     estado: estado,
                     numCarteirinha: numCarteirinha ?? '',
-                    CTG: {
-                        connect: { idCTG: 1 } // Replace with appropriate CTG id or creation logic
-                    }
+                    CTG: { connect: { idCTG: CTGId } }
                 }
             });
-            return pessoa.idPessoa;
-        } catch(error){
+            return pessoa;
+        } catch (error) {
             throw new Error("Erro ao criar pessoa. Verifique os dados fornecidos.");
         }
     }
 
-    async atualizarPessoa(idPessoa: number, data: {nomeCompleto?: string, cidade?: string, estado?: string, numCarteirinha?: string}){
-        try{
+    async atualizarPessoa(
+        idPessoa: number,
+        data: { nomeCompleto?: string; cidade?: string; estado?: string; numCarteirinha?: string }
+    ) {
+        try {
             const pessoa = await this.prisma.pessoa.update({
-                where: {idPessoa: idPessoa},
+                where: { idPessoa: idPessoa },
                 data: data
             });
             return pessoa;
-        } catch(error){
+        } catch (error) {
             throw new Error("Erro ao atualizar pessoa. Verifique os dados fornecidos.");
         }
     }

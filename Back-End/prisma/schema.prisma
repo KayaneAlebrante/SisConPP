@@ -16,45 +16,46 @@ model Pessoa {
   Candidato      Candidato?
   Usuario        Usuario?
   CTG            CTG        @relation(fields: [CTGIdCTG], references: [idCTG])
-  CTGIdCTG       Int        @unique
+  CTGIdCTG       Int        @default(0)
 }
 
 model Candidato {
-  idCandidato                  Int                       @id @default(autoincrement())
-  pessoaId                     Int                       @unique
-  Pessoa                       Pessoa                    @relation(fields: [pessoaId], references: [idPessoa])
-  CPF                          String
-  RG                           String
-  endereco                     String
-  numEndereco                  Int
-  bairro                       String
-  escolaridade                 String
-  filiacao                     String
-  ProvaCampeiraEsportiva       ProvaCampeiraEsportiva?
-  anexoDocumento               Bytes
-  anexoCarteirinha             Bytes
-  anexoEscolaridade            Bytes
-  anexoResidencia              Bytes
-  anexoAtaConcurso             Bytes?
-  fichaInscricao               Bytes
-  anexoTermoCandidato          Bytes
-  anexoRelatorioVivencia       Bytes?
-  anexoResponsavel             Bytes?
-  anexoProvaEsportivaCampeira  Bytes?
-  CTG                          CTG                       @relation(fields: [cTGIdCTG], references: [idCTG])
-  cTGIdCTG                     Int
-  PreferenciaSorteioDanca      PreferenciaSorteioDanca[]
-  Concurso                     Concurso                  @relation(fields: [concursoIdConcurso], references: [idConcurso])
-  concursoIdConcurso           Int
-  Categoria                    Categoria                 @relation(fields: [categoriaIdCategoria], references: [idCategoria])
-  categoriaIdCategoria         Int
-  Avalicao                     Avaliacao[]
-  SorteioDanca                 SorteioDanca[]
+  idCandidato                 Int                       @id @default(autoincrement())
+  pessoaId                    Int                       @unique
+  Pessoa                      Pessoa                    @relation(fields: [pessoaId], references: [idPessoa])
+  CPF                         String
+  RG                          String
+  endereco                    String
+  numEndereco                 Int
+  bairro                      String
+  escolaridade                String
+  filiacao                    String
+  ProvaCampeiraEsportiva      ProvaCampeiraEsportiva?
+  anexoDocumento              Bytes?
+  anexoCarteirinha            Bytes?
+  anexoEscolaridade           Bytes?
+  anexoResidencia             Bytes?
+  anexoAtaConcurso            Bytes?
+  fichaInscricao              Bytes?
+  anexoTermoCandidato         Bytes?
+  anexoRelatorioVivencia      Bytes?
+  anexoResponsavel            Bytes?
+  anexoProvaEsportivaCampeira Bytes?
+  CTG                         CTG                       @relation(fields: [cTGIdCTG], references: [idCTG])
+  cTGIdCTG                    Int
+  PreferenciaSorteioDanca     PreferenciaSorteioDanca[]
+  Concurso                    Concurso                  @relation(fields: [concursoId], references: [idConcurso])
+  concursoId                  Int
+  Categoria                   Categoria                 @relation(fields: [categoriaId], references: [idCategoria])
+  categoriaId                 Int
+  Avalicao                    Avaliacao[]
+  SorteioDanca                SorteioDanca[]
 }
 
 enum ProvaCampeiraEsportiva {
   CAMPEIRA
   ESPORTIVA
+  NENHUMA
 }
 
 model Usuario {
@@ -92,7 +93,6 @@ model CTG {
   candidatos Candidato[]
   Usuario    Usuario[]
   Pessoa     Pessoa[]
-  pessoaId   Int?
 }
 
 model RT {
@@ -176,11 +176,11 @@ model Avaliacao {
 }
 
 model Prova {
-  idProva      Int           @id @default(autoincrement())
+  idProva      Int            @id @default(autoincrement())
   nomeProva    String
   tipo         TipoProva
-  ProvaPratica ProvaPratica?
-  ProvaTeorica ProvaTeorica?
+  ProvaPratica ProvaPratica[]
+  ProvaTeorica ProvaTeorica[]
   Recurso      Recurso[]
 }
 
@@ -192,7 +192,7 @@ enum TipoProva {
 model ProvaTeorica {
   idprovaTeorica Int    @id @default(autoincrement())
   nome           String
-  idProva        Int    @unique
+  idProva        Int
   Prova          Prova  @relation(fields: [idProva], references: [idProva])
 
   categorias Categoria[]
@@ -201,7 +201,7 @@ model ProvaTeorica {
 model ProvaPratica {
   idProvaPratica Int    @id @default(autoincrement())
   nome           String
-  idProva        Int    @unique
+  idProva        Int
   Prova          Prova  @relation(fields: [idProva], references: [idProva])
 
   categorias   Categoria[]
@@ -209,11 +209,11 @@ model ProvaPratica {
 }
 
 model BlocoProva {
-  idBloco                    Int           @id @default(autoincrement())
+  idBloco                    Int          @id @default(autoincrement())
   nomeBloco                  String
   notaMaximaBloco            Float
-  ProvaPratica               ProvaPratica? @relation(fields: [provaPraticaIdProvaPratica], references: [idProvaPratica])
-  provaPraticaIdProvaPratica Int?
+  ProvaPratica               ProvaPratica @relation(fields: [provaPraticaIdProvaPratica], references: [idProvaPratica])
+  provaPraticaIdProvaPratica Int
 }
 
 model Quesitos {
