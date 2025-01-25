@@ -7,7 +7,7 @@ router.post("/", async (req: Request, res: Response) => {
     await CandidatoController.criarCandidato(req, res);
 });
 
-router.post("/:id", async (req: Request, res: Response) => {
+router.put("/:id", async (req: Request, res: Response) => {
     await CandidatoController.atualizarCandidato(req, res);
 });
 
