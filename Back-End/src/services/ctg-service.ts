@@ -13,7 +13,7 @@ class CTGService{
                     RTid: RTId,
                 },
             });
-            return ctg;
+            return ctg.idCTG;
         } catch (error){
             throw new Error("Erro ao criar CTG. Verifique os dados fornecidos.");
         }
