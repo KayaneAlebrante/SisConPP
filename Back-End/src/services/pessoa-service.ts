@@ -6,34 +6,46 @@ import { connect } from "http2";
 const prisma = new PrismaClient();
 
 class PessoaService {
-    constructor(protected prisma: PrismaClient) {}
+    constructor(protected prisma: PrismaClient) { }
 
     async criarPessoa(
         nomeCompleto: string,
         cidade: string,
         estado: string,
-        numCarteirinha?: string,
-        CTGId?: CTG["idCTG"]
+        CTGId: number,
+        numCarteirinha?: string
     ) {
+        console.log("CTG ID:", CTGId);
         try {
+            const ctgExiste = await this.prisma.cTG.findUnique({
+                where: { idCTG: CTGId }
+            });
+
+            if (!ctgExiste) {
+                throw new Error('CTG não encontrado');
+            }
+
             const pessoa = await this.prisma.pessoa.create({
                 data: {
-                    nomeCompleto: nomeCompleto,
-                    cidade: cidade,
-                    estado: estado,
-                    numCarteirinha: numCarteirinha ?? '',
-                    CTG: { connect: { idCTG: CTGId } }
+                    nomeCompleto,
+                    cidade,
+                    estado,
+                    CTG: {
+                        connect: { idCTG: CTGId }
+                    },
+                    numCarteirinha: numCarteirinha ?? ''
                 }
             });
             return pessoa;
         } catch (error) {
-            throw new Error("Erro ao criar pessoa. Verifique os dados fornecidos.");
+            console.error("Erro ao criar pessoa:", error);
+            throw error;
         }
     }
 
     async atualizarPessoa(
         idPessoa: number,
-        data: { nomeCompleto?: string; cidade?: string; estado?: string; numCarteirinha?: string }
+        data: { nomeCompleto?: string; cidade?: string; estado?: string; CTGId?: number; numCarteirinha?: string }
     ) {
         try {
             const pessoa = await this.prisma.pessoa.update({
@@ -46,33 +58,36 @@ class PessoaService {
         }
     }
 
-    async buscarPessoaPorId(idPessoa: number){
-        try{
+    async buscarPessoaPorId(idPessoa: number) {
+        try {
             const pessoa = await this.prisma.pessoa.findUnique({
-                where: {idPessoa: idPessoa}
+                where: { idPessoa: idPessoa }
             });
             return pessoa;
-        } catch(error){
+        } catch (error) {
             throw new Error("Erro ao buscar pessoa.");
         }
     }
 
-    async buscarPessoas(){
-        try{
+    async buscarPessoas() {
+        try {
             const pessoas = await this.prisma.pessoa.findMany();
             return pessoas;
-        } catch(error){
+        } catch (error) {
             throw new Error("Erro ao buscar pessoas.");
         }
     }
 
-    async deletarPessoa(idPessoa: number){
-        try{
+    async deletarPessoa(idPessoa: number) {
+        try {
             await this.prisma.pessoa.delete({
-                where: {idPessoa: idPessoa}
+                where: { idPessoa: idPessoa }
             });
-        } catch(error){
-            throw new Error("Erro ao deletar pessoa.");
+            
+            return { message: 'Pessoa deletada com sucesso.' };
+        } catch (error: any) {
+            console.error('Erro ao deletar pessoa:', error);
+            throw new Error(`Erro ao deletar pessoa: ${error.message}`);
         }
     }
 }

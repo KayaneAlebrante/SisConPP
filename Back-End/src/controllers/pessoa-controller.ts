@@ -3,14 +3,14 @@ import PessoaService from "../services/pessoa-service";
 
 class PessoaController{
     async criarPessoa(req: Request, res: Response){
-        const{nomeCompleto, cidade, estado, numCarteirinha} = req.body;
+        const{nomeCompleto, cidade, estado,CTGId, numCarteirinha} = req.body;
 
         if(!nomeCompleto || !cidade || !estado){
             return res.status(400).json({ mensagem: "Nome completo, cidade e estado são obrigatórios." });
         }
 
         try{
-            const pessoa = await PessoaService.prototype.criarPessoa(nomeCompleto, cidade, estado, numCarteirinha);
+            const pessoa = await PessoaService.prototype.criarPessoa(nomeCompleto, cidade, estado,CTGId,numCarteirinha);
             return res.status(201).json(pessoa);
         } catch(error: unknown){
             if(error instanceof Error){
@@ -77,10 +77,10 @@ class PessoaController{
     }
 
     async deletarPessoa(req: Request, res: Response){
-        const { id } = req.params;
+        const { idPessoa } = req.params;
 
         try{
-            await PessoaService.prototype.deletarPessoa(Number(id));
+            await PessoaService.prototype.deletarPessoa(Number(idPessoa));
             return res.status(204).end();
         } catch(error: unknown){
             if(error instanceof Error){
