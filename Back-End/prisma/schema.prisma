@@ -64,8 +64,8 @@ model Usuario {
   senha             String
   funcao            Funcao
   numCredenciamento String?
-  Concurso          Concurso?        @relation(fields: [concursoId], references: [idConcurso])
-  concursoId        Int?
+  Concurso          Concurso         @relation(fields: [concursoId], references: [idConcurso])
+  concursoId        Int
   comissaoUsuarioId Int?
   ComissaoUsuario   ComissaoUsuario? @relation
   avalicoes         Avaliacao[]
