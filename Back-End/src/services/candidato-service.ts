@@ -1,5 +1,6 @@
 import { Avaliacao, PreferenciaSorteioDanca, PrismaClient, ProvaCampeiraEsportiva, SorteioDanca } from "@prisma/client";
 import PessoaService from "./pessoa-service";
+import usuarioController from "../controllers/usuario-controller";
 
 const prisma = new PrismaClient();
 
@@ -9,8 +10,12 @@ class CandidatoService extends PessoaService {
     }
 
     async criarCandidato(
+        nomeCompleto: string,
+        cidade: string,
+        estado: string,
+        CTGId: number,
+        numCarteirinha: string,
         categoriaId: number,
-        pessoaData: { nomeCompleto: string; cidade: string; estado: string; numCarteirinha?: string },
         CPF: string,
         RG: string,
         endereco: string,
@@ -19,26 +24,38 @@ class CandidatoService extends PessoaService {
         escolaridade: string,
         filiacao: string,
         ProvaCampeiraEsportiva: ProvaCampeiraEsportiva,
-        anexoDocumento: Buffer,
-        anexoCarteirinha: Buffer,
-        anexoEscolaridade: Buffer,
-        anexoResidencia: Buffer,
-        anexoAtaConcurso: Buffer,
-        fichaInscricao: Buffer,
-        anexoTermoCandidato: Buffer,
-        anexoRelatorioVivencia: Buffer,
-        anexoResponsavel: Buffer,
-        anexoProvaEsportivaCampeira: Buffer,
-        cTGIdCTG: number,
-        concursoId: number
+        concursoId: number,
+        anexoDocumento?: Buffer,
+        anexoCarteirinha?: Buffer,
+        anexoEscolaridade?: Buffer,
+        anexoResidencia?: Buffer,
+        anexoAtaConcurso?: Buffer,
+        fichaInscricao?: Buffer,
+        anexoTermoCandidato?: Buffer,
+        anexoRelatorioVivencia?: Buffer,
+        anexoResponsavel?: Buffer,
+        anexoProvaEsportivaCampeira?: Buffer
     ) {
-        try {
-            const { nomeCompleto, cidade, estado, numCarteirinha } = pessoaData;
-            const pessoaId = await this.criarPessoa(nomeCompleto, cidade, estado, numCarteirinha);
+        const pessoaId = await this.criarPessoa(
+            nomeCompleto,
+            cidade,
+            estado,
+            CTGId,
+            numCarteirinha
+        );
 
+        const pessoaExistente = await this.prisma.pessoa.findUnique({
+            where: { idPessoa: pessoaId.idPessoa },
+            include: { Usuario: true, Candidato: true },
+        });
+
+        if (pessoaExistente?.Usuario || pessoaExistente?.Candidato) {
+            throw new Error("Esta pessoa já está associada a um usuário ou candidato.");
+        }
+
+        try {
             const candidato = await this.prisma.candidato.create({
                 data: {
-                    categoriaId,
                     pessoaId: pessoaId.idPessoa,
                     CPF,
                     RG,
@@ -58,83 +75,73 @@ class CandidatoService extends PessoaService {
                     anexoRelatorioVivencia,
                     anexoResponsavel,
                     anexoProvaEsportivaCampeira,
-                    cTGIdCTG,
-                    concursoId
+                    concursoId,
+                    categoriaId
                 }
             });
 
-            return candidato;
+            console.log("Candidato Criado con sucesso");
+            return { candidato, pessoaId };
+
         } catch (error) {
+            console.error("Erro detalhad:", error);
             throw new Error("Erro ao criar candidato. Verifique os dados fornecidos.");
         }
     }
 
     async atualizarCandidato(
-        candidatoId: number,
-        categoriaId: number,
-        pessoaData: { nomeCompleto: string; cidade: string; estado: string; numCarteirinha?: string },
-        CPF: string,
-        RG: string,
-        endereco: string,
-        numEndereco: number,
-        bairro: string,
-        escolaridade: string,
-        filiacao: string,
-        ProvaCampeiraEsportiva: ProvaCampeiraEsportiva,
-        anexoDocumento: Buffer,
-        anexoCarteirinha: Buffer,
-        anexoEscolaridade: Buffer,
-        anexoResidencia: Buffer,
-        anexoAtaConcurso: Buffer,
-        fichaInscricao: Buffer,
-        anexoTermoCandidato: Buffer,
-        anexoRelatorioVivencia: Buffer,
-        anexoResponsavel: Buffer,
-        anexoProvaEsportivaCampeira: Buffer,
-        cTGIdCTG: number,
-        preferenciaSorteioDanca: PreferenciaSorteioDanca[], 
-        concursoId: number,
-        avaliacao: Avaliacao[], 
-        sorteioDanca: SorteioDanca[]
+        idCandidato: number,
+        data: {
+            categoriaId: number,
+            CPF: string,
+            RG: string,
+            endereco: string,
+            numEndereco: number,
+            bairro: string,
+            escolaridade: string,
+            filiacao: string,
+            ProvaCampeiraEsportiva: ProvaCampeiraEsportiva,
+            concursoId: number,
+            anexoDocumento?: Buffer,
+            anexoCarteirinha?: Buffer,
+            anexoEscolaridade?: Buffer,
+            anexoResidencia?: Buffer,
+            anexoAtaConcurso?: Buffer,
+            fichaInscricao?: Buffer,
+            anexoTermoCandidato?: Buffer,
+            anexoRelatorioVivencia?: Buffer,
+            anexoResponsavel?: Buffer,
+            anexoProvaEsportivaCampeira?: Buffer
+        },
+
+        pessoaData: {
+            nomeCompleto?: string;
+            cidade?: string;
+            estado?: string;
+            CTGId?: number;
+            numCarteirinha?: string
+        }
     ) {
         try {
-            const { nomeCompleto, cidade, estado, numCarteirinha } = pessoaData;
-            const pessoa = await this.atualizarPessoa(candidatoId, { nomeCompleto, cidade, estado, numCarteirinha });
-            const pessoaId = pessoa.idPessoa;
 
             const candidato = await this.prisma.candidato.update({
-                where: { idCandidato: candidatoId },
-                data: {
-                    categoriaId,
-                    pessoaId,
-                    CPF,
-                    RG,
-                    endereco,
-                    numEndereco,
-                    bairro,
-                    escolaridade,
-                    filiacao,
-                    ProvaCampeiraEsportiva,
-                    anexoDocumento,
-                    anexoCarteirinha,
-                    anexoEscolaridade,
-                    anexoResidencia,
-                    anexoAtaConcurso,
-                    fichaInscricao,
-                    anexoTermoCandidato,
-                    anexoRelatorioVivencia,
-                    anexoResponsavel,
-                    anexoProvaEsportivaCampeira,
-                    cTGIdCTG,
-                    PreferenciaSorteioDanca: { create: preferenciaSorteioDanca },
-                    concursoId
-                }
-            });    
+                where: { idCandidato },
+                data,
+                include: { Pessoa: true },
+            });
+
+            if(pessoaData && candidato.pessoaId){
+                const pessoa = await this.atualizarPessoa(candidato.pessoaId, pessoaData);
+                return{ candidato, pessoa };
+            }        
+
+            return candidato;
         } catch (error) {
+            console.error(error);
             throw new Error("Erro ao atualizar candidato. Verifique os dados fornecidos.");
         }
     }
-    
+
     async buscarCandidatoPorId(idCandidato: number) {
         try {
             const candidato = await this.prisma.candidato.findUnique({
@@ -157,10 +164,31 @@ class CandidatoService extends PessoaService {
 
     async deletarCandidato(idCandidato: number) {
         try {
-            await this.prisma.candidato.delete({
-                where: { idCandidato: idCandidato }
+            console.log("IdCandidato:", idCandidato);
+    
+            const candidato = await this.prisma.candidato.findUnique({
+                where: { idCandidato },
+                include: { Pessoa: true },
             });
+    
+            if (!candidato) {
+                throw new Error("Candidato não encontrado.");
+            }
+    
+            const idPessoa = candidato.pessoaId;
+    
+            await this.prisma.candidato.delete({
+                where: { idCandidato },
+            });
+    
+            if (idPessoa) {
+                await this.deletarPessoa(idPessoa); // Chamada fora da transação
+                console.log("Pessoa Deletada com Sucesso!");
+            }
+    
+            return { mensagem: "Candidato deletado com sucesso." };
         } catch (error) {
+            console.error(error);
             throw new Error("Erro ao deletar candidato.");
         }
     }
@@ -185,10 +213,10 @@ class CandidatoService extends PessoaService {
             return candidato;
         } catch (error) {
             throw new Error("Erro ao anexar anexos.");
-        }        
+        }
     }
 
-    
+
     async visualizarAnexos(idCandidato: number) {
         try {
             const candidato = await this.prisma.candidato.findUnique({
