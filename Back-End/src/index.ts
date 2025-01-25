@@ -15,7 +15,6 @@ app.use("/ctg", ctgRoutes);
 app.use("/usuario", usuarioRoutes);
 app.use("/candidato", candidatoRoutes);
 
-
 const PORT = process.env.PORT || 3002;
 
 app.listen(PORT, () => {
