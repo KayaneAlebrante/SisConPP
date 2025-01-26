@@ -85,7 +85,8 @@ class CandidatoController {
         }
 
         try{
-            const { nomeCompleto, 
+            const { 
+                nomeCompleto, 
                 cidade, 
                 estado,
                 CTGId,
