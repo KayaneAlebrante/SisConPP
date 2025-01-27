@@ -7,4 +7,9 @@ router.post("/", async (req: Request, res: Response) => {
     await concursoController.criarConcurso(req, res);
 });
 
+router.put("/:id", async (req: Request, res: Response) => {
+    await concursoController.atualizarConcurso(req, res);
+});
+
+
 export default router;

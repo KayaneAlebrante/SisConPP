@@ -42,6 +42,49 @@ class ConcursoController{
             }
         }
     }
+
+    async atualizarConcurso(req: Request, res: Response){
+        const { id } = req.params;
+        const data = req.body;
+
+        if(!data || Object.keys(data).length === 0){
+            return res.status(400).json({ mensagem: "Dados para atualização são obrigatórios." });
+        }
+
+        try{
+            const{
+                nomeConcurso,
+                lancamentoEdital,
+                inscricoesInicio,
+                inscricoesFinal,
+                dataProvaEscrita,
+                dataProvasPraticas,
+                dataResultado,
+                local
+            } = data;
+
+            const concurso = {
+                nomeConcurso,
+                lancamentoEdital,
+                inscricoesInicio,
+                inscricoesFinal,
+                dataProvaEscrita,
+                dataProvasPraticas, 
+                dataResultado,
+                local
+            };
+
+            const Concurso = await concursoService.atualizarConcurso(Number(id), concurso);
+            return res.status(200).json(Concurso);
+        }catch(error: unknown){
+            if(error instanceof Error){
+                return res.status(400).json({ mensagem: error.message });
+            } else {
+                console.error("Erro desconhecido:", error);
+                return res.status(400).json({ mensagem: "Erro desconhecido." });
+            }
+        }
+    }
 }
 
 export default new ConcursoController();
