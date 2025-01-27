@@ -35,4 +35,4 @@ router.put("/:id/anexos", async (req: Request, res: Response) => {
     await CandidatoController.editarAnexos(req, res);
 });
 
-export default router;
+export default router;   
