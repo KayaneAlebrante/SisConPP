@@ -84,7 +84,7 @@ class CandidatoService extends PessoaService {
             return { candidato, pessoaId };
 
         } catch (error) {
-            console.error("Erro detalhad:", error);
+            console.error("Erro detalhado:", error);
             throw new Error("Erro ao criar candidato. Verifique os dados fornecidos.");
         }
     }
