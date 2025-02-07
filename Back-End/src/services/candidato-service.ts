@@ -182,7 +182,7 @@ class CandidatoService extends PessoaService {
             });
     
             if (idPessoa) {
-                await this.deletarPessoa(idPessoa); // Chamada fora da transação
+                await this.deletarPessoa(idPessoa);
                 console.log("Pessoa Deletada com Sucesso!");
             }
     
