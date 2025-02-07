@@ -77,6 +77,28 @@ class ConcursoService{
             throw new Error("Erro ao atualizar concurso. Verifique os dados fornecidos.");
         }
     }
+
+    async buscarConcursoPorId(idConcurso: number){
+        try{
+            const concurso = await this.prisma.concurso.findUnique({
+                where: { idConcurso: idConcurso }
+            });
+            return concurso;
+        }catch(error){
+            throw new Error("Erro ao buscar Concurso.");
+        }
+    }
+
+    async buscarConcursos(){
+        try{
+            const concursos = await this.prisma.concurso.findMany();
+            return concursos;
+        }catch(erro){
+            throw new Error("Erro ao buscar concursos");
+        }
+    }
+
+    
     
 }
 

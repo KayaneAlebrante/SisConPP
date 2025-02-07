@@ -85,6 +85,33 @@ class ConcursoController{
             }
         }
     }
+
+    async buscarConcursoPorId(req: Request, res: Response){
+        const{ id } = req.params;
+
+        try{
+            const concurso = await concursoService.buscarConcursoPorId(Number(id));
+            return res.status(200).json(concurso);
+        }catch(error: unknown){
+            if(error instanceof Error){
+                console.log("Erro ao buscar concurso:", error);
+                return res.status(400).json({mensagem: "Erro desconhecido."});
+            }
+        }
+    }
+
+    
+    async buscarConcursos(req: Request, res: Response){
+        try{
+            const concursos = await concursoService.buscarConcursos();
+            return res.status(200).json(concursos);
+        }catch(error: unknown){
+            if(error instanceof Error){
+                console.log("Erro ao buscar concursos:", error);
+                return res.status(400).json({mensagem: "Erro desconhecido."});
+            }
+        }
+    }
 }
 
 export default new ConcursoController();

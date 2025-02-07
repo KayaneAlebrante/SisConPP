@@ -11,5 +11,13 @@ router.put("/:id", async (req: Request, res: Response) => {
     await concursoController.atualizarConcurso(req, res);
 });
 
+router.get("/:id", async(req: Request, res: Response) => {
+    await concursoController.buscarConcursoPorId(req, res);
+})
+
+router.get("/", async(req: Request, res: Response) =>{
+    await concursoController.buscarConcursos(req, res);
+})
+
 
 export default router;
