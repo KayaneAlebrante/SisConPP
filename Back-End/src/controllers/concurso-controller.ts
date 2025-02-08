@@ -100,7 +100,6 @@ class ConcursoController{
             }
         }
     }
-
     
     async buscarConcursos(req: Request, res: Response){
         try{
@@ -126,6 +125,21 @@ class ConcursoController{
                 return res.status(400).json({ mensagem: error.message });
             }
             return res.status(400).json({ mensagem: "Erro desconhecido." });
+        }
+    }
+
+    async bsucarCandidadosConcurso(req: Request, res: Response){
+        const { idConcurso } = req.params;
+
+        try{
+            const candidatos = await concursoService.buscarCandidatosConcurso(Number(idConcurso));
+            return res.status(200).json(candidatos);
+
+        }catch(error){
+            if(error instanceof Error){
+                console.error("Erro ao buscar Candidatos.");
+                return res.status(400).json({mensagem: "Erro desconhecido."});
+            }
         }
     }
 }

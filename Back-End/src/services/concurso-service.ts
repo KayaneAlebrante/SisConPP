@@ -122,9 +122,23 @@ class ConcursoService{
         }
     }
 
-    async buscarCanditadosConcurso(){
-
+    async buscarCandidatosConcurso(idConcurso: number) {
+        try {
+            if (!idConcurso || isNaN(idConcurso)) {
+                throw new Error("ID do concurso inválido.");
+            }
+    
+            const candidatos = await this.prisma.candidato.findMany({
+                where: { concursoId: idConcurso },
+            });
+    
+            return candidatos;
+        } catch (error) {
+            console.error("Erro ao buscar candidatos do concurso:", error);
+            throw new Error("Erro ao buscar candidatos do concurso.");
+        }
     }
+    
 
     async anexarEdital(){
 

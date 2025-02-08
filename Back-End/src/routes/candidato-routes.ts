@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import CandidatoController from "../controllers/canditado-controller";
+import CandidatoController from "../controllers/candidato-controller";
 
 const router = express.Router();
 
