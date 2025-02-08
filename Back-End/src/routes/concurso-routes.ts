@@ -19,5 +19,8 @@ router.get("/", async(req: Request, res: Response) =>{
     await concursoController.buscarConcursos(req, res);
 })
 
+router.delete("/:id", async(req: Request, res: Response) =>{
+    await concursoController.deletarConcurso(req, res);
+});
 
 export default router;

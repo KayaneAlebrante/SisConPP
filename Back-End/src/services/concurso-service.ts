@@ -98,7 +98,37 @@ class ConcursoService{
         }
     }
 
-    
+    async deletarConcuro(idConcurso: number){
+        try{
+            console.log("IdConcurso", idConcurso);
+
+            const concurso = await this.prisma.concurso.findUnique({
+                where: { idConcurso }
+            });
+
+            if(!concurso){
+                throw new Error("Concurso não encontrado.");
+            }
+
+            await this.prisma.concurso.delete({
+                where: { idConcurso },
+            });
+
+            return { mensagem: "Concurso deletado com sucesso." };
+        }catch(error){
+            console.error(error);
+            throw new Error("Erro ao deletar concurso.");
+
+        }
+    }
+
+    async buscarCanditadosConcurso(){
+
+    }
+
+    async anexarEdital(){
+
+    }   
     
 }
 
