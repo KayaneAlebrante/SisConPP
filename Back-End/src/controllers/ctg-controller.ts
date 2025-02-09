@@ -22,12 +22,11 @@ class CTGController {
         }
     }
 
-    // Função para atualizar CTG
     async atualizarCTG(req: Request, res: Response) {
         const { id } = req.params;
         const data = req.body;
 
-        // Validação simples de dados
+
         if (!data || Object.keys(data).length === 0) {
             return res.status(400).json({ mensagem: "Dados para atualização são obrigatórios." });
         }

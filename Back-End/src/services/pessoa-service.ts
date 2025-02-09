@@ -1,7 +1,4 @@
-import { CTG, PrismaClient } from "@prisma/client";
-import UsuarioService from "./usuario-service";
-import candidatoService from "./candidato-service";
-import { connect } from "http2";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 

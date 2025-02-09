@@ -141,17 +141,17 @@ model ComissaoUsuario {
 model Categoria {
   idCategoria   Int    @id @default(autoincrement())
   nomeCategoria String @db.VarChar(50)
-  idadeInicial  Int
-  idadeLimite   Int?
   escolaridade  String
   sorteioDanca  Int
-
-  candidatos Candidato[]
+  idadeInicial  Int
+  idadeLimite   Int?
 
   provaTeoricaId Int
   ProvaTeorica   ProvaTeorica @relation(fields: [provaTeoricaId], references: [idprovaTeorica])
   provaPraticaId Int
   ProvaPratica   ProvaPratica @relation(fields: [provaPraticaId], references: [idProvaPratica])
+  
+  candidatos Candidato[]
 }
 
 model Avaliacao {
