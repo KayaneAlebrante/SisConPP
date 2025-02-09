@@ -139,11 +139,19 @@ class ConcursoService{
         }
     }
     
-
-    async anexarEdital(){
-
-    }   
     
+    async anexarEdital(idConcurso: number, editalAnexo: Partial<{ anexarEdital: Buffer }>) {
+        try {
+            const concurso = await prisma.concurso.update({
+                where: { idConcurso },
+                data: { anexoEdital: editalAnexo.anexarEdital }
+            });
+            return concurso;
+        } catch (error) {
+        throw new Error("Erro ao anexar Edital: " + error);
+        }
+    }   
+
 }
 
 const concursoService = new ConcursoService(prisma);

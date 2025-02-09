@@ -27,4 +27,9 @@ router.get("/:idConcurso/candidatos", async(req: Request, res: Response) =>{
     await concursoController.bsucarCandidadosConcurso(req, res);
 });
 
+
+router.put("/:id/anexo", async(req: Request, res: Response) =>{
+    await concursoController.anexarEdital(req, res);
+});
+
 export default router;

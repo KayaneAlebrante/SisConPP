@@ -142,6 +142,24 @@ class ConcursoController{
             }
         }
     }
+
+    async anexarEdital(req: Request, res: Response){
+        const { id } = req.params;
+        const{
+            anexoEdital,
+        } = req.body;
+
+        try{
+            const concurso = await concursoService.anexarEdital(Number(id), anexoEdital);
+            return res.status(200).json(concurso);
+        }catch(error: unknown){
+            if(error instanceof Error){
+                console.error("Erro ao anexar Edital.");
+                return res.status(400).json({mensahem: error.message});
+            }
+            return res.status(400).json({mensagem: "Erro desconhecido."});
+        }
+    }
 }
 
 export default new ConcursoController();
