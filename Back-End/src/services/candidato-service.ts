@@ -1,6 +1,5 @@
-import { Avaliacao, PreferenciaSorteioDanca, PrismaClient, ProvaCampeiraEsportiva, SorteioDanca } from "@prisma/client";
+import { PrismaClient, ProvaCampeiraEsportiva } from "@prisma/client";
 import PessoaService from "./pessoa-service";
-import usuarioController from "../controllers/usuario-controller";
 
 const prisma = new PrismaClient();
 
