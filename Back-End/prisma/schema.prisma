@@ -113,6 +113,7 @@ model Concurso {
   dataProvasPraticas DateTime
   dataResultado      DateTime
   local              String   @db.VarChar(255)
+  anexoEdital        Bytes?
 
   candidatos Candidato[]
   comissoes  Comissao[]
