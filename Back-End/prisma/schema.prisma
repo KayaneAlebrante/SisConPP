@@ -150,7 +150,7 @@ model Categoria {
   ProvaTeorica   ProvaTeorica @relation(fields: [provaTeoricaId], references: [idprovaTeorica])
   provaPraticaId Int
   ProvaPratica   ProvaPratica @relation(fields: [provaPraticaId], references: [idProvaPratica])
-  
+
   candidatos Candidato[]
 }
 
@@ -207,6 +207,7 @@ model BlocoProva {
   notaMaximaBloco Float
   ProvaPratica    ProvaPratica @relation(fields: [provaPraticaId], references: [idProvaPratica])
   provaPraticaId  Int
+  quesitos        Quesitos[]
 }
 
 model Quesitos {
@@ -216,8 +217,10 @@ model Quesitos {
   danca                 Boolean
   dancaSalaoTradicional DancaSalaoTradicional
 
-  subeQuesitos SubQuesitos[]
-  recursos     Recurso[]
+  subeQuesitos      SubQuesitos[]
+  recursos          Recurso[]
+  BlocoProva        BlocoProva?   @relation(fields: [blocoProvaIdBloco], references: [idBloco])
+  blocoProvaIdBloco Int?
 }
 
 model SubQuesitos {
