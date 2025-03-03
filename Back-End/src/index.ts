@@ -5,7 +5,8 @@ import usuarioRoutes from "./routes/usuario-routes";
 import candidatoRoutes from "./routes/candidato-routes";
 import concursoRoutes from "./routes/concurso-routes";
 import categoriaRoutes from "./routes/categoria-routes";
-
+import provaPraticaRoutes from "./routes/provaPratica-routes";
+import comissao from "./routes/comissao-routes";
 
 const app: Application = express(); 
 
@@ -18,6 +19,8 @@ app.use("/usuario", usuarioRoutes);
 app.use("/candidato", candidatoRoutes);
 app.use("/concurso", concursoRoutes);
 app.use("/categoria", categoriaRoutes);
+app.use("/provaPratica", provaPraticaRoutes);
+app.use("/comissao", comissao)
 
 const PORT = process.env.PORT || 3002;
 

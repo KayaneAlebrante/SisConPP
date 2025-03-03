@@ -1,4 +1,5 @@
 import { PrismaClient, Avaliacao, ComissaoUsuario } from "@prisma/client";
+import ComissaoUsuarioService from "./comissaoUsuario-service";
 
 const prisma = new PrismaClient();
 
@@ -29,6 +30,54 @@ class ComissaoService {
         } catch (error) {
             console.error("Erro ao criar comissão:", error);
             throw new Error("Erro ao criar comissão. Verifique os dados fornecidos.");
+        }
+    }
+
+    async atualizarComissao(comissaoId: number, dadosAtualizados: any) {
+        try {
+            const comissao = await this.prisma.comissao.update({
+                where: { idComissao: comissaoId },
+                data: dadosAtualizados,
+            });
+            return comissao;
+        } catch (error) {
+            console.error("Erro ao editar comissão:", error);
+            throw new Error("Erro ao editar comissão. Verifique os dados fornecidos.");
+        }
+    }
+
+    async buscarComissaoPorId(idComissao: number) {
+        try {
+            const comissao = await this.prisma.comissao.findUnique({
+                where: { idComissao: idComissao }
+            });
+
+            return comissao;
+        } catch (error) {
+            console.error("Erro ao visualizar comissão:", error);
+            throw new Error("Erro ao visualizar comissão. Verifique os dados fornecidos.");
+        }
+    }
+
+    async buscarTodasComissoes() {
+        try {
+            const comissoes = await this.prisma.comissao.findMany();
+            return comissoes;
+        } catch (error) {
+            console.error("Erro ao consultar comissões:", error);
+            throw new Error("Erro ao consultar comissões.");
+        }
+    }
+
+    async deletarComissao(comissaoId: number) {
+        try {
+            await this.prisma.comissao.delete({
+                where: { idComissao: comissaoId },
+            });
+            return { message: "Comissão deletada com sucesso." };
+        } catch (error) {
+            console.error("Erro ao deletar comissão:", error);
+            throw new Error("Erro ao deletar comissão. Verifique os dados fornecidos.");
         }
     }
 }
