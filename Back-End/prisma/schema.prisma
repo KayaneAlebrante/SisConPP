@@ -168,37 +168,22 @@ model Avaliacao {
   Candidato   Candidato @relation(fields: [candidatoId], references: [idCandidato])
 }
 
-model Prova {
-  idProva       Int            @id @default(autoincrement())
-  nomeProva     String
-  tipo          TipoProva
-  provasPratica ProvaPratica[]
-  provasTeorica ProvaTeorica[]
-  recursos      Recurso[]
-}
-
-enum TipoProva {
-  PRATICA
-  TEORICA
-}
-
 model ProvaTeorica {
   idprovaTeorica Int    @id @default(autoincrement())
   nome           String
-  provaId        Int
-  Prova          Prova  @relation(fields: [provaId], references: [idProva])
 
+  quesitos   Quesitos[]
   categorias Categoria[]
+  recursos   Recurso[]
 }
 
 model ProvaPratica {
   idProvaPratica Int    @id @default(autoincrement())
   nome           String
-  idProva        Int
-  Prova          Prova  @relation(fields: [idProva], references: [idProva])
 
   categorias   Categoria[]
   blocosProvas BlocoProva[]
+  recursos     Recurso[]
 }
 
 model BlocoProva {
@@ -217,10 +202,14 @@ model Quesitos {
   danca                 Boolean
   dancaSalaoTradicional DancaSalaoTradicional
 
-  subeQuesitos      SubQuesitos[]
-  recursos          Recurso[]
-  BlocoProva        BlocoProva?   @relation(fields: [blocoProvaIdBloco], references: [idBloco])
-  blocoProvaIdBloco Int?
+  BlocoProva                 BlocoProva?   @relation(fields: [blocoProvaIdBloco], references: [idBloco])
+  blocoProvaIdBloco          Int?
+  
+  ProvaTeorica               ProvaTeorica? @relation(fields: [provaTeoricaIdprovaTeorica], references: [idprovaTeorica])
+  provaTeoricaIdprovaTeorica Int?
+
+  subeQuesitos SubQuesitos[]
+  recursos     Recurso[]
 }
 
 model SubQuesitos {
@@ -245,15 +234,18 @@ model Recurso {
   avaliador Int
   Usuario   Usuario @relation(fields: [avaliador], references: [idUsuario])
 
-  quesitoRecurso Int
-  Quesito        Quesitos @relation(fields: [quesitoRecurso], references: [idQuesito])
-  Prova          Prova?   @relation(fields: [provaIdProva], references: [idProva])
-  provaIdProva   Int?
+  quesitoRecurso             Int
+  Quesito                    Quesitos      @relation(fields: [quesitoRecurso], references: [idQuesito])
+  ProvaTeorica               ProvaTeorica? @relation(fields: [provaTeoricaIdprovaTeorica], references: [idprovaTeorica])
+  provaTeoricaIdprovaTeorica Int?
+  ProvaPratica               ProvaPratica? @relation(fields: [provaPraticaIdProvaPratica], references: [idProvaPratica])
+  provaPraticaIdProvaPratica Int?
 }
 
 enum DancaSalaoTradicional {
   DANCA_DE_SALAO
   DANCA_TRADICIONAL
+  NENHUMA
 }
 
 model SorteioDanca {
