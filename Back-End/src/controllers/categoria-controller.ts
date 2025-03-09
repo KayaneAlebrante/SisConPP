@@ -14,7 +14,7 @@ class CategoriaController{
         } = req.body;
 
         if(!nomeCategoria || !escolaridade || !sorteioDanca || ! idadeInicial || !provaTeoricaId || !provaPraticaId){
-            return res.status(400).json({mensagem: "NomeCategoria, Escolaridade, SorteioDanca, IdadeInicial, ProvaTeoricaId, ProvaPraticaId são Obrigatórios."})
+            return res.status(400).json({mensagem: "NomeCategoria, Escolaridade, SorteioDanca, IdadeInicial, ProvaTeoricaId, ProvaPraticaId são Obrigatórios."});
         }
 
         try{
