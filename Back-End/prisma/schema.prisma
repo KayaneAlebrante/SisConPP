@@ -48,6 +48,7 @@ model Candidato {
   categoriaId                 Int
   avalicoes                   Avaliacao[]
   sorteioDanca                SorteioDanca[]
+  Recurso                     Recurso[]
 }
 
 enum ProvaCampeiraEsportiva {
@@ -202,9 +203,9 @@ model Quesitos {
   danca                 Boolean
   dancaSalaoTradicional DancaSalaoTradicional
 
-  BlocoProva                 BlocoProva?   @relation(fields: [blocoProvaIdBloco], references: [idBloco])
-  blocoProvaIdBloco          Int?
-  
+  BlocoProva        BlocoProva? @relation(fields: [blocoProvaIdBloco], references: [idBloco])
+  blocoProvaIdBloco Int?
+
   ProvaTeorica               ProvaTeorica? @relation(fields: [provaTeoricaIdprovaTeorica], references: [idprovaTeorica])
   provaTeoricaIdprovaTeorica Int?
 
@@ -230,9 +231,12 @@ model Recurso {
   justificativa String
   status        Boolean
   dataRecurso   DateTime @default(now())
+  arquivos      Bytes
 
-  avaliador Int
-  Usuario   Usuario @relation(fields: [avaliador], references: [idUsuario])
+  candidato Int
+  Candidato   Candidato @relation(fields: [candidato], references: [idCandidato])
+  avaliador   Int
+  Usuario     Usuario   @relation(fields: [avaliador], references: [idUsuario])
 
   quesitoRecurso             Int
   Quesito                    Quesitos      @relation(fields: [quesitoRecurso], references: [idQuesito])

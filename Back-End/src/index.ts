@@ -9,6 +9,7 @@ import provaPraticaRoutes from "./routes/provaPratica-routes";
 import comissao from "./routes/comissao-routes";
 import subquesito from "./routes/subquesito-routes";
 import quesito from "./routes/quesitos-routes";
+import recurso from "./routes/recurso-routes";
 
 const app: Application = express(); 
 
@@ -25,6 +26,7 @@ app.use("/provaPratica", provaPraticaRoutes);
 app.use("/comissao", comissao);
 app.use("/quesito", quesito);
 app.use("/subquesito", subquesito);
+app.use("/recurso", recurso);
 
 
 const PORT = process.env.PORT || 3002;
