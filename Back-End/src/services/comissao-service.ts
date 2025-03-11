@@ -80,6 +80,7 @@ class ComissaoService {
             throw new Error("Erro ao deletar comissão. Verifique os dados fornecidos.");
         }
     }
+    
 }
 
 const comissaoService = new ComissaoService(prisma);
