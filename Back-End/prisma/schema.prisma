@@ -190,7 +190,7 @@ model ProvaPratica {
 model BlocoProva {
   idBloco         Int          @id @default(autoincrement())
   nomeBloco       String
-  notaMaximaBloco Float
+  notaMaximaBloco Float        
   ProvaPratica    ProvaPratica @relation(fields: [provaPraticaId], references: [idProvaPratica])
   provaPraticaId  Int
   quesitos        Quesitos[]
