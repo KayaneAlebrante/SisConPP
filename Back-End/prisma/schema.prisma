@@ -165,13 +165,17 @@ model Avaliacao {
   avaliadorId Int
   Usuario     Usuario @relation(fields: [avaliadorId], references: [idUsuario])
 
-  candidatoId Int
-  Candidato   Candidato @relation(fields: [candidatoId], references: [idCandidato])
+  candidatoId           Int
+  Candidato             Candidato       @relation(fields: [candidatoId], references: [idCandidato])
+  FichaCandidado        FichaCandidado? @relation(fields: [fichaCandidadoIdFicha], references: [idFicha])
+  fichaCandidadoIdFicha Int?
 }
 
 model ProvaTeorica {
-  idprovaTeorica Int    @id @default(autoincrement())
-  nome           String
+  idprovaTeorica   Int    @id @default(autoincrement())
+  nome             String
+  gabaritoOficinal Bytes
+  anexoGabarito    Bytes
 
   quesitos   Quesitos[]
   categorias Categoria[]
@@ -234,9 +238,9 @@ model Recurso {
   arquivos      Bytes
 
   candidato Int
-  Candidato   Candidato @relation(fields: [candidato], references: [idCandidato])
-  avaliador   Int
-  Usuario     Usuario   @relation(fields: [avaliador], references: [idUsuario])
+  Candidato Candidato @relation(fields: [candidato], references: [idCandidato])
+  avaliador Int
+  Usuario   Usuario   @relation(fields: [avaliador], references: [idUsuario])
 
   quesitoRecurso             Int
   Quesito                    Quesitos      @relation(fields: [quesitoRecurso], references: [idQuesito])
@@ -264,4 +268,21 @@ model SorteioDanca {
 
   usuarioId Int
   Usuario   Usuario @relation(fields: [usuarioId], references: [idUsuario])
+}
+
+model FichaCandidado {
+  idFicha                Int         @id @default(autoincrement())
+  candidatoId            Int
+  notaCandidato          Float
+  avaliacoes             Avaliacao[]
+  provaId                Int
+  concursoId             Int
+  categoriaId            Int
+  axenoTermodeCiencia    Bytes
+  dataTermo              DateTime    @default(now())
+  numAcertosProvaTeorica Int
+  anexoGabarito          Bytes
+  notaRedacao            Float
+  anexoRedacao           Bytes
+  anexoProvaPratica      Bytes
 }
