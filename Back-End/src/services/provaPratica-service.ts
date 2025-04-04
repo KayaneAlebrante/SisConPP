@@ -1,17 +1,32 @@
-import {  PrismaClient } from "@prisma/client";
+import {  BlocoProva, Categoria, PrismaClient } from "@prisma/client";
+import ProvaService from "./prova-service";
 
 const prisma = new PrismaClient();
 
-class ProvaPraticaService{
-    constructor(protected prisma: PrismaClient) {}
+class ProvaPraticaService extends ProvaService{
+    constructor(protected prisma: PrismaClient) {
+        super(prisma);
+    }
 
     async criarProvaPratica(
-       nome: string
+       nomeProva: string,
+       notaMaxima: number,    
+       categorias: number[],
+       blocodProva: number[]
     ) {
+        const prova = await this.criarProva(
+            nomeProva,
+            notaMaxima,
+            categorias,
+        );
+
         try{
             const provaPratica = await this.prisma.provaPratica.create({
                 data: {
-                    nome
+                    provaId: prova.idProva,
+                    blocosProvas: {
+                        connect: blocodProva.map(id => ({ idBloco: id }))
+                    },
                 }
             });
             return provaPratica;
@@ -46,15 +61,28 @@ class ProvaPraticaService{
 
     async atualizarProvaPratica(
         idProvaPratica: number,
-        nome: string,
+        data:{
+            blocosProvas?: number[],
+        },
+        provaData:{
+            nomeProva?: string,
+            categorias?: Categoria[],
+        }
     ) {
         try {
             const provaPratica = await this.prisma.provaPratica.update({
                 where: { idProvaPratica },
                 data: {
-                    nome
-                }
+                    blocosProvas: {
+                        set: data.blocosProvas?.map(id => ({ idBloco: id })) || [],
+                    },
+                },
             });
+
+            if(provaData && provaPratica.provaId) {
+                const prova = await this.atualizarProva(provaPratica.provaId, provaData);
+                return { provaPratica, prova };
+            }
             return provaPratica;
         } catch (error) {
             console.error("Erro ao atualizar prova prática:", error);

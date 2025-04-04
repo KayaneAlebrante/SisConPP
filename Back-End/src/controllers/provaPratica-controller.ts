@@ -3,14 +3,14 @@ import provaPraticaService from "../services/provaPratica-service";
 
 class ProvaPraticaController{
     async criarProvaPratica(req: Request, res: Response) {
-        const { nome } = req.body;
+        const { nome, notaMaxima, categorias, blocosProvas } = req.body;
 
-        if (!nome) {
-            return res.status(400).json({ mensagem: "Nome da prova prática é obrigatório." });
+        if (!nome || !notaMaxima || !categorias || !blocosProvas) {
+            return res.status(400).json({ mensagem: "Nome, notaMaxima, Categorias e blocosProvas da prova prática é obrigatório." });
         }
 
         try {
-            const provaPratica = await provaPraticaService.criarProvaPratica(nome);
+            const provaPratica = await provaPraticaService.criarProvaPratica(nome, notaMaxima, categorias, blocosProvas);
             return res.status(201).json(provaPratica);
         } catch (error: unknown) {
             if (error instanceof Error) {
@@ -64,8 +64,8 @@ class ProvaPraticaController{
         }
 
         try {
-
-            const provaPratica = await provaPraticaService.atualizarProvaPratica(Number(id), data); 
+            const { blocosProvas, provaData } = data;
+            const provaPratica = await provaPraticaService.atualizarProvaPratica(Number(id), { blocosProvas }, provaData); 
             return res.status(200).json(provaPratica);
 
 

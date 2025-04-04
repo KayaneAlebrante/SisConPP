@@ -3,14 +3,14 @@ import blocoProvaService from "../services/blocoProva-service";
 
 class BlocoProvaController{
     async criarBlocoProva(req: Request, res: Response){
-        const {nomeBloco, notaMaximaBloco, provaPraticaId} = req.body;
+        const {nomeBloco, notaMaximaBloco} = req.body;
 
-        if(!nomeBloco || !notaMaximaBloco || !provaPraticaId){
-            return res.status(400).json({mensagem: "Nome do Bloco, Nota Máxima do Bloco e Id da Prova Prática são Obrigatórios"});
+        if(!nomeBloco || !notaMaximaBloco){
+            return res.status(400).json({mensagem: "Nome do Bloco, Nota Máxima do Bloco e Id da Bloco de Prova são Obrigatórios"});
         }
 
         try{
-            const blocoProva = await blocoProvaService.criarBlocoProva(nomeBloco, notaMaximaBloco, provaPraticaId);
+            const blocoProva = await blocoProvaService.criarBlocoProva(nomeBloco, notaMaximaBloco);
             return res.status(201).json(blocoProva);
         }catch (error: unknown) {
             if (error instanceof Error) {
