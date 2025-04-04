@@ -1,4 +1,4 @@
-import { PrismaClient, ProvaPratica, ProvaTeorica, Recurso, TipoProva } from "@prisma/client";
+import { Categoria, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -7,13 +7,18 @@ class ProvaService{
 
     async criarProva(
         nomeProva: string,
-        tipo: TipoProva
+        notaMaxima: number, 
+        categorias: number[]
+
     ){
         try{
             const prova = await this.prisma.prova.create({
                 data:{
                     nomeProva,
-                    tipo,
+                    notaMaxima,
+                    categorias: {
+                        connect: categorias.map(id => ({ idCategoria: id }))
+                    },
                 }
             });
 
@@ -29,13 +34,18 @@ class ProvaService{
         idProva: number,
         data: {
             nomeProva?: string,
-            tipo?: TipoProva,
+            categorias?: Categoria[]
         }
     ){
         try{
             const prova = await this.prisma.prova.update({
                 where: { idProva: idProva },
-                data: data,
+                data: {
+                    nomeProva: data.nomeProva,
+                    categorias: data.categorias ? {
+                        set: data.categorias
+                    } : undefined
+                },
             });
             return prova;
         }catch(error){

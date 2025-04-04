@@ -147,12 +147,15 @@ model Categoria {
   idadeInicial  Int
   idadeLimite   Int?
 
-  provaTeoricaId Int
-  ProvaTeorica   ProvaTeorica @relation(fields: [provaTeoricaId], references: [idprovaTeorica])
-  provaPraticaId Int
-  ProvaPratica   ProvaPratica @relation(fields: [provaPraticaId], references: [idProvaPratica])
-
   candidatos Candidato[]
+  provaId    Int? 
+  Prova      Prova?      @relation(fields: [provaId], references: [idProva], onDelete: SetNull)
+
+  provaTeoricaId Int?
+  ProvaTeorica   ProvaTeorica? @relation(fields: [provaTeoricaId], references: [idprovaTeorica], onDelete: SetNull)
+
+  provaPraticaId Int?
+  ProvaPratica   ProvaPratica? @relation(fields: [provaPraticaId], references: [idProvaPratica], onDelete: SetNull)
 }
 
 model Avaliacao {
@@ -171,32 +174,42 @@ model Avaliacao {
   fichaCandidadoIdFicha Int?
 }
 
-model ProvaTeorica {
-  idprovaTeorica   Int    @id @default(autoincrement())
-  nome             String
-  gabaritoOficinal Bytes
-  anexoGabarito    Bytes
+model Prova {
+  idProva      Int            @id @default(autoincrement())
+  nomeProva    String
+  notaMaxima   Float
+  categorias   Categoria[]
+  ProvaTeorica ProvaTeorica[]
+  ProvaPratica ProvaPratica[]
+  recursos     Recurso[]
+}
 
-  quesitos   Quesitos[]
-  categorias Categoria[]
-  recursos   Recurso[]
+model ProvaTeorica {
+  idprovaTeorica   Int         @id @default(autoincrement())
+  provaId          Int?
+  Prova            Prova?       @relation(fields: [provaId], references: [idProva])
+  gabaritoOficinal Bytes
+  numQuestao       Int
+  quesitos         Quesitos[]
+  Categoria        Categoria[]
+  Recurso          Recurso[]
 }
 
 model ProvaPratica {
-  idProvaPratica Int    @id @default(autoincrement())
-  nome           String
-
-  categorias   Categoria[]
-  blocosProvas BlocoProva[]
-  recursos     Recurso[]
+  idProvaPratica Int          @id @default(autoincrement())
+  provaId        Int?
+  prova          Prova?        @relation(fields: [provaId], references: [idProva])
+  blocosProvas   BlocoProva[]
+  Categoria      Categoria[]
+  Recurso        Recurso[]
 }
 
 model BlocoProva {
   idBloco         Int          @id @default(autoincrement())
   nomeBloco       String
   notaMaximaBloco Float
-  ProvaPratica    ProvaPratica @relation(fields: [provaPraticaId], references: [idProvaPratica])
-  provaPraticaId  Int
+  ProvaPratica    ProvaPratica? @relation(fields: [provaPraticaId], references: [idProvaPratica])
+  provaPraticaId  Int?
   quesitos        Quesitos[]
 }
 
@@ -248,6 +261,8 @@ model Recurso {
   provaTeoricaIdprovaTeorica Int?
   ProvaPratica               ProvaPratica? @relation(fields: [provaPraticaIdProvaPratica], references: [idProvaPratica])
   provaPraticaIdProvaPratica Int?
+  Prova                      Prova?        @relation(fields: [provaIdProva], references: [idProva])
+  provaIdProva               Int?
 }
 
 enum DancaSalaoTradicional {
