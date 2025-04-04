@@ -5,7 +5,14 @@ const prisma = new PrismaClient();
 class CategoriaService {
     constructor(private prisma: PrismaClient){}
 
-    async criarCategoria(nomeCategoria: string, escolaridade: string, sorteioDanca: number, idadeInicial: number, idadeLimite: number | null, provaTeoricaId: number, provaPraticaId: number) {
+    async criarCategoria(
+        nomeCategoria: string, 
+        escolaridade: string, 
+        sorteioDanca: number, 
+        idadeInicial: number, 
+        idadeLimite: number | null, 
+        provaTeoricaId: number, 
+        provaPraticaId: number) {
         try {
             return await this.prisma.categoria.create({
                 data: {
