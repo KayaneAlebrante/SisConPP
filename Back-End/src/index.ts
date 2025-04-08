@@ -13,6 +13,9 @@ import recurso from "./routes/recurso-routes";
 import provaPratica from "./routes/provaPratica-routes";
 import blocoProva from "./routes/blocoProva-routes";
 import provaTeorica from "./routes/provaTeorica-routes";
+import avaliacao from "./routes/avaliacao-routes"; 
+import preferenciaSorteioDanca from "./routes/preferenciaSorteioDanca-routes";
+
 
 const app: Application = express(); 
 
@@ -33,6 +36,9 @@ app.use("/recurso", recurso);
 app.use("/provaPratica", provaPratica);
 app.use("/provaTeorica", provaTeorica);
 app.use("/blocoProva", blocoProva);
+app.use("/avaliacao", avaliacao); 
+app.use("/preferenciaSorteioDanca", preferenciaSorteioDanca); 
+
 
 const PORT = process.env.PORT || 3002;
 

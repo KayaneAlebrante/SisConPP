@@ -97,11 +97,13 @@ model RT {
 }
 
 model PreferenciaSorteioDanca {
-  idPreferecnia  Int           @id @default(autoincrement())
-  candidatoId    Int
-  Candidato      Candidato     @relation(fields: [candidatoId], references: [idCandidato])
-  SorteioDanca   SorteioDanca? @relation(fields: [sorteioDancaId], references: [idSorteio])
-  sorteioDancaId Int?
+  idPreferencia    Int           @id @default(autoincrement())
+  nomeSorteioDanca DancaSalaoTradicional
+  candidatoId      Int
+  Candidato        Candidato     @relation(fields: [candidatoId], references: [idCandidato])
+  SorteioDanca     SorteioDanca? @relation(fields: [sorteioDancaId], references: [idSorteio])
+  sorteioDancaId   Int?
+  quesitos         Quesitos[]
 }
 
 model Concurso {
@@ -148,7 +150,7 @@ model Categoria {
   idadeLimite   Int?
 
   candidatos Candidato[]
-  provaId    Int? 
+  provaId    Int?
   Prova      Prova?      @relation(fields: [provaId], references: [idProva], onDelete: SetNull)
 
   provaTeoricaId Int?
@@ -187,7 +189,7 @@ model Prova {
 model ProvaTeorica {
   idprovaTeorica   Int         @id @default(autoincrement())
   provaId          Int?
-  Prova            Prova?       @relation(fields: [provaId], references: [idProva])
+  Prova            Prova?      @relation(fields: [provaId], references: [idProva])
   gabaritoOficinal Bytes
   numQuestao       Int
   quesitos         Quesitos[]
@@ -198,14 +200,14 @@ model ProvaTeorica {
 model ProvaPratica {
   idProvaPratica Int          @id @default(autoincrement())
   provaId        Int?
-  prova          Prova?        @relation(fields: [provaId], references: [idProva])
+  prova          Prova?       @relation(fields: [provaId], references: [idProva])
   blocosProvas   BlocoProva[]
   Categoria      Categoria[]
   Recurso        Recurso[]
 }
 
 model BlocoProva {
-  idBloco         Int          @id @default(autoincrement())
+  idBloco         Int           @id @default(autoincrement())
   nomeBloco       String
   notaMaximaBloco Float
   ProvaPratica    ProvaPratica? @relation(fields: [provaPraticaId], references: [idProvaPratica])
@@ -226,8 +228,10 @@ model Quesitos {
   ProvaTeorica               ProvaTeorica? @relation(fields: [provaTeoricaIdprovaTeorica], references: [idprovaTeorica])
   provaTeoricaIdprovaTeorica Int?
 
-  subeQuesitos SubQuesitos[]
-  recursos     Recurso[]
+  subeQuesitos              SubQuesitos[]
+  recursos                  Recurso[]
+  PreferenciaSorteioDanca   PreferenciaSorteioDanca? @relation(fields: [preferenciaSorteioDancaId], references: [idPreferencia])
+  preferenciaSorteioDancaId Int?
 }
 
 model SubQuesitos {
