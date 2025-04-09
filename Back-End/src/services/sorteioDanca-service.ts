@@ -10,13 +10,11 @@ class SorteioDanca {
         tipoDanca: DancaSalaoTradicional
     ) {
         try {
-
-            const sorteioDancaExistente = preferenciaSorteioDanca.vereficarSorteioDancaId(candidatoId);
-
-            if(await sorteioDancaExistente == true){
+            //Testar mais, arrumar o veeficiar para verificar o tipo do sorteio se já existe
+            if(await preferenciaSorteioDanca.verificarSorteioDancaId(candidatoId, tipoDanca) === true){
                return { message: "Sorteio já realizado para este candidato." };
             }
-
+            
             const preferencias = await prisma.preferenciaSorteioDanca.findMany({
                 where: {
                     candidatoId,

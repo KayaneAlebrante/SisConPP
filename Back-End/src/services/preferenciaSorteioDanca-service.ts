@@ -55,18 +55,20 @@ class PreferenciaSorteioDancaService {
         return preferenciaAtualizada;
     }
 
-    async vereficarSorteioDancaId(candidatoId: number) {
-        const sorteioDancaId = await prisma.preferenciaSorteioDanca.findFirst({
-            where: {
-                candidatoId,
-            },
-        });
-
-        if (sorteioDancaId == null){
-            throw new Error("Sorteio não Realizado!");
-            return false;
-        }else{
-            return true;
+    async verificarSorteioDancaId(candidatoId: number, tipoDanca: DancaSalaoTradicional): Promise<boolean> {
+        try {
+            const sorteioDanca = await prisma.preferenciaSorteioDanca.findFirst({
+                where: {
+                    candidatoId,
+                    nomeSorteioDanca: tipoDanca, 
+                    sorteioDancaId: { not: null }, 
+                },
+            });
+    
+            return sorteioDanca !== null;
+        } catch (error: any) {
+            console.error("Erro ao verificar sorteio de dança:", error);
+            throw new Error("Erro ao verificar sorteio de dança: " + error.message);
         }
     }
 }
