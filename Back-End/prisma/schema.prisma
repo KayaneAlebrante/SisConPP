@@ -279,6 +279,7 @@ model SorteioDanca {
   idSorteio        Int      @id @default(autoincrement())
   resultadoSorteio Int
   dataSorteio      DateTime @default(now())
+  tipoDanca       DancaSalaoTradicional
 
   preferenciaSorteioDancaIds PreferenciaSorteioDanca[]
 

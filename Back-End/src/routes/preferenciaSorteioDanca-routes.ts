@@ -11,4 +11,8 @@ router.get("/:candidatoId", async (req: Request, res: Response) => {
     await PreferenciaSorteioDancaController.visualizarPreferencias(req, res);
 });
 
+router.put("/", async (req: Request, res: Response) => {
+    await PreferenciaSorteioDancaController.atualizarSorteioDancaId(req, res);
+});
+
 export default router;

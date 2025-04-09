@@ -36,6 +36,39 @@ class PreferenciaSorteioDancaService {
 
         return preferencias;
     }
+
+    async atualizarSorteioDancaId(
+        candidatoId: number,
+        sorteioDancaId: number,
+        nomeSorteioDanca: DancaSalaoTradicional
+    ) {
+        const preferenciaAtualizada = await prisma.preferenciaSorteioDanca.updateMany({
+            where: {
+                candidatoId,
+                nomeSorteioDanca,
+            },
+            data: {
+                sorteioDancaId,
+            },
+        });
+
+        return preferenciaAtualizada;
+    }
+
+    async vereficarSorteioDancaId(candidatoId: number) {
+        const sorteioDancaId = await prisma.preferenciaSorteioDanca.findFirst({
+            where: {
+                candidatoId,
+            },
+        });
+
+        if (sorteioDancaId == null){
+            throw new Error("Sorteio não Realizado!");
+            return false;
+        }else{
+            return true;
+        }
+    }
 }
 
 const preferenciaSorteioDanca = new PreferenciaSorteioDancaService();
