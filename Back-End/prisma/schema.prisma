@@ -161,21 +161,18 @@ model Categoria {
 }
 
 model Avaliacao {
-  idAvalicao    Int      @id @default(autoincrement())
-  dataAvaliacao DateTime @default(now())
-
-  comissaoId Int
-  Comissao   Comissao @relation(fields: [comissaoId], references: [idComissao])
-
-  avaliadorId Int
-  Usuario     Usuario @relation(fields: [avaliadorId], references: [idUsuario])
-
-  provaId Int
-  Prova   Prova? @relation(fields: [provaId], references: [idProva])
-
-  blocoProvaId Int?
-  BlocoProva   BlocoProva? @relation(fields: [blocoProvaId], references: [idBloco])
-
+  idAvalicao            Int             @id @default(autoincrement())
+  dataAvaliacao         DateTime        @default(now())
+  comissaoId            Int
+  Comissao              Comissao        @relation(fields: [comissaoId], references: [idComissao])
+  avaliadorId           Int
+  Usuario               Usuario         @relation(fields: [avaliadorId], references: [idUsuario])
+  provaId               Int
+  Prova                 Prova?          @relation(fields: [provaId], references: [idProva])
+  blocoProvaId          Int?
+  BlocoProva            BlocoProva?     @relation(fields: [blocoProvaId], references: [idBloco])
+  quesitos              Quesitos[]
+  nota                  Float
   candidatoId           Int
   Candidato             Candidato       @relation(fields: [candidatoId], references: [idCandidato])
   FichaCandidato        FichaCandidato? @relation(fields: [fichaCandidatoIdFicha], references: [idFicha])
@@ -240,6 +237,8 @@ model Quesitos {
   recursos                  Recurso[]
   PreferenciaSorteioDanca   PreferenciaSorteioDanca? @relation(fields: [preferenciaSorteioDancaId], references: [idPreferencia])
   preferenciaSorteioDancaId Int?
+  Avaliacao                 Avaliacao?               @relation(fields: [avaliacaoIdAvalicao], references: [idAvalicao])
+  avaliacaoIdAvalicao       Int?
 }
 
 model SubQuesitos {
