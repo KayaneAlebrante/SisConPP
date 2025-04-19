@@ -13,7 +13,7 @@ import recurso from "./routes/recurso-routes";
 import provaPratica from "./routes/provaPratica-routes";
 import blocoProva from "./routes/blocoProva-routes";
 import provaTeorica from "./routes/provaTeorica-routes";
-import avaliacao from "./routes/avaliacao-routes"; 
+import avaliacao from "./routes/avaliacao.routes"; 
 import preferenciaSorteioDanca from "./routes/preferenciaSorteioDanca-routes";
 import sorteioDanca from "./routes/sorteioDanca-routes";
 
