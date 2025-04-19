@@ -10,7 +10,6 @@ class SorteioDanca {
         tipoDanca: DancaSalaoTradicional
     ) {
         try {
-            //Testar mais, arrumar o veeficiar para verificar o tipo do sorteio se já existe
             if(await preferenciaSorteioDanca.verificarSorteioDancaId(candidatoId, tipoDanca) === true){
                return { message: "Sorteio já realizado para este candidato." };
             }
@@ -49,7 +48,8 @@ class SorteioDanca {
                     resultadoSorteio: quesitoSorteado.idQuesito,
                     dataSorteio: new Date(),
                     candidatoId,
-                    usuarioId
+                    usuarioId,
+                    tipoDanca
                 },
             });
 
