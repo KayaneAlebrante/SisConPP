@@ -97,11 +97,11 @@ model RT {
 }
 
 model PreferenciaSorteioDanca {
-  idPreferencia    Int           @id @default(autoincrement())
+  idPreferencia    Int                   @id @default(autoincrement())
   nomeSorteioDanca DancaSalaoTradicional
   candidatoId      Int
-  Candidato        Candidato     @relation(fields: [candidatoId], references: [idCandidato])
-  SorteioDanca     SorteioDanca? @relation(fields: [sorteioDancaId], references: [idSorteio])
+  Candidato        Candidato             @relation(fields: [candidatoId], references: [idCandidato])
+  SorteioDanca     SorteioDanca?         @relation(fields: [sorteioDancaId], references: [idSorteio])
   sorteioDancaId   Int?
   quesitos         Quesitos[]
 }
@@ -170,10 +170,16 @@ model Avaliacao {
   avaliadorId Int
   Usuario     Usuario @relation(fields: [avaliadorId], references: [idUsuario])
 
+  provaId Int
+  Prova   Prova? @relation(fields: [provaId], references: [idProva])
+
+  blocoProvaId Int?
+  BlocoProva   BlocoProva? @relation(fields: [blocoProvaId], references: [idBloco])
+
   candidatoId           Int
   Candidato             Candidato       @relation(fields: [candidatoId], references: [idCandidato])
-  FichaCandidado        FichaCandidado? @relation(fields: [fichaCandidadoIdFicha], references: [idFicha])
-  fichaCandidadoIdFicha Int?
+  FichaCandidato        FichaCandidato? @relation(fields: [fichaCandidatoIdFicha], references: [idFicha])
+  fichaCandidatoIdFicha Int?
 }
 
 model Prova {
@@ -184,6 +190,7 @@ model Prova {
   ProvaTeorica ProvaTeorica[]
   ProvaPratica ProvaPratica[]
   recursos     Recurso[]
+  Avaliacao    Avaliacao[]
 }
 
 model ProvaTeorica {
@@ -213,6 +220,7 @@ model BlocoProva {
   ProvaPratica    ProvaPratica? @relation(fields: [provaPraticaId], references: [idProvaPratica])
   provaPraticaId  Int?
   quesitos        Quesitos[]
+  Avaliacao       Avaliacao[]
 }
 
 model Quesitos {
@@ -276,10 +284,10 @@ enum DancaSalaoTradicional {
 }
 
 model SorteioDanca {
-  idSorteio        Int      @id @default(autoincrement())
+  idSorteio        Int                   @id @default(autoincrement())
   resultadoSorteio Int
-  dataSorteio      DateTime @default(now())
-  tipoDanca       DancaSalaoTradicional
+  dataSorteio      DateTime              @default(now())
+  tipoDanca        DancaSalaoTradicional
 
   preferenciaSorteioDancaIds PreferenciaSorteioDanca[]
 
@@ -290,16 +298,18 @@ model SorteioDanca {
   Usuario   Usuario @relation(fields: [usuarioId], references: [idUsuario])
 }
 
-model FichaCandidado {
-  idFicha                Int         @id @default(autoincrement())
-  candidatoId            Int
-  notaCandidato          Float
-  avaliacoes             Avaliacao[]
-  provaId                Int
-  concursoId             Int
-  categoriaId            Int
-  axenoTermodeCiencia    Bytes
-  dataTermo              DateTime    @default(now())
+model FichaCandidato {
+  idFicha       Int         @id @default(autoincrement())
+  candidatoId   Int
+  notaCandidato Float
+  avaliacoes    Avaliacao[]
+  provaId       Int
+  concursoId    Int
+  categoriaId   Int
+
+  anexoTermodeCiencia Bytes
+  dataTermo           DateTime @default(now())
+
   numAcertosProvaTeorica Int
   anexoGabarito          Bytes
   notaRedacao            Float
