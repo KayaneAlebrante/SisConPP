@@ -1,5 +1,4 @@
 import { PrismaClient, Avaliacao, ComissaoUsuario } from "@prisma/client";
-import ComissaoUsuarioService from "./comissaoUsuario-service";
 
 const prisma = new PrismaClient();
 
@@ -143,8 +142,7 @@ class ComissaoService {
                 idComissaoUsuario: comissaoUsuario.idComissaoUsuario,
             },
         });
-    }
-    
+    }    
 }
 
 const comissaoService = new ComissaoService(prisma);
