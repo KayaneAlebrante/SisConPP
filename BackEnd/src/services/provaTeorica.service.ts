@@ -1,5 +1,5 @@
 import { Categoria, PrismaClient } from "@prisma/client";
-import ProvaService from "./prova-service";
+import ProvaService from "./prova.service";
 
 const prisma = new PrismaClient;
 

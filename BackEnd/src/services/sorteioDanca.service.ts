@@ -1,5 +1,5 @@
 import { DancaSalaoTradicional, PrismaClient } from "@prisma/client";
-import preferenciaSorteioDanca from "./preferenciaSorteioDanca-service";
+import preferenciaSorteioDanca from "./preferenciaSorteioDanca.service";
 
 const prisma = new PrismaClient();
 

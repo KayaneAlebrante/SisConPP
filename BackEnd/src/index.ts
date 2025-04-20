@@ -1,24 +1,33 @@
 import express, { Application } from "express";
-import rtRoutes from "./routes/rt-routes"; 
-import ctgRoutes from "./routes/ctg-routes";
-import usuarioRoutes from "./routes/usuario-routes";
-import candidatoRoutes from "./routes/candidato-routes";
-import concursoRoutes from "./routes/concurso-routes";
-import categoriaRoutes from "./routes/categoria-routes";
-import provaPraticaRoutes from "./routes/provaPratica-routes";
-import comissao from "./routes/comissao-routes";
-import subquesito from "./routes/subquesito-routes";
-import quesito from "./routes/quesitos-routes";
-import recurso from "./routes/recurso-routes";
-import provaPratica from "./routes/provaPratica-routes";
-import blocoProva from "./routes/blocoProva-routes";
-import provaTeorica from "./routes/provaTeorica-routes";
+import cors from "cors";
+
+import rtRoutes from "./routes/rt.routes"; 
+import ctgRoutes from "./routes/ctg.routes";
+import usuarioRoutes from "./routes/usuario.routes";
+import candidatoRoutes from "./routes/candidato.routes";
+import concursoRoutes from "./routes/concurso.routes";
+import categoriaRoutes from "./routes/categoria.routes";
+import provaPraticaRoutes from "./routes/provaPratica.routes";
+import comissao from "./routes/comissao.routes";
+import subquesito from "./routes/subquesito.routes";
+import quesito from "./routes/quesitos.routes";
+import recurso from "./routes/recurso.routes";
+import provaPratica from "./routes/provaPratica.routes";
+import blocoProva from "./routes/blocoProva.routes";
+import provaTeorica from "./routes/provaTeorica.routes";
 import avaliacao from "./routes/avaliacao.routes"; 
-import preferenciaSorteioDanca from "./routes/preferenciaSorteioDanca-routes";
-import sorteioDanca from "./routes/sorteioDanca-routes";
+import preferenciaSorteioDanca from "./routes/preferenciaSorteioDanca.routes";
+import sorteioDanca from "./routes/sorteioDanca.routes";
+import { METHODS } from "http";
 
 
 const app: Application = express(); 
+
+app.use(cors({
+  origin: 'http://localhost:5173',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
+}));
 
 app.use(express.json()); // Para analisar o corpo das requisições como JSON
 

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import AvaliacaoService from "../services/avaliacao-service";
+import AvaliacaoService from "../services/avaliacao.service";
 import exp from "constants";
 
 class AvaliacaoController{

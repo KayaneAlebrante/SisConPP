@@ -22,6 +22,7 @@ class Avaliacao{
                     candidatoId,
                     provaId,
                     blocoProvaId,
+                    nota: 0, 
                 },
             });
             return avaliacao;
