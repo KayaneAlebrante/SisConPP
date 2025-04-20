@@ -1,6 +1,7 @@
 import { Routes, Route} from "react-router-dom";
 import { RoutesPaths } from "./models/enums/RouterPaths";
 import Login from "./pages/Login";
+import TelaInicial from "./pages/TelaInicial";
 
 function App() {
   
@@ -8,6 +9,7 @@ function App() {
     <>
     <Routes>
       <Route path={RoutesPaths.Login} element={<Login />}/>
+      <Route path={RoutesPaths.TelaInicial} element={<TelaInicial/>}/>
     </Routes>
     </>
   );
