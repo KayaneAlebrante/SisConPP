@@ -1,7 +1,6 @@
 import { FC, useState } from 'react';
 import {
   LayoutDashboard,
-  Search,
   BookText,
   User,
   Users,
@@ -16,7 +15,7 @@ const Sidebar: FC = () => {
   const [isOpen, setIsOpen] = useState(true);
   const menuItems = [
     { label: "Concursos", icon: LayoutDashboard },
-    { label: "Concorrentes", icon: Search },
+    { label: "Concorrentes", icon: Users },
     { label: "Avaliadores", icon: BookText },
     { label: "Comissões Avaliadoras", icon: Users },
     { label: "Auxiliar", icon: User },
