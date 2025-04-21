@@ -3,7 +3,12 @@ import { RT } from "../../types/RT";
 import { listarRTs, deleteRT } from "../../services/api";
 import { Pencil, Trash2 } from "lucide-react";
 import { toast } from "react-toastify";
-export default function RTList() {
+
+interface RTListProps {
+  onEdit: (rt: RT) => void;
+}
+
+export default function RTList({ onEdit }: RTListProps) {
   const [rts, setRTs] = useState<RT[]>([]);
 
   const fetchRTs = async () => {
@@ -34,9 +39,9 @@ export default function RTList() {
       <table className="w-full bg-white rounded-xl shadow-md overflow-hidden">
         <thead>
           <tr className="text-left bg-secondary-dark text-secondary-light">
-            <th className="p-3 first:rounded-tl-xl last:rounded-tr-xl">Nome</th>
+            <th className="p-3 first:rounded-tl-xl">Nome</th>
             <th className="p-3">Número</th>
-            <th className="p-3">Ações</th>
+            <th className="p-3 last:rounded-tr-xl">Ações</th>
           </tr>
         </thead>
         <tbody>
@@ -45,7 +50,10 @@ export default function RTList() {
               <td className="p-3">{rt.nomeRT}</td>
               <td className="p-3">{rt.numeroRT}</td>
               <td className="p-3 flex gap-2">
-                <button className="text-green-600 hover:text-green-800">
+                <button
+                  className="text-green-600 hover:text-green-800"
+                  onClick={() => onEdit(rt)}
+                >
                   <Pencil size={18} />
                 </button>
                 <button

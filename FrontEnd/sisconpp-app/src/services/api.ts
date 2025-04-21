@@ -14,6 +14,10 @@ export const listarRTs = async () => {
   return response.data;
 };
 
+export const atualizarRT = (rt: RT) => {
+  return api.put(`/rt/${rt.idRT}`, rt);
+};
+
 export const deleteRT = async (id: number) => {
   await api.delete(`/rt/${id}`);
 };
