@@ -3,6 +3,7 @@ import { RoutesPaths } from "./models/enums/RouterPaths";
 import Login from "./pages/Login";
 import TelaInicial from "./pages/TelaInicial";
 import RT from "./pages/RT";
+import CTG from "./pages/CTG";
 import { ToastContainer } from 'react-toastify';
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
         <Route path={RoutesPaths.Login} element={<Login />} />
         <Route path={RoutesPaths.TelaInicial} element={<TelaInicial />} />
         <Route path={RoutesPaths.RT} element={<RT />} />
+        <Route path={RoutesPaths.CTG} element={<CTG />} />
       </Routes>
       <ToastContainer
         position="top-right"
