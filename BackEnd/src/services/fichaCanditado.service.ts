@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-
+/*
 class FichaCandidatoService{
     private prisma: PrismaClient;
 
@@ -20,6 +20,13 @@ class FichaCandidatoService{
                     provaId,
                     concursoId,
                     categoriaId,
+                    notaCandidato: 0,
+                    anexoTermodeCiencia: undefined,
+                    numAcertosProvaTeorica: 0,
+                    anexoGabarito: undefined,
+                    notaRedacao: 0,
+                    anexoRedacao: undefined,
+                    dataTermo: null
                 }
             });
             return fichaCandidato;
@@ -108,4 +115,4 @@ class FichaCandidatoService{
         }
         
     }
-}
+}*/

@@ -117,6 +117,45 @@ class UsuarioController{
         }
     }
 
+    async buscarUsuariosAvaliadores(req: Request, res: Response) {
+        try {
+            const avaliadores = await usuarioService.listarUsuariosAvaliadores();
+            res.status(200).json(avaliadores);
+        } catch (error) {
+            console.error('Erro ao buscar avaliadores:', error);
+            res.status(500).json({ error: 'Erro ao buscar avaliadores' });
+        }
+    }
+
+    async buscarUsuariosAuxiliares(req: Request, res: Response){
+        try{
+            const Usuarios = await usuarioService.listarUsuariosAuxiliares;
+            return res.status(200).json(Usuarios);
+        }
+        catch(error: unknown){
+            if(error instanceof Error){
+                return res.status(400).json({ mensagem: error.message });
+            } else {
+                console.error("Erro desconhecido:", error);
+                return res.status(400).json({ mensagem: "Erro desconhecido." });
+            }
+        }
+    }
+
+    async buscarUsuariosSecretarios(req: Request, res: Response){
+        try{
+            const Usuarios = await usuarioService.listarUsuariosSecretarios;
+            return res.status(200).json(Usuarios);
+        } catch(error: unknown){
+            if(error instanceof Error){
+                return res.status(400).json({ mensagem: error.message });
+            } else {
+                console.error("Erro desconhecido:", error);
+                return res.status(400).json({ mensagem: "Erro desconhecido." });
+            }
+        }
+    }
+    
     async deletarUsuario(req: Request, res: Response){
         const { id } = req.params;
 

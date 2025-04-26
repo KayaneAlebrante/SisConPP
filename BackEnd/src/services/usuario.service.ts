@@ -98,7 +98,49 @@ class UsuarioService extends PessoaService {
             throw new Error("Erro ao atualizar usuário com pessoa. Verifique os dados fornecidos.");
         }
     }
-    
+
+    async listarUsuariosAvaliadores() {
+        try {
+            const usuarios = await this.prisma.usuario.findMany({
+                where: { funcao: Funcao.AVALIADOR },
+                include: { Pessoa: true },
+            });
+            return usuarios;
+        }
+        catch (error) {
+            console.error(error);
+            throw new Error("Erro ao listar usuários avaliadores.");
+        }
+    };
+
+    async listarUsuariosSecretarios() {
+        try {
+            const usuarios = await this.prisma.usuario.findMany({
+                where: { funcao: Funcao.SECRETARIO },
+                include: { Pessoa: true },
+            });
+            return usuarios;
+        }
+        catch (error) {
+            console.error(error);
+            throw new Error("Erro ao listar usuários secretários.");
+        }
+    }
+
+    async listarUsuariosAuxiliares() {
+        try {
+            const usuarios = await this.prisma.usuario.findMany({
+                where: { funcao: Funcao.AUXILIAR },
+                include: { Pessoa: true },
+            });
+            return usuarios;
+        }
+        catch (error) {
+            console.error(error);
+            throw new Error("Erro ao listar usuários auxiliares.");
+        }
+    }
+       
 
     async buscarUsuarioPorId(idUsuario: number) {
         try {
