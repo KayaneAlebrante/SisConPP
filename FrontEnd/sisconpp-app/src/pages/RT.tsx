@@ -27,10 +27,9 @@ function RT() {
   };
 
   return (
-    <div className="flex flex-row h-screen w-full bg-neutral-background overflow-hidden">
+    <div className="flex flex-row min-h-screen w-full bg-neutral-background">
       <SideNavBar />
-
-      <div className="flex-grow p-4 bg-neutral-background flex flex-col items-center">
+      <div className="flex-1 p-4 bg-neutral-background flex flex-col items-center overflow-y-auto">
         <div className="w-full max-w-5xl mt-10 mb-6 px-2 flex justify-end">
           <button
             onClick={openModal}
@@ -40,7 +39,7 @@ function RT() {
           </button>
         </div>
 
-        <div className="w-full max-w-6xl h-full bg-secondary-light p-8 rounded-2xl shadow-lg">
+        <div className="w-full max-w-6xl bg-secondary-light p-8 rounded-2xl shadow-lg mb-4">
           <RTList key={refreshList.toString()} onEdit={handleEdit} />
         </div>
       </div>
