@@ -129,7 +129,7 @@ class UsuarioController{
 
     async buscarUsuariosAuxiliares(req: Request, res: Response){
         try{
-            const Usuarios = await usuarioService.listarUsuariosAuxiliares;
+            const Usuarios = await usuarioService.listarUsuariosAuxiliares();
             return res.status(200).json(Usuarios);
         }
         catch(error: unknown){
@@ -144,7 +144,7 @@ class UsuarioController{
 
     async buscarUsuariosSecretarios(req: Request, res: Response){
         try{
-            const Usuarios = await usuarioService.listarUsuariosSecretarios;
+            const Usuarios = await usuarioService.listarUsuariosSecretarios();
             return res.status(200).json(Usuarios);
         } catch(error: unknown){
             if(error instanceof Error){

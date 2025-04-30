@@ -146,6 +146,7 @@ class UsuarioService extends PessoaService {
         try {
             const Usuario = await this.prisma.usuario.findUnique({
                 where: { idUsuario: idUsuario },
+                include: { Pessoa: true },
             });
             return Usuario;
         } catch (error) {
@@ -155,7 +156,9 @@ class UsuarioService extends PessoaService {
 
     async buscarUsuarios() {
         try {
-            const Usuarios = await this.prisma.usuario.findMany();
+            const Usuarios = await this.prisma.usuario.findMany({
+                include: { Pessoa: true },
+            });
             return Usuarios;
         } catch (error) {
             throw new Error("Erro ao buscar usuários.");
