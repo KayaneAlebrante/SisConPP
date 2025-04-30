@@ -1,5 +1,5 @@
 export interface CTG {
     idCTG: number;
     nomeCTG: string;
-    RTid: number;
+    RTId: number;
 }  

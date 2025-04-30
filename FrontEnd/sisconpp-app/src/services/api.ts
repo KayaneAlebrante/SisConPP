@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { RT } from '../types/RT';
 import { CTG } from '../types/CTG';
+import { Usuario } from '../types/Usuario';
 
 const api = axios.create({
   baseURL: 'http://localhost:3002',
@@ -39,3 +40,20 @@ export const atualizarCTG = (ctg: CTG) => {
 export const deleteCTG = async (id: number) => {
   await api.delete(`/ctg/${id}`);
 };
+
+export const cadastrarUsuario = async (criarUsuario: Usuario) =>{
+  return await api.post('/usuario', criarUsuario);
+};
+
+export const atualizarUsuario = (usuario: Usuario) => {
+  return api.put(`/usuario/${usuario.idUsuario}`, usuario);
+};
+
+export const deleteUsuario = async (id: number) => {
+  await api.delete(`/usuario/${id}`);
+};
+
+export const listarUsuriosAvaliadores = async () => {
+  const response = await api.get("/usuario/usuarios/avaliadores");
+  return response.data;
+}

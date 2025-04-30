@@ -17,7 +17,7 @@ export default function CTGForm({ onClose, ctgToEdit }: CTGFormProps) {
     const [formData, setFormData] = useState<CTG>({
         idCTG: 0,
         nomeCTG: '',
-        RTid: 0,
+        RTId: 0,
     });
 
     const [rts, setRTs] = useState<RT[]>([]); 
@@ -35,9 +35,9 @@ export default function CTGForm({ onClose, ctgToEdit }: CTGFormProps) {
         if (ctgToEdit) {
             setFormData({
                 ...ctgToEdit,
-                RTid: Number(ctgToEdit.RTid),
+                RTId: Number(ctgToEdit.RTId),
             });
-            setSelectedRT(Number(ctgToEdit.RTid));
+            setSelectedRT(Number(ctgToEdit.RTId));
         }
     }, [ctgToEdit]);  
 
@@ -59,7 +59,7 @@ export default function CTGForm({ onClose, ctgToEdit }: CTGFormProps) {
             const ctgPayload: CTG = {
                 idCTG: ctgToEdit ? ctgToEdit.idCTG : 0,
                 nomeCTG: formData.nomeCTG,
-                RTid: selectedRT,
+                RTId: selectedRT,
             };
 
             if (ctgToEdit) {
