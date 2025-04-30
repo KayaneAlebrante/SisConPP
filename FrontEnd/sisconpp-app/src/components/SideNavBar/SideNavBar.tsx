@@ -8,15 +8,20 @@ import {
   AlertCircle,
   ChevronLeft,
   ChevronRight,
+  Building2,
+  CopyPlus
 } from 'lucide-react';
 import imgLogoLight from '../../assets/Logo-Light-SisConPP.png';
 
 const Sidebar: FC = () => {
   const [isOpen, setIsOpen] = useState(true);
   const menuItems = [
+    { label: "Dashboard", icon: LayoutDashboard, href: "/tela-inicial" },
+    { label: "CTGs", icon: Building2, href: "/ctg" },
+    { label: "RTs", icon: CopyPlus, href: "/rt" },
     { label: "Concursos", icon: LayoutDashboard },
     { label: "Concorrentes", icon: Users },
-    { label: "Avaliadores", icon: BookText },
+    { label: "Avaliadores", icon: BookText, href: "/avaliadores" },
     { label: "Comissões Avaliadoras", icon: Users },
     { label: "Auxiliar", icon: User },
     { label: "Sortear Danças", icon: Music },
@@ -25,7 +30,7 @@ const Sidebar: FC = () => {
 
   return (
     <div
-      className={`h-screen transition-all duration-300 relative flex flex-col justify-between ${isOpen ? 'w-64' : 'w-20'
+      className={`min-h-screen transition-all duration-300 relative flex flex-col ${isOpen ? 'w-64' : 'w-20'
         } bg-primary-dark border-r border-primary text-primary-onContainer shadow-lg`}
     >
       {/* Botão toggle */}
@@ -57,12 +62,12 @@ const Sidebar: FC = () => {
       </div>
 
       {/* Menu items */}
-      <nav className="flex flex-col gap-1">
+      <nav className="flex flex-col justify-between gap-1">
         {menuItems.map(({ label, icon: Icon }) => {
           return (
             <a
               key={label}
-              href="#"
+              href={menuItems.find((item) => item.label === label)?.href || '#'}
               className={`flex items-center gap-4 px-4 py-3 mx-2 rounded-lg transition-colors
               hover:bg-primary-light hover:text-primary-dark`}
             >
@@ -74,7 +79,7 @@ const Sidebar: FC = () => {
       </nav>
 
       {/* Rodapé */}
-      <div className="p-4 flex justify-end text-primary-light">
+      <div className="mt-auto p-4 flex justify-end text-primary-light">
         <AlertCircle size={20} />
       </div>
     </div>
