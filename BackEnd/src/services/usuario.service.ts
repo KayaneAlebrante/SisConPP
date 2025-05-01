@@ -134,15 +134,9 @@ class UsuarioService {
 
     async deletarUsuario(idUsuario: number) {
         try {
-            console.log("IdUsuario:", idUsuario);
-
-            const usuario = await this.prisma.usuario.findUnique({
-                where: { idUsuario },
-            });
-
-            if (!usuario) {
-                throw new Error("Usuário não encontrado.");
-            }
+            const usuario = await this.prisma.usuario.delete({
+                where: { idUsuario: idUsuario }
+            })
 
             return { mensagem: "Usuário deletado com sucesso." };
         } catch (error) {
