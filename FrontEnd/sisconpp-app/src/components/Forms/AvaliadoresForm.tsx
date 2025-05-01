@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Funcao, Usuario } from '../../types/Usuario';
+import { Credenciamento, Funcao, Usuario } from '../../types/Usuario';
 import { CTG } from '../../types/CTG';
 import { toast } from 'react-toastify';
 import { cadastrarUsuario, listarCTGs, atualizarUsuario } from '../../services/api'; // <- 
@@ -10,16 +10,12 @@ interface AvaliadorFormProps {
 }
 
 const estados = [
-    'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA',
-    'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN',
-    'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'
+    'Paraná', 'Santa Catarina', 'Rio Grande do Sul'
 ];
-
 
 export default function AvaliadoresForm({ onClose, avaliadorToEdit }: AvaliadorFormProps) {
     const [formData, setFormData] = useState<Usuario>({
         idUsuario: 0,
-        pessoaId: 0,
         nomeCompleto: '',
         cidade: '',
         estado: '',
@@ -28,9 +24,8 @@ export default function AvaliadoresForm({ onClose, avaliadorToEdit }: AvaliadorF
         login: '',
         senha: '',
         funcao: Funcao.AVALIADOR,
-        comissaoIdUsuario: 0,
-        concursoId: 0,
-        numCredenciamento: '',
+        numCredenciamento: Credenciamento.CREDENCIADO,
+        comissaoUsuarioId: 0,
     });
 
 
@@ -56,7 +51,6 @@ export default function AvaliadoresForm({ onClose, avaliadorToEdit }: AvaliadorF
         if (avaliadorToEdit) {
             setFormData({
                 idUsuario: avaliadorToEdit.idUsuario,
-                pessoaId: avaliadorToEdit.pessoaId || 0,
                 nomeCompleto: avaliadorToEdit.nomeCompleto || '',
                 cidade: avaliadorToEdit.cidade || '',
                 estado: avaliadorToEdit.estado || '',
@@ -65,9 +59,9 @@ export default function AvaliadoresForm({ onClose, avaliadorToEdit }: AvaliadorF
                 login: avaliadorToEdit.login,
                 senha: avaliadorToEdit.senha,
                 funcao: avaliadorToEdit.funcao,
-                concursoId: avaliadorToEdit.concursoId,
-                comissaoIdUsuario: avaliadorToEdit.comissaoIdUsuario || 0,
                 numCredenciamento: avaliadorToEdit.numCredenciamento || '',
+                comissaoUsuarioId: avaliadorToEdit.comissaoUsuarioId || 0,
+
             });
         }
     }, [avaliadorToEdit]);
@@ -77,12 +71,10 @@ export default function AvaliadoresForm({ onClose, avaliadorToEdit }: AvaliadorF
             setFormData({
                 ...avaliadorToEdit,
                 CTGId: avaliadorToEdit.CTGId,
-                concursoId: avaliadorToEdit.concursoId
             });
         } else {
             setFormData({
                 idUsuario: 0,
-                pessoaId: 0,
                 nomeCompleto: '',
                 cidade: '',
                 estado: '',
@@ -91,28 +83,26 @@ export default function AvaliadoresForm({ onClose, avaliadorToEdit }: AvaliadorF
                 login: '',
                 senha: '',
                 funcao: Funcao.AVALIADOR,
-                concursoId: 0,
-                comissaoIdUsuario: 0,
-                numCredenciamento: '',
+                numCredenciamento: Credenciamento.CREDENCIADO,
+                comissaoUsuarioId: 0,
             });
         }
     }, [avaliadorToEdit]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
-        
+
         setFormData(prev => ({
-          ...prev,
-          [name]: (name === 'concursoId' || name === 'CTGId') ? Number(value) : value
+            ...prev,
+            [name]: (name === 'concursoId' || name === 'CTGId') ? Number(value) : value
         }));
-    };      
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
             const avaliadorPayload: Usuario = {
                 idUsuario: formData.idUsuario,
-                pessoaId: formData.pessoaId,
                 nomeCompleto: formData.nomeCompleto,
                 cidade: formData.cidade,
                 estado: formData.estado,
@@ -121,11 +111,10 @@ export default function AvaliadoresForm({ onClose, avaliadorToEdit }: AvaliadorF
                 login: formData.login,
                 senha: formData.senha,
                 funcao: formData.funcao,
-                concursoId: formData.concursoId,
-                comissaoIdUsuario: formData.comissaoIdUsuario,
                 numCredenciamento: formData.numCredenciamento,
+                comissaoUsuarioId: formData.comissaoUsuarioId,                
             };
-              
+
             if (formData.senha.trim()) {
                 avaliadorPayload.senha = formData.senha;
             }
@@ -203,7 +192,7 @@ export default function AvaliadoresForm({ onClose, avaliadorToEdit }: AvaliadorF
                         required
                         className="rounded-lg p-2 bg-surface-containerHigh border border-outline focus:outline-none focus:ring-2 focus:ring-primary"
                     >
-                        <option value="" disabled>Selecione um CTG</option>
+                        <option value="">Selecione um CTG</option>
                         {ctgs.map(ctg => (
                             <option key={ctg.id} value={ctg.id}>{ctg.nome}</option>
                         ))}
@@ -224,24 +213,17 @@ export default function AvaliadoresForm({ onClose, avaliadorToEdit }: AvaliadorF
 
                 <div className="flex flex-col mb-4">
                     <label className="text-sm font-medium mb-1">Número de Credenciamento</label>
-                    <input
-                        type="text"
+                    <select
                         name="numCredenciamento"
                         value={formData.numCredenciamento}
                         onChange={handleChange}
+                        required
                         className="rounded-lg p-2 bg-surface-containerHigh border border-outline focus:outline-none focus:ring-2 focus:ring-primary"
-                    />
-                </div>
-
-                <div className="flex flex-col mb-4">
-                    <label className="text-sm font-medium mb-1">ID do Concurso</label>
-                    <input
-                        type="number"
-                        name="concursoId"
-                        value={formData.concursoId}
-                        onChange={handleChange}
-                        className="rounded-lg p-2 bg-surface-containerHigh border border-outline focus:outline-none focus:ring-2 focus:ring-primary"
-                    />
+                    >
+                        <option value="">Selecione uma Opção</option>
+                        <option value={Credenciamento.CREDENCIADO}>Credenciado</option>
+                        <option value={Credenciamento.NAO_CREDENCIADO}>Não Credenciado</option>
+                    </select>
                 </div>
 
                 <div className="flex flex-col mb-4">

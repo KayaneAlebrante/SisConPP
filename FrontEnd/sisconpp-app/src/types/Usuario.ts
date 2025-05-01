@@ -1,12 +1,16 @@
 export enum Funcao {
     AVALIADOR = 'AVALIADOR',
-    ADMIN = 'ADMIN',
-    OUTRO = 'OUTRO'
+    AUXILIAR = 'AUXILIAR',
+    SECRETARIO = 'SECRETARIO',
 }
-  
+
+export enum Credenciamento{
+    CREDENCIADO = 'CREDENCIADO',
+    NAO_CREDENCIADO = 'NÃO CREDENCIADO'
+}
+
 export interface Usuario {
     idUsuario: number;
-    pessoaId: number;
     nomeCompleto: string;
     cidade: string;
     estado: string;
@@ -15,7 +19,6 @@ export interface Usuario {
     login: string;
     senha: string;
     funcao: Funcao;
-    numCredenciamento: string;
-    concursoId: number;
-    comissaoIdUsuario: number;
+    numCredenciamento: Credenciamento;
+    comissaoUsuarioId?: number;
 }    

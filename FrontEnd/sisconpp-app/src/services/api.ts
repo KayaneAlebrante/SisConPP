@@ -4,7 +4,7 @@ import { CTG } from '../types/CTG';
 import { Usuario } from '../types/Usuario';
 
 const api = axios.create({
-  baseURL: 'http://localhost:3002',
+  baseURL: 'http://localhost:3005',
 });
 
 export const cadastrarRT = async (novaRT: RT) => {
@@ -50,10 +50,15 @@ export const atualizarUsuario = (usuario: Usuario) => {
 };
 
 export const deleteUsuario = async (id: number) => {
-  await api.delete(`/usuario/${id}`);
+  return await api.delete(`/usuario/${id}`);
 };
 
 export const listarUsuriosAvaliadores = async () => {
   const response = await api.get("/usuario/usuarios/avaliadores");
+  return response.data;
+}
+
+export const listarUsuriosAuxiliares = async () => {
+  const response = await api.get("/usuario/usuarios/auxiliares");
   return response.data;
 }

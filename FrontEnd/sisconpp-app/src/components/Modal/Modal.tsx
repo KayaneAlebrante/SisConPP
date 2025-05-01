@@ -11,10 +11,10 @@ export default function Modal({ isOpen, onClose, children }: ModalProps) {
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-            <div className="bg-white p-6 rounded-xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto relative">
+            <div className="bg-neutral-surface p-6 rounded-xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto relative">
                 <button
                     onClick={onClose}
-                    className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+                    className="absolute top-2 right-2 text-[#757871] hover:text-[#454841]"
                     aria-label="Fechar"
                 >
                     <X size={20} />

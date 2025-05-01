@@ -105,12 +105,12 @@ export default function CTGForm({ onClose, ctgToEdit }: CTGFormProps) {
                     </label>
                     <select
                         name="RTId"
-                        value={selectedRT}
+                        value={selectedRT || ""}
                         onChange={handleRTChange}
                         className="rounded-lg p-2 bg-surface-containerHigh border border-outline focus:outline-none focus:ring-2 focus:ring-primary text-neutral-onBackground"
                         required
                     >
-                        <option value="" disabled>Selecione uma RT</option>
+                        <option value="">Selecione uma RT</option>
                         {rts.map((rt) => (
                             <option key={rt.idRT} value={rt.idRT}>
                                 {rt.nomeRT}
