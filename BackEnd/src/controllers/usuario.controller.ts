@@ -1,42 +1,41 @@
 import { Request, Response } from "express";
 import usuarioService from "../services/usuario.service";
 
-class UsuarioController{
-    async criarUsuario(req: Request, res: Response){
-        const { 
-            nomeCompleto, 
-            cidade, 
-            estado, 
-            CTGId, 
-            numCarteirinha, 
-            login, 
-            senha, 
+class UsuarioController {
+    async criarUsuario(req: Request, res: Response) {
+        const {
+            nomeCompleto,
+            cidade,
+            estado,
+            CTGId,
+            numCarteirinha,
+            login,
+            senha,
             funcao,
-            concursoId,
-            comissaoIdUsuario,
-            numCredenciamento 
+            numCredenciamento,
+            comissaoUsuarioId,
         } = req.body;
 
-        if(!login || !senha || !funcao || !CTGId){
+        if (!login || !senha || !funcao || !CTGId) {
             return res.status(400).json({ mensagem: "Login, senha, função e CTG são obrigatórios." });
         }
 
-        try{
-            const Usuario = await usuarioService.criarUsuario(nomeCompleto, 
-                cidade, 
-                estado, 
-                CTGId, 
-                numCarteirinha, 
-                login, 
-                senha, 
-                funcao, 
-                concursoId,
-                comissaoIdUsuario,
-                numCredenciamento);
+        try {
+            const Usuario = await usuarioService.criarUsuario(
+                nomeCompleto,
+                cidade,
+                estado,
+                CTGId,
+                numCarteirinha,
+                login,
+                senha,
+                funcao,
+                numCredenciamento,
+                comissaoUsuarioId,);
             return res.status(201).json(Usuario);
-        } catch(error: unknown){
-            if(error instanceof Error){
-                console.error("Erro ao Criar Usuario: ", error); 
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                console.error("Erro ao Criar Usuario: ", error);
                 return res.status(400).json({ mensagem: error.message });
             } else {
                 console.error("Erro desconhecido:", error);
@@ -45,37 +44,47 @@ class UsuarioController{
         }
     }
 
-    async atualizarUsuario(req: Request, res: Response){
+    async atualizarUsuario(req: Request, res: Response) {
         const { id } = req.params;
         const data = req.body;
 
-        if(!data || Object.keys(data).length === 0){
+        if (!data || Object.keys(data).length === 0) {
             return res.status(400).json({ mensagem: "Dados para atualização são obrigatórios." });
         }
 
-        try{
-            const { 
-                nomeCompleto, 
-                cidade, 
-                estado, 
-                CTGId, 
-                numCarteirinha, 
-                login, 
-                senha, 
-                funcao, 
+        try {
+            const {
+                nomeCompleto,
+                cidade,
+                estado,
+                CTGId,
+                numCarteirinha,
+                login,
+                senha,
+                funcao,
                 numCredenciamento,
-                concursoId,
-                comissaoIdUsuario} = data;
+                comissaoUsuarioId
+                } = data;
 
-            const userData = { login, senha, funcao, numCredenciamento, comissaoIdUsuario, concursoId};
+            const userData = {
+                nomeCompleto,
+                cidade,
+                estado,
+                CTGId,
+                numCarteirinha,
+                login,
+                senha,
+                funcao,
+                numCredenciamento,
+                comissaoUsuarioId,
+            };
 
-            const pessoaData = { nomeCompleto, cidade, estado, CTGId, numCarteirinha };
 
-            const Usuario = await usuarioService.atualizarUsuario(Number(id), userData, pessoaData);   
-                   
+            const Usuario = await usuarioService.atualizarUsuario(Number(id), userData);
+
             return res.status(200).json(Usuario);
-        } catch(error: unknown){
-            if(error instanceof Error){
+        } catch (error: unknown) {
+            if (error instanceof Error) {
                 return res.status(400).json({ mensagem: error.message });
             } else {
                 console.error("Erro desconhecido:", error);
@@ -84,17 +93,17 @@ class UsuarioController{
         }
     }
 
-    async buscarUsuarioPorId(req: Request, res: Response){
+    async buscarUsuarioPorId(req: Request, res: Response) {
         const { id } = req.params;
 
-        try{
+        try {
             const Usuario = await usuarioService.buscarUsuarioPorId(Number(id));
-            if(!Usuario){
+            if (!Usuario) {
                 return res.status(404).json({ mensagem: "Usuário não encontrado." });
             }
             return res.status(200).json(Usuario);
-        } catch(error: unknown){
-            if(error instanceof Error){
+        } catch (error: unknown) {
+            if (error instanceof Error) {
                 return res.status(400).json({ mensagem: error.message });
             } else {
                 console.error("Erro desconhecido:", error);
@@ -103,12 +112,12 @@ class UsuarioController{
         }
     }
 
-    async buscarUsuarios(req: Request, res: Response){
-        try{
+    async buscarUsuarios(req: Request, res: Response) {
+        try {
             const Usuarios = await usuarioService.buscarUsuarios();
             return res.status(200).json(Usuarios);
-        } catch(error: unknown){
-            if(error instanceof Error){
+        } catch (error: unknown) {
+            if (error instanceof Error) {
                 return res.status(400).json({ mensagem: error.message });
             } else {
                 console.error("Erro desconhecido:", error);
@@ -127,43 +136,34 @@ class UsuarioController{
         }
     }
 
-    async buscarUsuariosAuxiliares(req: Request, res: Response){
-        try{
-            const Usuarios = await usuarioService.listarUsuariosAuxiliares();
-            return res.status(200).json(Usuarios);
-        }
-        catch(error: unknown){
-            if(error instanceof Error){
-                return res.status(400).json({ mensagem: error.message });
-            } else {
-                console.error("Erro desconhecido:", error);
-                return res.status(400).json({ mensagem: "Erro desconhecido." });
-            }
+    async buscarUsuariosAuxiliares(req: Request, res: Response) {
+        try {
+            const auxiliares = await usuarioService.listarUsuariosAuxiliares();
+            return res.status(200).json(auxiliares);
+        } catch (error) {
+            console.error('Erro ao buscar auxiliares:', error);
+            res.status(500).json({ error: 'Erro ao buscar auxiliares' });
         }
     }
 
-    async buscarUsuariosSecretarios(req: Request, res: Response){
-        try{
-            const Usuarios = await usuarioService.listarUsuariosSecretarios();
-            return res.status(200).json(Usuarios);
-        } catch(error: unknown){
-            if(error instanceof Error){
-                return res.status(400).json({ mensagem: error.message });
-            } else {
-                console.error("Erro desconhecido:", error);
-                return res.status(400).json({ mensagem: "Erro desconhecido." });
-            }
+    async buscarUsuariosSecretarios(req: Request, res: Response) {
+        try {
+            const secretarios = await usuarioService.listarUsuariosSecretarios();
+            return res.status(200).json(secretarios);
+        } catch (error) {
+            console.error('Erro ao buscar secretarios:', error);
+            res.status(500).json({ error: 'Erro ao buscar secretarios' });
         }
     }
-    
-    async deletarUsuario(req: Request, res: Response){
+
+    async deletarUsuario(req: Request, res: Response) {
         const { id } = req.params;
 
-        try{
+        try {
             await usuarioService.deletarUsuario(Number(id));
             return res.status(204).send();
-        } catch(error: unknown){
-            if(error instanceof Error){
+        } catch (error: unknown) {
+            if (error instanceof Error) {
                 return res.status(400).json({ mensagem: error.message });
             } else {
                 console.error("Erro desconhecido:", error);

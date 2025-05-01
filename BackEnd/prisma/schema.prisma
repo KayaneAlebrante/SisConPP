@@ -15,7 +15,6 @@ model Pessoa {
   CTG            CTG        @relation(fields: [CTGId], references: [idCTG])
   CTGId          Int        @default(0)
   numCarteirinha String
-  Usuario        Usuario?
   Candidato      Candidato?
 }
 
@@ -58,20 +57,24 @@ enum ProvaCampeiraEsportiva {
 }
 
 model Usuario {
-  idUsuario         Int              @id @default(autoincrement())
-  pessoaId          Int              @unique
-  Pessoa            Pessoa           @relation(fields: [pessoaId], references: [idPessoa], onDelete: Cascade)
-  login             String           @unique
+  idUsuario         Int            @id @default(autoincrement())
+  nomeCompleto      String
+  cidade            String
+  estado            String
+  CTG               CTG            @relation(fields: [CTGId], references: [idCTG])
+  CTGId             Int            @default(0)
+  numCarteirinha    String
+  login             String         @unique
   senha             String
   funcao            Funcao
-  numCredenciamento String?
-  Concurso          Concurso         @relation(fields: [concursoId], references: [idConcurso])
-  concursoId        Int
-  comissaoUsuarioId Int?
-  ComissaoUsuario   ComissaoUsuario? @relation
-  avalicoes         Avaliacao[]
-  recursos          Recurso[]
-  sorteioDanca      SorteioDanca[]
+  numCredenciamento Credenciamento
+
+  comissaoUsuarioId      Int?
+  ComissaoUsuario        ComissaoUsuario?       @relation
+  participacaoConcursoId ParticipacaoConcurso[]
+  avalicoes              Avaliacao[]
+  recursos               Recurso[]
+  sorteioDanca           SorteioDanca[]
 }
 
 enum Funcao {
@@ -80,13 +83,26 @@ enum Funcao {
   AUXILIAR
 }
 
+enum Credenciamento {
+  CREDENCIADO
+  NAO_CREDENCIADO
+}
+
+model ParticipacaoConcurso {
+  idParticipacaoConcurso Int       @id @default(autoincrement())
+  concursoId             Int
+  Concurso               Concurso  @relation(fields: [concursoId], references: [idConcurso])
+  Usuario                Usuario[]
+}
+
 model CTG {
   idCTG   Int    @id @default(autoincrement())
   nomeCTG String @db.VarChar(100)
 
-  RTid   Int
-  RT     RT       @relation(fields: [RTid], references: [idRT])
-  pessoa Pessoa[]
+  RTid    Int
+  RT      RT        @relation(fields: [RTid], references: [idRT])
+  pessoa  Pessoa[]
+  Usuario Usuario[]
 }
 
 model RT {
@@ -118,9 +134,9 @@ model Concurso {
   local              String   @db.VarChar(255)
   anexoEdital        Bytes?
 
-  candidatos Candidato[]
-  comissoes  Comissao[]
-  usuarios   Usuario[]
+  candidatos           Candidato[]
+  comissoes            Comissao[]
+  ParticipacaoConcurso ParticipacaoConcurso[]
 }
 
 model Comissao {
