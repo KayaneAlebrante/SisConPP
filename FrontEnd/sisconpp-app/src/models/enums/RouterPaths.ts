@@ -4,6 +4,7 @@ export enum RoutesPaths{
     RT = "/rt",
     CTG = "/ctg",
     Avaliadores = "/avaliadores",
+    Auxiliares = "/auxiliares",
 }
 
 export default RoutesPaths;

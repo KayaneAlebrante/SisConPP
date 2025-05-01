@@ -75,7 +75,9 @@ export default function CTGList({ onEdit }: CTGListProps) {
                     {ctgs.map((ctg) => (
                         <tr key={ctg.idCTG} className="border-t hover:bg-secondary-light/20 transition">
                             <td className="p-3">{ctg.nomeCTG}</td>
-                            <td className="p-3">{getRTNameById(ctg.RTid)}</td>
+                            <td className="p-3">{getRTNameById(ctg.RTId
+                                
+                            )}</td>
                             <td className="p-3 flex gap-2">
                                 <button
                                     className="text-green-600 hover:text-green-800"
