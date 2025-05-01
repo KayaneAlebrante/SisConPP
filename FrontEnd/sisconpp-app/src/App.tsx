@@ -6,6 +6,7 @@ import RT from "./pages/RT";
 import CTG from "./pages/CTG";
 import Avaliadores from "./pages/Avaliadores";
 import { ToastContainer } from 'react-toastify';
+import Auxiliares from "./pages/Auxiliares";
 
 function App() {
 
@@ -17,6 +18,7 @@ function App() {
         <Route path={RoutesPaths.RT} element={<RT />} />
         <Route path={RoutesPaths.CTG} element={<CTG />} />
         <Route path={RoutesPaths.Avaliadores} element={<Avaliadores />} />
+        <Route path={RoutesPaths.Auxiliares} element={<Auxiliares />} />
       </Routes>
       <ToastContainer
         position="top-right"
