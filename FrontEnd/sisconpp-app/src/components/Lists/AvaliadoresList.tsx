@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { listarUsuriosAvaliadores as listarAvaliadores, deleteUsuario as deleteAvaliador, listarCTGs } from "../../services/api";
 import { toast } from "react-toastify";
 import { Pencil, Trash2, Search } from "lucide-react";
-import { Usuario, Funcao } from "../../types/Usuario";
+import { Usuario, Funcao, Credenciamento } from "../../types/Usuario";
 import { CTG } from "../../types/CTG";
+import Dialog from "../Modal/Dialog";
 
 interface AvaliadorListProps {
     onEdit: (avaliador: Usuario) => void;
@@ -19,46 +20,40 @@ export default function AvaliadorList({ onEdit, onVisualizar }: AvaliadorListPro
         try {
             type UsuarioComPessoa = {
                 idUsuario: number;
-                pessoaId: number;
+                nomeCompleto: string;
+                cidade: string;
+                estado: string;
+                CTGId: number;
+                numCarteirinha: string;
                 login: string;
                 senha: string;
                 funcao: Funcao;
-                numCredenciamento: string;
-                concursoId: number;
-                comissaoUsuarioId: number;
-                Pessoa?: {
-                    nomeCompleto: string;
-                    cidade: string;
-                    estado: string;
-                    CTGId: number;
-                    numCarteirinha: string;
-                };
+                numCredenciamento: Credenciamento;
+                comissaoUsuarioId?: number;
             };
-    
+
             const response = await listarAvaliadores() as UsuarioComPessoa[];
-    
+
             const avaliadores: Usuario[] = response.map((usuario) => ({
                 idUsuario: usuario.idUsuario,
-                pessoaId: usuario.pessoaId,
-                nomeCompleto: usuario.Pessoa?.nomeCompleto || "---",
-                cidade: usuario.Pessoa?.cidade || "",
-                estado: usuario.Pessoa?.estado || "",
-                CTGId: usuario.Pessoa?.CTGId || 0,
-                numCarteirinha: usuario.Pessoa?.numCarteirinha || "",
+                nomeCompleto: usuario.nomeCompleto || "---",
+                cidade: usuario.cidade || "",
+                estado: usuario.estado || "",
+                CTGId: usuario.CTGId || 0,
+                numCarteirinha: usuario.numCarteirinha || "",
                 login: usuario.login,
                 senha: usuario.senha,
                 funcao: usuario.funcao,
                 numCredenciamento: usuario.numCredenciamento || "",
-                concursoId: usuario.concursoId,
                 comissaoIdUsuario: usuario.comissaoUsuarioId,
             }));
-    
+
             setAvaliadores(avaliadores);
         } catch (error) {
             toast.error("Erro ao carregar avaliadores");
             console.error(error);
         }
-    };       
+    };
 
     const fetchCTGs = async () => {
         try {
@@ -75,12 +70,21 @@ export default function AvaliadorList({ onEdit, onVisualizar }: AvaliadorListPro
         fetchCTGs();
     }, []);
 
-    const handleDelete = async (id: number) => {
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [avaliadorSelecionadoId, setAvaliadorSelecionadoId] = useState<number | null>(null);
+
+
+    const handleConfirmDelete = async (id: number) => {
         try {
-            if (window.confirm("Tem certeza que deseja excluir este avaliador?")) {
-                await deleteAvaliador(id);
+            const response = await deleteAvaliador(id);
+            console.log("Resposta da exclusão:", response);
+            if (response !== null && response !== undefined) {
                 await fetchAvaliadores();
                 toast.success("Avaliador excluído com sucesso!");
+                setIsDialogOpen(false);
+                setAvaliadorSelecionadoId(null);
+            } else {
+                throw new Error("Falha ao excluir avaliador");
             }
         } catch (error) {
             console.error("Erro ao excluir avaliador:", error);
@@ -88,11 +92,12 @@ export default function AvaliadorList({ onEdit, onVisualizar }: AvaliadorListPro
         }
     };
 
+
     const getCTGNameById = (idCTG: number | undefined) => {
-            if (!idCTG) return "CTG não informado";
-            const ctg = ctgs.find((ctg) => ctg.idCTG === idCTG);
-            return ctg?.nomeCTG || "CTG não encontrado";
-        };
+        if (!idCTG) return "CTG não informado";
+        const ctg = ctgs.find((ctg) => ctg.idCTG === idCTG);
+        return ctg?.nomeCTG || "CTG não encontrado";
+    };
 
     return (
         <div className="flex flex-col h-full">
@@ -125,7 +130,11 @@ export default function AvaliadorList({ onEdit, onVisualizar }: AvaliadorListPro
                                 </button>
                                 <button
                                     className="text-red-600 hover:text-red-800"
-                                    onClick={() => handleDelete(avaliador.idUsuario)}
+                                    onClick={() => {
+                                        setAvaliadorSelecionadoId(avaliador.idUsuario);
+                                        setIsDialogOpen(true);
+                                    }}
+
                                 >
                                     <Trash2 size={18} />
                                 </button>
@@ -133,8 +142,22 @@ export default function AvaliadorList({ onEdit, onVisualizar }: AvaliadorListPro
                         </tr>
                     ))}
                 </tbody>
-
             </table>
+
+            <Dialog
+                isOpen={isDialogOpen}
+                onClose={() => {
+                    setIsDialogOpen(false);
+                    setAvaliadorSelecionadoId(null);
+                }}
+                onConfirm={() => {
+                    if (avaliadorSelecionadoId !== null) {
+                        handleConfirmDelete(avaliadorSelecionadoId);
+                    }
+                }}
+                menssage="Tem certeza que deseja excluir este avaliador?"
+            />
+
         </div>
     );
 }

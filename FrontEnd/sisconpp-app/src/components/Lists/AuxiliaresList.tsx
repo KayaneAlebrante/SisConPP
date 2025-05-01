@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { listarUsuriosAuxiliares as listarAuxiliares, deleteUsuario as deleteAuxiliar, listarCTGs } from "../../services/api";
+import { listarUsuriosAuxiliares as listarAuxiliares, deleteUsuario, listarCTGs} from "../../services/api";
 import { toast } from "react-toastify";
 import { Pencil, Trash2, Search } from "lucide-react";
 import { Usuario, Funcao, Credenciamento } from "../../types/Usuario";
 import { CTG } from "../../types/CTG";
+import Dialog from "../Modal/Dialog";
 
 interface AuxiliaresListProps {
     onEdit: (auxiliar: Usuario) => void;
@@ -70,17 +71,25 @@ export default function AuxiliaresList({ onEdit, onVisualizar }: AuxiliaresListP
         fetchCTGs();
     }, []);
 
-    const handleDelete = async (id: number) => {
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [auxiliarSelecionadoId, setAuxiliarSelecionadoId] = useState<number | null>(null);
+
+
+    const handleConfirmDelete = async (id: number) => {
         try {
-           if(window.confirm("Tem certeza que deseja excluir este auxiliar")){
-            await deleteAuxiliar(id);
-            await fetchAuxiliares();
-            toast.success("Auxiliar excluído com sucesso!");
-            fetchAuxiliares();
-           }
+            const response = await deleteUsuario(id);
+            console.log("Resposta da exclusão:", response);
+            if (response !== null && response !== undefined) {
+                await fetchAuxiliares();
+                toast.success("Auxiliar excluído com sucesso!");
+                setIsDialogOpen(false);
+                setAuxiliarSelecionadoId(null);
+            } else {
+                throw new Error("Falha ao excluir auxiliar");
+            }
         } catch (error) {
-            toast.error("Erro ao excluir auxiliar");
-            console.error(error);
+            console.error("Erro ao excluir auxiliar:", error);
+            toast.error("Erro ao excluir auxiliar. Tente novamente.");
         }
     };
 
@@ -121,7 +130,10 @@ export default function AuxiliaresList({ onEdit, onVisualizar }: AuxiliaresListP
                                 </button>
                                 <button
                                     className="text-red-600 hover:text-red-800"
-                                    onClick={() => handleDelete(auxiliar.idUsuario)}
+                                    onClick={() => {
+                                        setAuxiliarSelecionadoId(auxiliar.idUsuario);
+                                        setIsDialogOpen(true);
+                                    }}
                                 >
                                     <Trash2 size={18} />
                                 </button>
@@ -129,8 +141,21 @@ export default function AuxiliaresList({ onEdit, onVisualizar }: AuxiliaresListP
                         </tr>
                     ))}
                 </tbody>
-
             </table>
+
+            <Dialog
+                            isOpen={isDialogOpen}
+                            onClose={() => {
+                                setIsDialogOpen(false);
+                                setAuxiliarSelecionadoId(null);
+                            }}
+                            onConfirm={() => {
+                                if (auxiliarSelecionadoId !== null) {
+                                    handleConfirmDelete(auxiliarSelecionadoId);
+                                }
+                            }}
+                            menssage="Tem certeza que deseja excluir este avaliador?"
+                        />
         </div>
     );
 }
