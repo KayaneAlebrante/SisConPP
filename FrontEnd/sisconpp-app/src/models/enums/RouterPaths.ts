@@ -3,8 +3,10 @@ export enum RoutesPaths{
     TelaInicial = "/tela-inicial",
     RT = "/rt",
     CTG = "/ctg",
-    Avaliadores = "/avaliadores",
+    candidatoes = "/candidatoes",
     Auxiliares = "/auxiliares",
+    Avaliadores = "/avaliadores",
+    Candidatos = "/candidatos"
 }
 
 export default RoutesPaths;

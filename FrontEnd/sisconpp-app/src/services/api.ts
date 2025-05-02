@@ -2,6 +2,7 @@ import axios from 'axios';
 import { RT } from '../types/RT';
 import { CTG } from '../types/CTG';
 import { Usuario } from '../types/Usuario';
+import { Candidato } from '../types/Candidato';
 
 const api = axios.create({
   baseURL: 'http://localhost:3005',
@@ -61,4 +62,26 @@ export const listarUsuriosAvaliadores = async () => {
 export const listarUsuriosAuxiliares = async () => {
   const response = await api.get("/usuario/usuarios/auxiliares");
   return response.data;
+}
+
+export const listarCategorias = async () =>{
+  const response = await api.get("/categoria");
+  return response.data;
+}
+
+export const cadastrarCandidato = async (criarCandidato: Candidato ) =>{
+  return await api.post("/candidato", criarCandidato);
+}
+
+export const atualizarCandidato = (candidato: Candidato) => {
+  return api.put(`/candidato/${candidato.idCandidato}`, candidato);
+};
+
+export const listarCandidatos = async () =>{
+  const response = await api.get("/candidato");
+  return response.data;
+}
+
+export const deletarCandidato = async (id: number) =>{
+  return await api.delete(`/candidato/${id}`);
 }

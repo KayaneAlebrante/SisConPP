@@ -18,7 +18,7 @@ export default function AvaliadorList({ onEdit, onVisualizar }: AvaliadorListPro
 
     const fetchAvaliadores = async () => {
         try {
-            type UsuarioComPessoa = {
+            type Usuario = {
                 idUsuario: number;
                 nomeCompleto: string;
                 cidade: string;
@@ -32,7 +32,7 @@ export default function AvaliadorList({ onEdit, onVisualizar }: AvaliadorListPro
                 comissaoUsuarioId?: number;
             };
 
-            const response = await listarAvaliadores() as UsuarioComPessoa[];
+            const response = await listarAvaliadores() as Usuario[];
 
             const avaliadores: Usuario[] = response.map((usuario) => ({
                 idUsuario: usuario.idUsuario,
@@ -91,7 +91,6 @@ export default function AvaliadorList({ onEdit, onVisualizar }: AvaliadorListPro
             toast.error("Erro ao excluir avaliador. Tente novamente.");
         }
     };
-
 
     const getCTGNameById = (idCTG: number | undefined) => {
         if (!idCTG) return "CTG não informado";

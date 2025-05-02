@@ -57,7 +57,7 @@ export default function CTGList({ onEdit }: CTGListProps) {
 
     const getRTNameById = (id: number) => {
         const rt = rts.find((rt) => rt.idRT === id);
-        return rt ? rt.nomeRT : "RT não encontrada";
+        return rt ? rt.nomeRT: "RT não encontrada";
     };
 
     return (
@@ -75,8 +75,7 @@ export default function CTGList({ onEdit }: CTGListProps) {
                     {ctgs.map((ctg) => (
                         <tr key={ctg.idCTG} className="border-t hover:bg-secondary-light/20 transition">
                             <td className="p-3">{ctg.nomeCTG}</td>
-                            <td className="p-3">{getRTNameById(ctg.RTId
-                                
+                            <td className="p-3">{getRTNameById(ctg.RTId                              
                             )}</td>
                             <td className="p-3 flex gap-2">
                                 <button

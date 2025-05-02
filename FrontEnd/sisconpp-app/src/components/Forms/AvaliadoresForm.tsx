@@ -94,7 +94,7 @@ export default function AvaliadoresForm({ onClose, avaliadorToEdit }: AvaliadorF
 
         setFormData(prev => ({
             ...prev,
-            [name]: (name === 'concursoId' || name === 'CTGId') ? Number(value) : value
+            [name]: ( name === 'CTGId') ? Number(value) : value
         }));
     };
 
