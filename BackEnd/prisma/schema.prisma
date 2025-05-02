@@ -7,21 +7,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Pessoa {
-  idPessoa       Int        @id @default(autoincrement())
-  nomeCompleto   String
-  cidade         String
-  estado         String
-  CTG            CTG        @relation(fields: [CTGId], references: [idCTG])
-  CTGId          Int        @default(0)
-  numCarteirinha String
-  Candidato      Candidato?
-}
-
 model Candidato {
   idCandidato                 Int                       @id @default(autoincrement())
-  pessoaId                    Int                       @unique
-  Pessoa                      Pessoa                    @relation(fields: [pessoaId], references: [idPessoa], onDelete: Cascade)
+  nomeCompleto                String
+  cidade                      String
+  estado                      String
+  CTG                         CTG                       @relation(fields: [CTGId], references: [idCTG])
+  CTGId                       Int                       @default(0)
+  numCarteirinha              String
   CPF                         String
   RG                          String
   endereco                    String
@@ -41,13 +34,15 @@ model Candidato {
   anexoResponsavel            Bytes?
   anexoProvaEsportivaCampeira Bytes?
   PreferenciaSorteioDanca     PreferenciaSorteioDanca[]
-  Concurso                    Concurso                  @relation(fields: [concursoId], references: [idConcurso])
-  concursoId                  Int
   Categoria                   Categoria                 @relation(fields: [categoriaId], references: [idCategoria])
   categoriaId                 Int
-  avalicoes                   Avaliacao[]
-  sorteioDanca                SorteioDanca[]
-  Recurso                     Recurso[]
+
+  participacaoConcursoId ParticipacaoConcurso[]
+  avalicoes              Avaliacao[]
+  sorteioDanca           SorteioDanca[]
+  Recurso                Recurso[]
+  Concurso               Concurso?              @relation(fields: [concursoIdConcurso], references: [idConcurso])
+  concursoIdConcurso     Int?
 }
 
 enum ProvaCampeiraEsportiva {
@@ -89,20 +84,22 @@ enum Credenciamento {
 }
 
 model ParticipacaoConcurso {
-  idParticipacaoConcurso Int       @id @default(autoincrement())
+  idParticipacaoConcurso Int        @id @default(autoincrement())
   concursoId             Int
-  Concurso               Concurso  @relation(fields: [concursoId], references: [idConcurso])
+  Concurso               Concurso   @relation(fields: [concursoId], references: [idConcurso])
   Usuario                Usuario[]
+  Candidato              Candidato? @relation(fields: [candidatoIdCandidato], references: [idCandidato])
+  candidatoIdCandidato   Int?
 }
 
 model CTG {
   idCTG   Int    @id @default(autoincrement())
   nomeCTG String @db.VarChar(100)
 
-  RTid    Int
-  RT      RT        @relation(fields: [RTid], references: [idRT])
-  pessoa  Pessoa[]
-  Usuario Usuario[]
+  RTid      Int
+  RT        RT          @relation(fields: [RTid], references: [idRT])
+  Usuario   Usuario[]
+  Candidato Candidato[]
 }
 
 model RT {

@@ -4,7 +4,7 @@ import cors from "cors";
 import rtRoutes from "./routes/rt.routes"; 
 import ctgRoutes from "./routes/ctg.routes";
 import usuarioRoutes from "./routes/usuario.routes";
-//import candidatoRoutes from "./routes/candidato.routes";
+import candidatoRoutes from "./routes/candidato.routes";
 import concursoRoutes from "./routes/concurso.routes";
 import categoriaRoutes from "./routes/categoria.routes";
 import provaPraticaRoutes from "./routes/provaPratica.routes";
@@ -35,7 +35,7 @@ app.use(express.json()); // Para analisar o corpo das requisições como JSON
 app.use("/rt", rtRoutes);
 app.use("/ctg", ctgRoutes);
 app.use("/usuario", usuarioRoutes);
-//app.use("/candidato", candidatoRoutes);
+app.use("/candidato", candidatoRoutes);
 app.use("/concurso", concursoRoutes);
 app.use("/categoria", categoriaRoutes);
 app.use("/comissao", comissao);

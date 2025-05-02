@@ -127,21 +127,6 @@ class ConcursoController{
         }
     }
 
-    async bsucarCandidadosConcurso(req: Request, res: Response){
-        const { idConcurso } = req.params;
-
-        try{
-            const candidatos = await concursoService.buscarCandidatosConcurso(Number(idConcurso));
-            return res.status(200).json(candidatos);
-
-        }catch(error){
-            if(error instanceof Error){
-                console.error("Erro ao buscar Candidatos.");
-                return res.status(400).json({mensagem: "Erro desconhecido."});
-            }
-        }
-    }
-
     async anexarEdital(req: Request, res: Response){
         const { id } = req.params;
         const{
