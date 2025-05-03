@@ -1,8 +1,8 @@
 export enum ProvaCampeiraEsportiva {
-    CAMPEIRA = "Campeira",
-    ESPORTIVA = "Esportiva",
-    AMBAS = "Campeira e Esportiva",
-    NENHUMA = "Nenhuma"
+    CAMPEIRA = "CAMPEIRA",
+    ESPORTIVA = "ESPORTIVA",
+    AMBAS = "AMBAS",
+    NENHUMA = "NENHUMA"
 }
 
 export interface Candidato {

@@ -10,7 +10,7 @@ export default function Modal({ isOpen, onClose, children }: ModalProps) {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-60">
             <div className="bg-neutral-surface p-6 rounded-xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto relative">
                 <button
                     onClick={onClose}

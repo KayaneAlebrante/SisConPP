@@ -121,7 +121,7 @@ export default function AvaliadoresForm({ onClose, avaliadorToEdit }: AvaliadorF
 
             console.log('Payload enviado:', avaliadorPayload);
 
-            if (avaliadorToEdit) {
+            if (formData.idUsuario > 0) {
                 await atualizarUsuario(avaliadorPayload);
                 toast.success('Avaliador atualizado com sucesso!');
             } else {

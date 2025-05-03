@@ -6,6 +6,8 @@ import { toast } from "react-toastify";
 import { Pencil, Trash2, Search } from "lucide-react";
 import Dialog from "../Modal/Dialog";
 import { listarCTGs, listarCategorias, listarCandidatos, deletarCandidato } from "../../services/api";
+import Modal from "../Modal/Modal";
+import CandidatoView from "../View/CandidadoView";
 
 interface CandidatoListProps {
     onEdit: (candidato: Candidato) => void;
@@ -13,7 +15,7 @@ interface CandidatoListProps {
     onCredenciar: (candidato: Candidato) => void;
 }
 
-export default function CandidatoList({ onEdit, onVisualizar }: CandidatoListProps) {
+export default function CandidatoList({ onEdit }: CandidatoListProps) {
     const [candidatos, setCandidatos] = useState<Candidato[]>([]);
     const [ctgs, setCTGs] = useState<CTG[]>([]);
     const [categorias, setCategorias] = useState<Categoria[]>([]);
@@ -69,8 +71,10 @@ export default function CandidatoList({ onEdit, onVisualizar }: CandidatoListPro
         fetchCategorias();
     }, []);
 
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [candidatoSelecionadoId, setCandidatoSelecionadoId] = useState<number | null>(null);
+    const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [selectedCandidato, setSelectedCandidato] = useState<Candidato | null>(null);
 
     const handleConfirmDelete = async (id: number) => {
         try {
@@ -122,7 +126,10 @@ export default function CandidatoList({ onEdit, onVisualizar }: CandidatoListPro
                             <td className="p-3 flex gap-2">
                                 <button
                                     className="text-green-600 hover:text-green-800"
-                                    onClick={() => onVisualizar(candidato)}
+                                    onClick={() => {
+                                        setSelectedCandidato(candidato);
+                                        setIsViewModalOpen(true);
+                                    }}
                                 >
                                     <Search size={18} />
                                 </button>
@@ -160,6 +167,18 @@ export default function CandidatoList({ onEdit, onVisualizar }: CandidatoListPro
                 }}
                 menssage="Tem certeza que deseja excluir este candidato?"
             />
+
+            <Modal
+                isOpen={isViewModalOpen}
+                onClose={() => setIsViewModalOpen(false)}
+            >
+                {selectedCandidato && (
+                    <CandidatoView 
+                        candidato={selectedCandidato}
+                        onVoltar={() => setIsViewModalOpen(false)}
+                    />
+                )}
+            </Modal>
         </div>
     );
 }

@@ -93,7 +93,7 @@ export default function AuxiliarForm({ onClose, auxiliarToEdit }: AuxiliarFormPr
 
             console.log('Payload enviado:', auxiliarPayload);
 
-            if (auxiliarToEdit) {
+            if (formData.idUsuario > 0) {
                 await atualizarUsuario(auxiliarPayload);
                 toast.success('Auxiliar atualizado com sucesso!');
             } else {

@@ -137,41 +137,45 @@ export default function CandidatoForm({ onClose, candidatoToEdit }: CandidatoFor
                 estado: formData.estado,
                 CTGId: formData.CTGId,
                 numCarteirinha: formData.numCarteirinha,
+                categoriaId: formData.categoriaId,
                 CPF: formData.CPF,
                 RG: formData.RG,
                 endereco: formData.endereco,
                 numEndereco: formData.numEndereco,
                 bairro: formData.bairro,
-                escolaridade: formData.escolaridade, 
+                escolaridade: formData.escolaridade,
                 filiacao: formData.filiacao,
                 ProvaCampeiraEsportiva: formData.ProvaCampeiraEsportiva,
-                anexoDocumento: formData.anexoDocumento,
-                anexoCarteirinha: formData.anexoCarteirinha,
-                anexoEscolaridade: formData.anexoEscolaridade,
-                anexoResidencia: formData.anexoResidencia,
-                anexoAtaConcurso: formData.anexoAtaConcurso,
-                fichaInscricao: formData.fichaInscricao,
-                anexoTermoCandidato: formData.anexoTermoCandidato,
-                anexoRelatorioVivencia: formData.anexoRelatorioVivencia,
-                anexoResponsavel: formData.anexoResponsavel,
-                anexoProvaEsportivaCampeira: formData.anexoProvaEsportivaCampeira,
-                categoriaId: formData.categoriaId
+                anexoDocumento: formData.anexoDocumento || undefined,
+                anexoCarteirinha: formData.anexoCarteirinha || undefined,
+                anexoEscolaridade: formData.anexoEscolaridade || undefined,
+                anexoResidencia: formData.anexoResidencia || undefined,
+                anexoAtaConcurso: formData.anexoAtaConcurso || undefined,
+                fichaInscricao: formData.fichaInscricao || undefined,
+                anexoTermoCandidato: formData.anexoTermoCandidato || undefined,
+                anexoRelatorioVivencia: formData.anexoRelatorioVivencia || undefined,
+                anexoResponsavel: formData.anexoResponsavel || undefined,
+                anexoProvaEsportivaCampeira: formData.anexoProvaEsportivaCampeira || undefined,
             };
 
-            if(candidatoPayload){
+            console.log(candidatoPayload);
+
+            if (formData.idCandidato > 0) {
                 await atualizarCandidato(candidatoPayload);
                 toast.success('Candidato atualizado com sucesso!');
-            }else{
+            } else {
                 await cadastrarCandidato(candidatoPayload);
                 toast.success('Candidato cadastrado com sucesso!');
             }
-
+            
             onClose();
-        }catch (error) {
-            console.error('Erro ao salvar Candidato:', error);
-            toast.error('Erro ao salvar Candidato. Verifique os dados e tente novamente.');
+        }catch(error){
+            console.error("Erro ao salvar Candidato", error);
+            toast.error("Erro ao salvar Cadidato. Verefique os dados e tente novamente");
         }
+
     };
+    
 
     return (
         <div className="w-full max-w-xl">
@@ -288,7 +292,7 @@ export default function CandidatoForm({ onClose, candidatoToEdit }: CandidatoFor
                     <label className="text-sm font-medium mb-1">Número</label>
                     <input
                         type="number"
-                        name="CPF"
+                        name="numEndereco"
                         value={formData.numEndereco}
                         onChange={handleChange}
                         required
@@ -377,7 +381,7 @@ export default function CandidatoForm({ onClose, candidatoToEdit }: CandidatoFor
                         <option value={ProvaCampeiraEsportiva.AMBAS}>Campeira e Esportiva</option>
                         <option value={ProvaCampeiraEsportiva.CAMPEIRA}>Campeira</option>
                         <option value={ProvaCampeiraEsportiva.ESPORTIVA}>Esportiva</option>
-                        <option value={ProvaCampeiraEsportiva.ESPORTIVA}>Nenhuma</option>
+                        <option value={ProvaCampeiraEsportiva.NENHUMA}>Nenhuma</option>
                     </select>
                 </div>
 
