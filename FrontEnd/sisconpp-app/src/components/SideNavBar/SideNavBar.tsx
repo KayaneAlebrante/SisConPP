@@ -19,7 +19,7 @@ const Sidebar: FC = () => {
     { label: "Dashboard", icon: LayoutDashboard, href: "/tela-inicial" },
     { label: "CTGs", icon: Building2, href: "/ctg" },
     { label: "RTs", icon: CopyPlus, href: "/rt" },
-    { label: "Concursos", icon: LayoutDashboard },
+    { label: "Concursos", icon: LayoutDashboard, href: "/concurso" },
     { label: "Candidatos", icon: Users, href: "/candidatos"},
     { label: "Avaliadores", icon: BookText, href: "/avaliadores" },
     { label: "Comissões Avaliadoras", icon: Users },

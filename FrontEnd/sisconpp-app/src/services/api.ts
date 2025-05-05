@@ -3,6 +3,7 @@ import { RT } from '../types/RT';
 import { CTG } from '../types/CTG';
 import { Usuario } from '../types/Usuario';
 import { Candidato } from '../types/Candidato';
+import { Concurso } from '../types/Concurso';
 
 const api = axios.create({
   baseURL: 'http://localhost:3005',
@@ -84,4 +85,21 @@ export const listarCandidatos = async () =>{
 
 export const deletarCandidato = async (id: number) =>{
   return await api.delete(`/candidato/${id}`);
+}
+
+export const cadastrarConcurso = async(cadastrarConcurso: Concurso) =>{
+  return await api.post("/concurso", cadastrarConcurso);
+}
+
+export const atualizarConcurso = (concurso: Concurso) =>{
+  return api.put(`/concurso/${concurso.idConcurso}`, concurso);
+}
+
+export const deletarConcurso = async(id: number) =>{
+  return await api.delete(`/concurso/${id}`);
+}
+
+export const listarConcurso = async () =>{
+  const response = await api.get("/concurso");
+  return response.data;
 }

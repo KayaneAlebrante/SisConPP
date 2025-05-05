@@ -8,6 +8,7 @@ import Avaliadores from "./pages/Avaliadores";
 import { ToastContainer } from 'react-toastify';
 import Auxiliares from "./pages/Auxiliares";
 import Candidatos from "./pages/Candidato";
+import Concurso from "./pages/Concurso";
 
 function App() {
 
@@ -21,6 +22,7 @@ function App() {
         <Route path={RoutesPaths.Avaliadores} element={<Avaliadores />} />
         <Route path={RoutesPaths.Auxiliares} element={<Auxiliares />} />
         <Route path={RoutesPaths.Candidatos} element={<Candidatos />}/>
+        <Route path={RoutesPaths.Concurso} element={<Concurso />}/>
       </Routes>
       <ToastContainer
         position="top-right"
