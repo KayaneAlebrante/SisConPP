@@ -104,7 +104,7 @@ export default function CTGForm({ onClose, ctgToEdit }: CTGFormProps) {
                         Região Tradicionalista
                     </label>
                     <select
-                        name="RTId"
+                        name="RTid"
                         value={selectedRT || ""}
                         onChange={handleRTChange}
                         className="rounded-lg p-2 bg-surface-containerHigh border border-outline focus:outline-none focus:ring-2 focus:ring-primary text-neutral-onBackground"

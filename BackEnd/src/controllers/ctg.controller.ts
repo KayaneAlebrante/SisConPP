@@ -3,14 +3,14 @@ import CTGService from "../services/ctg.service";
 
 class CTGController {
     async criarCTG(req: Request, res: Response) {
-        const { nomeCTG, RTId } = req.body;
+        const { nomeCTG, RTid } = req.body;
 
-        if (!nomeCTG || !RTId) {
+        if (!nomeCTG || !RTid) {
             return res.status(400).json({ mensagem: "Nome CTG e número CTG são obrigatórios." });
         }
 
         try {
-            const ctg = await CTGService.criarCTG(nomeCTG, RTId);
+            const ctg = await CTGService.criarCTG(nomeCTG, RTid);
             return res.status(201).json(ctg);
         } catch (error: unknown) {
             if (error instanceof Error) {

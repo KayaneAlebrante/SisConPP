@@ -5,12 +5,12 @@ const prisma = new PrismaClient();
 class CTGService{
     constructor(private prisma: PrismaClient){ }
 
-    async criarCTG(nomeCTG: string, RTId: number){
+    async criarCTG(nomeCTG: string, RTid: number){
         try{
             const ctg = await this.prisma.cTG.create({
                 data: {
                     nomeCTG: nomeCTG,
-                    RTid: RTId,
+                    RTid: RTid,
                 },
             });
             return ctg.idCTG;
