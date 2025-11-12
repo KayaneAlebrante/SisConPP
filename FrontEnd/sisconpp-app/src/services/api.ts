@@ -4,8 +4,9 @@ import { CTG } from '../types/CTG';
 import { Usuario } from '../types/Usuario';
 import { Candidato } from '../types/Candidato';
 import { Concurso } from '../types/Concurso';
+import { Comissao } from '../types/Comissao';
 
-const api = axios.create({
+export const api = axios.create({
   baseURL: 'http://localhost:3005',
 });
 
@@ -43,9 +44,14 @@ export const deleteCTG = async (id: number) => {
   await api.delete(`/ctg/${id}`);
 };
 
-export const cadastrarUsuario = async (criarUsuario: Usuario) =>{
+export const cadastrarUsuario = async (criarUsuario: Usuario) => {
   return await api.post('/usuario', criarUsuario);
 };
+
+export const listarUsuarios = async () => {
+  const response = await api.get("/usuario");
+  return response.data;
+}
 
 export const atualizarUsuario = (usuario: Usuario) => {
   return api.put(`/usuario/${usuario.idUsuario}`, usuario);
@@ -65,12 +71,12 @@ export const listarUsuriosAuxiliares = async () => {
   return response.data;
 }
 
-export const listarCategorias = async () =>{
+export const listarCategorias = async () => {
   const response = await api.get("/categoria");
   return response.data;
 }
 
-export const cadastrarCandidato = async (criarCandidato: Candidato ) =>{
+export const cadastrarCandidato = async (criarCandidato: Candidato) => {
   return await api.post("/candidato", criarCandidato);
 }
 
@@ -78,28 +84,72 @@ export const atualizarCandidato = (candidato: Candidato) => {
   return api.put(`/candidato/${candidato.idCandidato}`, candidato);
 };
 
-export const listarCandidatos = async () =>{
+export const listarCandidatos = async () => {
   const response = await api.get("/candidato");
   return response.data;
 }
 
-export const deletarCandidato = async (id: number) =>{
+export const deletarCandidato = async (id: number) => {
   return await api.delete(`/candidato/${id}`);
 }
 
-export const cadastrarConcurso = async(cadastrarConcurso: Concurso) =>{
+export const cadastrarConcurso = async (cadastrarConcurso: Concurso) => {
   return await api.post("/concurso", cadastrarConcurso);
 }
 
-export const atualizarConcurso = (concurso: Concurso) =>{
+export const atualizarConcurso = (concurso: Concurso) => {
   return api.put(`/concurso/${concurso.idConcurso}`, concurso);
 }
 
-export const deletarConcurso = async(id: number) =>{
+export const deletarConcurso = async (id: number) => {
   return await api.delete(`/concurso/${id}`);
 }
 
-export const listarConcurso = async () =>{
+export const listarConcurso = async () => {
   const response = await api.get("/concurso");
   return response.data;
 }
+
+export const criarComissao = async (criarComissao: Comissao) => {
+  return await api.post("/comissao", criarComissao);
+}
+
+export const listarComissoes = async () => {
+  const response = await api.get("/comissao");
+  return response.data;
+}
+
+export const adicionarAvaliadorComissao = async (idUsuario: number, idComissao: number) => {
+  return await api.post("/comissao/avaliador", { idUsuario, idComissao });
+}
+
+export const adicionarAuxiliarComissao = async (idUsuario: number, idComissao: number) => {
+  return await api.post("/comissao/auxiliar", { idUsuario, idComissao });
+}
+
+export const listarUsuariosComissao = async () => {
+  const response = await api.get("/comissao/usuarios");
+  return response.data;
+}
+
+// ---- AUTENTICAÇÃO ----
+export interface LoginRequest {
+  login: string;
+  senha: string;
+}
+
+export interface LoginResponse {
+  token: string;
+  usuario: {
+    idUsuario: number;
+    nomeCompleto: string;
+    login: string;
+    funcao?: string;
+  };
+  message?: string;
+}
+
+export const loginUsuario = async (dados: LoginRequest): Promise<LoginResponse> => {
+  const response = await api.post<LoginResponse>("/auth/login", dados);
+  return response.data;
+};
