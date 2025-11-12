@@ -3,7 +3,7 @@ import { PrismaClient, Avaliacao, ComissaoUsuario } from "@prisma/client";
 const prisma = new PrismaClient();
 
 class ComissaoService {
-    constructor(private prisma: PrismaClient) {}
+    constructor(private prisma: PrismaClient) { }
 
     async criarComissao(
         nomeComissao: string,
@@ -60,13 +60,24 @@ class ComissaoService {
 
     async buscarTodasComissoes() {
         try {
-            const comissoes = await this.prisma.comissao.findMany();
+            const comissoes = await this.prisma.comissao.findMany({
+                include: {
+                    concurso: true,
+                    avalicao: true,
+                    usuarios: {
+                        include: {
+                            Usuarios: true,
+                        },
+                    },
+                },
+            });
             return comissoes;
         } catch (error) {
             console.error("Erro ao consultar comissões:", error);
             throw new Error("Erro ao consultar comissões.");
         }
     }
+
 
     async deletarComissao(comissaoId: number) {
         try {
@@ -142,7 +153,7 @@ class ComissaoService {
                 idComissaoUsuario: comissaoUsuario.idComissaoUsuario,
             },
         });
-    }    
+    }
 }
 
 const comissaoService = new ComissaoService(prisma);

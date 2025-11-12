@@ -15,7 +15,7 @@ router.get("/:id", async(req:Request, res: Response) => {
     await comissaoController.buscarComissaoPorId(req, res);
 });
 
-router.get("/comissoes", async(req:Request, res: Response) => {
+router.get("/", async(req:Request, res: Response) => {
     await comissaoController.buscarTodasComissoes(req, res);
 });
 
