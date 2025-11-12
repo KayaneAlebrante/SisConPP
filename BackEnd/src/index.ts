@@ -18,7 +18,8 @@ import provaTeorica from "./routes/provaTeorica.routes";
 import avaliacao from "./routes/avaliacao.routes"; 
 import preferenciaSorteioDanca from "./routes/preferenciaSorteioDanca.routes";
 import sorteioDanca from "./routes/sorteioDanca.routes";
-import { METHODS } from "http";
+import auth from "./routes/auth.routes";
+import { METHODS } from "http"
 
 
 const app: Application = express(); 
@@ -48,9 +49,10 @@ app.use("/blocoProva", blocoProva);
 app.use("/avaliacao", avaliacao); 
 app.use("/preferenciaSorteioDanca", preferenciaSorteioDanca); 
 app.use("/sorteioDanca", sorteioDanca);
+app.use("/auth", auth);
 
 
-const PORT = process.env.PORT || 3002;
+const PORT = process.env.PORT || 3005;
 
 app.listen(PORT, () => {
   console.log("Hello World");

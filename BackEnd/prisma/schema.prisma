@@ -152,6 +152,8 @@ model ComissaoUsuario {
   usuarioId         Int      @unique
   Comissao          Comissao @relation(fields: [comissaoId], references: [idComissao])
   Usuarios          Usuario  @relation(fields: [usuarioId], references: [idUsuario])
+
+  @@unique([comissaoId, usuarioId]) 
 }
 
 model Categoria {

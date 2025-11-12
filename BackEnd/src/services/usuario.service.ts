@@ -1,4 +1,5 @@
 import { PrismaClient, Funcao, Credenciamento } from "@prisma/client";
+import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 
@@ -22,6 +23,8 @@ class UsuarioService {
         comissaoUsuarioId?: number,
     ) {
         try {
+            const senhaCriptografada = await bcrypt.hash(senha, 10);
+
             const usuario = await this.prisma.usuario.create({
                 data: {
                     nomeCompleto,
@@ -30,7 +33,7 @@ class UsuarioService {
                     CTGId,
                     numCarteirinha,
                     login,
-                    senha,
+                    senha: senhaCriptografada,
                     funcao,
                     numCredenciamento,
                     comissaoUsuarioId,
