@@ -5,7 +5,7 @@ import Modal from '../../src/components/Modal/Modal';
 import AvaliadorForm from '../../src/components/Forms/AvaliadoresForm';
 import type { Usuario } from '../../src/types/Usuario';
 
-export default function Avaliadores() {
+export default function AvaliadoresPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [refreshList, setRefreshList] = useState(false);
     const [avaliadorToEdit, setAvaliadorToEdit] = useState<Usuario | undefined>(undefined);

@@ -5,7 +5,7 @@ import Modal from '../../src/components/Modal/Modal';
 import CTGForm from '../../src/components/Forms/CTGForm';
 import type { CTG } from '../../src/types/CTG';
 
-export default function CTG() {
+export default function CTGPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [refreshList, setRefreshList] = useState(false);
   const [ctgToEdit, setCtgToEdit] = useState<CTG | undefined>(undefined);

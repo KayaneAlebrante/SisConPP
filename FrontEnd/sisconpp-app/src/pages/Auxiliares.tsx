@@ -5,7 +5,7 @@ import Modal from "../components/Modal/Modal";
 import AuxiliarForm from "../components/Forms/AuxiliarForm";
 import { Usuario } from "../types/Usuario";
 
-export default function Auxiliares(){
+export default function AuxiliaresPage(){
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [refreshList, setRefreshList] = useState(false);
     const [auxiliarToEdit, setAuxiliarToEdit] = useState<Usuario | undefined>(undefined);

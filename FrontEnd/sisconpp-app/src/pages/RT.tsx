@@ -5,7 +5,7 @@ import Modal from '../../src/components/Modal/Modal';
 import FormRT from '../../src/components/Forms/RTForm';
 import type { RT } from '../../src/types/RT';
 
-function RT() {
+function RTPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [refreshList, setRefreshList] = useState(false);
   const [rtToEdit, setRtToEdit] = useState<RT | undefined>(undefined);
@@ -51,4 +51,4 @@ function RT() {
   );
 }
 
-export default RT;
+export default RTPage;
