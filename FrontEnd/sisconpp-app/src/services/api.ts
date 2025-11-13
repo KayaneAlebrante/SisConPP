@@ -24,7 +24,8 @@ export const atualizarRT = (rt: RT) => {
 };
 
 export const deleteRT = async (id: number) => {
-  await api.delete(`/rt/${id}`);
+  const response = await api.delete(`/rt/${id}`);
+  return response.data ?? true ;
 };
 
 export const cadastrarCTG = async (novoCTG: CTG) => {
@@ -41,7 +42,8 @@ export const atualizarCTG = (ctg: CTG) => {
 };
 
 export const deleteCTG = async (id: number) => {
-  await api.delete(`/ctg/${id}`);
+  const response = await api.delete(`/ctg/${id}`);
+  return response.data ?? true;
 };
 
 export const cadastrarUsuario = async (criarUsuario: Usuario) => {

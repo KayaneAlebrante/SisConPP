@@ -5,8 +5,6 @@ import { Pencil, Trash2, Search } from "lucide-react";
 import Dialog from "../Modal/Dialog";
 import { listarConcurso, deletarConcurso } from "../../services/api";
 
-
-
 interface ConcursoListProps {
     onEdit: (concurso: Concurso) => void;
     onVisualizar: (concurso: Concurso) => void;

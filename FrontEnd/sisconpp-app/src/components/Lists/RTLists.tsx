@@ -3,6 +3,7 @@ import { RT } from "../../types/RT";
 import { listarRTs, deleteRT } from "../../services/api";
 import { Pencil, Trash2 } from "lucide-react";
 import { toast } from "react-toastify";
+import Dialog from "../Modal/Dialog";
 
 interface RTListProps {
   onEdit: (rt: RT) => void;
@@ -10,26 +11,45 @@ interface RTListProps {
 
 export default function RTList({ onEdit }: RTListProps) {
   const [rts, setRTs] = useState<RT[]>([]);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [rtSelecionadoId, setRtSelecionadoId] = useState<number | null>(null);
 
   const fetchRTs = async () => {
-    const response = await listarRTs() as RT[];
-    setRTs(response);
+    try {
+      const response = (await listarRTs()) as RT[];
+      setRTs(response);
+    } catch (error) {
+      toast.error("Erro ao carregar RTs");
+      console.error(error);
+    }
   };
 
   useEffect(() => {
     fetchRTs();
   }, []);
 
-  const handleDelete = async (id: number) => {
+  const handleConfirmDelete = async () => {
+    if (rtSelecionadoId === null) {
+      toast.error("Nenhuma RT selecionada para exclusão.");
+      return;
+    }
+
     try {
-      if (window.confirm("Tem certeza que deseja excluir esta RT?")) {
-        await deleteRT(id);
+      const response = await deleteRT(rtSelecionadoId);
+      console.log("Resposta deleteRT:", response);
+
+      if (response) {
         await fetchRTs();
         toast.success("RT excluída com sucesso!");
+      } else {
+        throw new Error("Falha ao excluir a RT.");
       }
     } catch (error) {
       console.error("Erro ao excluir RT:", error);
-      toast.error("Erro ao excluir RT. Tente novamente.");
+      toast.error("Erro ao excluir RT.");
+    } finally {
+      setIsDialogOpen(false);
+      setRtSelecionadoId(null);
     }
   };
 
@@ -58,7 +78,10 @@ export default function RTList({ onEdit }: RTListProps) {
                 </button>
                 <button
                   className="text-red-600 hover:text-red-800"
-                  onClick={() => handleDelete(rt.idRT)}
+                  onClick={() => {
+                    setRtSelecionadoId(rt.idRT);
+                    setIsDialogOpen(true);
+                  }}
                 >
                   <Trash2 size={18} />
                 </button>
@@ -67,6 +90,16 @@ export default function RTList({ onEdit }: RTListProps) {
           ))}
         </tbody>
       </table>
+
+      <Dialog
+        isOpen={isDialogOpen}
+        onClose={() => {
+          setIsDialogOpen(false);
+          setRtSelecionadoId(null);
+        }}
+        onConfirm={handleConfirmDelete}
+        message="Tem certeza que deseja excluir esta RT?"
+      />
     </div>
   );
 }
