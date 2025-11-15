@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import { listarUsuriosAuxiliares as listarAuxiliares, deleteUsuario, listarCTGs} from "../../services/api";
 import { toast } from "react-toastify";
 import { Pencil, Trash2, Search } from "lucide-react";
-import { Usuario, Funcao, Credenciamento } from "../../types/Usuario";
+import { Usuario, Funcao, Credenciamento} from "../../types/Usuario";
 import { CTG } from "../../types/CTG";
 import Dialog from "../Modal/Dialog";
+import AuxiliarView from "../View/AuxiliarView";
+import Modal from "../Modal/Modal";
 
 interface AuxiliaresListProps {
     onEdit: (auxiliar: Usuario) => void;
@@ -12,9 +14,13 @@ interface AuxiliaresListProps {
     onCredenciar: (auxiliar: Usuario) => void;
 }
 
-export default function AuxiliaresList({ onEdit, onVisualizar }: AuxiliaresListProps) {
+export default function AuxiliaresList({ onEdit}: AuxiliaresListProps) {
     const [auxiliares, setAuxiliares] = useState<Usuario[]>([]);
     const [ctgs, setCTGs] = useState<CTG[]>([]);
+    const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+    const [selectedAuxiliar, setSelectedAuxiliar] = useState<Usuario | null>(null);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [auxiliarSelecionadoId, setAuxiliarSelecionadoId] = useState<number | null>(null);
 
     const fetchAuxiliares = async () => {
         try {
@@ -28,7 +34,8 @@ export default function AuxiliaresList({ onEdit, onVisualizar }: AuxiliaresListP
                 login: string;
                 senha: string;
                 funcao: Funcao;
-                numCredenciamento: Credenciamento;
+                credenciamento: Credenciamento;
+                numCredenciamento: number;
                 comissaoUsuarioId?: number;
             };
 
@@ -44,7 +51,8 @@ export default function AuxiliaresList({ onEdit, onVisualizar }: AuxiliaresListP
                 login: usuario.login,
                 senha: usuario.senha,
                 funcao: usuario.funcao,
-                numCredenciamento: usuario.numCredenciamento || "",
+                credenciamento: usuario.numCredenciamento === 1 ? Credenciamento.CREDENCIADO : Credenciamento.NAO_CREDENCIADO, // Mapeamento explícito
+                numCredenciamento: usuario.numCredenciamento || 0,
                 comissaoIdUsuario: usuario.comissaoUsuarioId,
             }));
 
@@ -70,10 +78,6 @@ export default function AuxiliaresList({ onEdit, onVisualizar }: AuxiliaresListP
         fetchAuxiliares();
         fetchCTGs();
     }, []);
-
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [auxiliarSelecionadoId, setAuxiliarSelecionadoId] = useState<number | null>(null);
-
 
     const handleConfirmDelete = async (id: number) => {
         try {
@@ -118,7 +122,10 @@ export default function AuxiliaresList({ onEdit, onVisualizar }: AuxiliaresListP
                             <td className="p-3 flex gap-2">
                                 <button
                                     className="text-green-600 hover:text-green-800"
-                                    onClick={() => onVisualizar(auxiliar)}
+                                    onClick={() => {
+                                        setSelectedAuxiliar(auxiliar);
+                                        setIsViewModalOpen(true);
+                                    }}
                                 >
                                     <Search size={18} />
                                 </button>
@@ -154,8 +161,23 @@ export default function AuxiliaresList({ onEdit, onVisualizar }: AuxiliaresListP
                                     handleConfirmDelete(auxiliarSelecionadoId);
                                 }
                             }}
-                            menssage="Tem certeza que deseja excluir este avaliador?"
-                        />
+                            message="Tem certeza que deseja excluir este avaliador?"
+            />
+
+            <Modal 
+                isOpen={isViewModalOpen}
+                onClose={() => setIsViewModalOpen(false)}
+                >
+                {selectedAuxiliar && (
+                    <AuxiliarView
+                        auxiliar={selectedAuxiliar}
+                        ctg={ctgs.find(ctg => ctg.idCTG === selectedAuxiliar.CTGId)}
+                        onVoltar={() => setIsViewModalOpen(false)}
+                    />
+                )}
+            </Modal>
+                    
+
         </div>
     );
 }

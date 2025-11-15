@@ -37,7 +37,6 @@ model Candidato {
   Categoria                   Categoria                 @relation(fields: [categoriaId], references: [idCategoria])
   categoriaId                 Int
 
-  participacaoConcursoId ParticipacaoConcurso[]
   avalicoes              Avaliacao[]
   sorteioDanca           SorteioDanca[]
   Recurso                Recurso[]
@@ -62,11 +61,11 @@ model Usuario {
   login             String         @unique
   senha             String
   funcao            Funcao
-  numCredenciamento Credenciamento
+  credenciamento    Credenciamento @default(NAO_CREDENCIADO)
+  numCredenciamento String?
 
   comissaoUsuarioId      Int?
   ComissaoUsuario        ComissaoUsuario?       @relation
-  participacaoConcursoId ParticipacaoConcurso[]
   avalicoes              Avaliacao[]
   recursos               Recurso[]
   sorteioDanca           SorteioDanca[]
@@ -83,14 +82,6 @@ enum Credenciamento {
   NAO_CREDENCIADO
 }
 
-model ParticipacaoConcurso {
-  idParticipacaoConcurso Int        @id @default(autoincrement())
-  concursoId             Int
-  Concurso               Concurso   @relation(fields: [concursoId], references: [idConcurso])
-  Usuario                Usuario[]
-  Candidato              Candidato? @relation(fields: [candidatoIdCandidato], references: [idCandidato])
-  candidatoIdCandidato   Int?
-}
 
 model CTG {
   idCTG   Int    @id @default(autoincrement())
@@ -133,7 +124,6 @@ model Concurso {
 
   candidatos           Candidato[]
   comissoes            Comissao[]
-  ParticipacaoConcurso ParticipacaoConcurso[]
 }
 
 model Comissao {

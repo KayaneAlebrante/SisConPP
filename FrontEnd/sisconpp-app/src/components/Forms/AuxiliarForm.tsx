@@ -12,6 +12,9 @@ interface AuxiliarFormProps {
 const estados = ['Paraná', 'Santa Catarina', 'Rio Grande do Sul'];
 
 export default function AuxiliarForm({ onClose, auxiliarToEdit }: AuxiliarFormProps) {
+
+    const [ctgs, setCTGs] = useState<{ id: string; nome: string }[]>([]);
+
     const [formData, setFormData] = useState<Usuario>({
         idUsuario: 0,
         nomeCompleto: '',
@@ -22,12 +25,11 @@ export default function AuxiliarForm({ onClose, auxiliarToEdit }: AuxiliarFormPr
         login: '',
         senha: '',
         funcao: Funcao.AUXILIAR,
-        numCredenciamento: Credenciamento.NAO_CREDENCIADO,
+        numCredenciamento: "" as unknown as Credenciamento,
         comissaoUsuarioId: 0,
     });
 
-    const [ctgs, setCTGs] = useState<{ id: string; nome: string }[]>([]);
-
+    // Carregar CTGs
     useEffect(() => {
         const fetchCTGs = async () => {
             try {
@@ -48,22 +50,8 @@ export default function AuxiliarForm({ onClose, auxiliarToEdit }: AuxiliarFormPr
         if (auxiliarToEdit) {
             setFormData({
                 ...auxiliarToEdit,
-                CTGId: auxiliarToEdit.CTGId,
-                funcao: Funcao.AUXILIAR, 
-            });
-        } else {
-            setFormData({
-                idUsuario: 0,
-                nomeCompleto: '',
-                cidade: '',
-                estado: '',
-                CTGId: 0,
-                numCarteirinha: '',
-                login: '',
-                senha: '',
                 funcao: Funcao.AUXILIAR,
-                numCredenciamento: Credenciamento.NAO_CREDENCIADO,
-                comissaoUsuarioId: 0,
+                numCredenciamento: auxiliarToEdit.numCredenciamento ?? "" as Credenciamento
             });
         }
     }, [auxiliarToEdit]);
@@ -77,6 +65,13 @@ export default function AuxiliarForm({ onClose, auxiliarToEdit }: AuxiliarFormPr
         }));
     };
 
+    const handleCredenciamentoChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setFormData(prev => ({
+            ...prev,
+            numCredenciamento: e.target.value as Credenciamento,
+        }));
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
@@ -85,13 +80,14 @@ export default function AuxiliarForm({ onClose, auxiliarToEdit }: AuxiliarFormPr
                 funcao: Funcao.AUXILIAR,
             };
 
-            console.log("Auxiliar", auxiliarPayload);
+            if (!auxiliarPayload.numCredenciamento) {
+                toast.error("Selecione o credenciamento.");
+                return;
+            }
 
             if (formData.senha.trim()) {
                 auxiliarPayload.senha = formData.senha;
             }
-
-            console.log('Payload enviado:', auxiliarPayload);
 
             if (formData.idUsuario > 0) {
                 await atualizarUsuario(auxiliarPayload);
@@ -113,7 +109,9 @@ export default function AuxiliarForm({ onClose, auxiliarToEdit }: AuxiliarFormPr
             <h1 className="text-xl font-semibold text-neutral-onBackground mb-4">
                 {auxiliarToEdit ? 'Editar' : 'Cadastrar'} Auxiliar
             </h1>
+
             <form onSubmit={handleSubmit}>
+        
                 <div className="flex flex-col mb-4">
                     <label className="text-sm font-medium mb-1">Nome Completo</label>
                     <input
@@ -122,7 +120,7 @@ export default function AuxiliarForm({ onClose, auxiliarToEdit }: AuxiliarFormPr
                         value={formData.nomeCompleto}
                         onChange={handleChange}
                         required
-                        className="rounded-lg p-2 bg-surface-containerHigh border border-outline focus:outline-none focus:ring-2 focus:ring-primary"
+                        className="rounded-lg p-2 bg-surface-containerHigh border border-outline"
                     />
                 </div>
 
@@ -134,7 +132,7 @@ export default function AuxiliarForm({ onClose, auxiliarToEdit }: AuxiliarFormPr
                         value={formData.cidade}
                         onChange={handleChange}
                         required
-                        className="rounded-lg p-2 bg-surface-containerHigh border border-outline focus:outline-none focus:ring-2 focus:ring-primary"
+                        className="rounded-lg p-2 bg-surface-containerHigh border border-outline"
                     />
                 </div>
 
@@ -145,9 +143,9 @@ export default function AuxiliarForm({ onClose, auxiliarToEdit }: AuxiliarFormPr
                         value={formData.estado}
                         onChange={handleChange}
                         required
-                        className="rounded-lg p-2 bg-surface-containerHigh border border-outline focus:outline-none focus:ring-2 focus:ring-primary"
+                        className="rounded-lg p-2 bg-surface-containerHigh border border-outline"
                     >
-                        <option value="" disabled>Selecione um estado</option>
+                        <option value="">Selecione um estado</option>
                         {estados.map(estado => (
                             <option key={estado} value={estado}>{estado}</option>
                         ))}
@@ -161,7 +159,7 @@ export default function AuxiliarForm({ onClose, auxiliarToEdit }: AuxiliarFormPr
                         value={formData.CTGId}
                         onChange={handleChange}
                         required
-                        className="rounded-lg p-2 bg-surface-containerHigh border border-outline focus:outline-none focus:ring-2 focus:ring-primary"
+                        className="rounded-lg p-2 bg-surface-containerHigh border border-outline"
                     >
                         <option value="">Selecione um CTG</option>
                         {ctgs.map(ctg => (
@@ -178,18 +176,18 @@ export default function AuxiliarForm({ onClose, auxiliarToEdit }: AuxiliarFormPr
                         value={formData.numCarteirinha}
                         onChange={handleChange}
                         required
-                        className="rounded-lg p-2 bg-surface-containerHigh border border-outline focus:outline-none focus:ring-2 focus:ring-primary"
+                        className="rounded-lg p-2 bg-surface-containerHigh border border-outline"
                     />
                 </div>
-
+                
                 <div className="flex flex-col mb-4">
-                    <label className="text-sm font-medium mb-1">Número de Credenciamento</label>
+                    <label className="text-sm font-medium mb-1">Credenciamento</label>
                     <select
                         name="numCredenciamento"
-                        value={formData.numCredenciamento}
-                        onChange={handleChange}
+                        value={formData.numCredenciamento || ""}
+                        onChange={handleCredenciamentoChange}
                         required
-                        className="rounded-lg p-2 bg-surface-containerHigh border border-outline focus:outline-none focus:ring-2 focus:ring-primary"
+                        className="rounded-lg p-2 bg-surface-containerHigh border border-outline"
                     >
                         <option value="">Selecione uma Opção</option>
                         <option value={Credenciamento.CREDENCIADO}>Credenciado</option>
@@ -205,7 +203,7 @@ export default function AuxiliarForm({ onClose, auxiliarToEdit }: AuxiliarFormPr
                         value={formData.login}
                         onChange={handleChange}
                         required
-                        className="rounded-lg p-2 bg-surface-containerHigh border border-outline focus:outline-none focus:ring-2 focus:ring-primary"
+                        className="rounded-lg p-2 bg-surface-containerHigh border border-outline"
                     />
                 </div>
 
@@ -217,7 +215,7 @@ export default function AuxiliarForm({ onClose, auxiliarToEdit }: AuxiliarFormPr
                         value={formData.senha}
                         onChange={handleChange}
                         required={!auxiliarToEdit}
-                        className="rounded-lg p-2 bg-surface-containerHigh border border-outline focus:outline-none focus:ring-2 focus:ring-primary"
+                        className="rounded-lg p-2 bg-surface-containerHigh border border-outline"
                     />
                 </div>
 
@@ -225,13 +223,14 @@ export default function AuxiliarForm({ onClose, auxiliarToEdit }: AuxiliarFormPr
                     <button
                         type="button"
                         onClick={onClose}
-                        className="px-4 py-2 rounded-lg border border-gray-400 text-gray-700 hover:bg-gray-100 transition"
+                        className="px-4 py-2 rounded-lg border border-gray-400 text-gray-700 hover:bg-gray-100"
                     >
                         Cancelar
                     </button>
+
                     <button
                         type="submit"
-                        className="px-4 py-2 bg-secondary text-secondary-on font-medium rounded-lg hover:bg-secondary-dark transition"
+                        className="px-4 py-2 bg-secondary text-secondary-on font-medium rounded-lg hover:bg-secondary-dark"
                     >
                         {auxiliarToEdit ? 'Salvar alterações' : 'Cadastrar Auxiliar'}
                     </button>
