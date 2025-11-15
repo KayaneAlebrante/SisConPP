@@ -51,7 +51,6 @@ app.use("/preferenciaSorteioDanca", preferenciaSorteioDanca);
 app.use("/sorteioDanca", sorteioDanca);
 app.use("/auth", auth);
 
-
 const PORT = process.env.PORT || 3005;
 
 app.listen(PORT, () => {

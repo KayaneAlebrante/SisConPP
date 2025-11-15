@@ -19,6 +19,7 @@ export interface Usuario {
     login: string;
     senha: string;
     funcao: Funcao;
-    numCredenciamento: Credenciamento;
+    credenciamento: Credenciamento;
+    numCredenciamento?: number;
     comissaoUsuarioId?: number;
 }    

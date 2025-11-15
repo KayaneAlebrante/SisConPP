@@ -38,7 +38,7 @@ export default function VisualizacaoCandidato({ candidato, ctg, categoria, onVol
           </div>
           <div className="flex justify-between">
             <p><strong>CTG:</strong> {ctg?.nomeCTG || "CTG não encontrado"}</p>
-            <p><strong>RT:</strong> {ctg?.RTId || "RT não informada"}</p>
+            <p><strong>RT:</strong> {ctg?.RTid || "RT não informada"}</p>
           </div>
           <div className="flex justify-between">
             <p><strong>Pai:</strong> {candidato.filiacao?.split("/")[0]}</p>

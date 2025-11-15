@@ -4,6 +4,9 @@ import { toast } from "react-toastify";
 import { Pencil, Trash2, Search } from "lucide-react";
 import Dialog from "../Modal/Dialog";
 import { listarConcurso, deletarConcurso } from "../../services/api";
+import { AxiosError } from "axios";
+import Modal from "../Modal/Modal";
+import ConcursoView from "../View/ConcursoView";
 
 interface ConcursoListProps {
     onEdit: (concurso: Concurso) => void;
@@ -15,6 +18,9 @@ export default function ConcursoList({ onEdit }: ConcursoListProps) {
     const [concursos, setConcursos] = useState<Concurso[]>([]);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [concursoSelecionadoId, setConcursoSelecionadoId] = useState<number | null>(null);
+    const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+    const [selectedConcurso, setSelectedConcurso] = useState<Concurso | null>(null);
+
 
     const fetchConcursos = async () => {
         try {
@@ -44,6 +50,10 @@ export default function ConcursoList({ onEdit }: ConcursoListProps) {
         } catch (error) {
             toast.error("Erro ao excluir concurso.");
             console.error(error);
+
+            const menssagemErro = (error as AxiosError)?.response?.data?.mensagem || "Erro ao excluir concurso.";
+            toast.error(menssagemErro);
+
         }
     };
 
@@ -53,7 +63,7 @@ export default function ConcursoList({ onEdit }: ConcursoListProps) {
         const mes = String(dateObj.getUTCMonth() + 1).padStart(2, "0");
         const ano = dateObj.getUTCFullYear();
         return `${dia}/${mes}/${ano}`;
-    };    
+    };
 
     return (
         <div className="flex flex-col h-full">
@@ -78,10 +88,15 @@ export default function ConcursoList({ onEdit }: ConcursoListProps) {
                             <td className="p-3 flex gap-2">
                                 <button
                                     className="text-green-600 hover:text-green-800"
+                                    onClick={() => {
+                                        setSelectedConcurso(concurso);
+                                        setIsViewModalOpen(true);
+                                    }}
                                 >
                                     <Search size={18} />
                                 </button>
                                 <button
+
                                     className="text-blue-600 hover:text-blue-800"
                                     onClick={() => onEdit(concurso)}
                                 >
@@ -111,10 +126,23 @@ export default function ConcursoList({ onEdit }: ConcursoListProps) {
                 onConfirm={() => {
                     if (concursoSelecionadoId !== null) {
                         handleConfirmDelete(concursoSelecionadoId);
+                        setIsDialogOpen(false);
                     }
                 }}
-                menssage="Tem certeza que deseja excluir este concurso?"
+                message="Tem certeza que deseja excluir este concurso?"
             />
+            <Modal
+                isOpen={isViewModalOpen}
+                onClose={() => setIsViewModalOpen(false)}
+            >
+                {selectedConcurso && (
+                    <ConcursoView
+                        concurso={selectedConcurso}
+                        onVoltar={() => setIsViewModalOpen(false)}
+                    />
+                )}
+            </Modal>
+
         </div>
     );
 }

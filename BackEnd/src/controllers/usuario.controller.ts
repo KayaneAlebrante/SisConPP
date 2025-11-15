@@ -12,6 +12,7 @@ class UsuarioController {
             login,
             senha,
             funcao,
+            credenciamento,
             numCredenciamento,
             comissaoUsuarioId,
         } = req.body;
@@ -21,7 +22,7 @@ class UsuarioController {
         }
 
         try {
-            const Usuario = await usuarioService.criarUsuario(
+            const Usuario = await usuarioService.criarUsuarioComPessoa(
                 nomeCompleto,
                 cidade,
                 estado,
@@ -30,8 +31,11 @@ class UsuarioController {
                 login,
                 senha,
                 funcao,
+                credenciamento,
                 numCredenciamento,
-                comissaoUsuarioId,);
+                comissaoUsuarioId,
+            );
+
             return res.status(201).json(Usuario);
         } catch (error: unknown) {
             if (error instanceof Error) {
@@ -43,6 +47,7 @@ class UsuarioController {
             }
         }
     }
+
 
     async atualizarUsuario(req: Request, res: Response) {
         const { id } = req.params;
@@ -62,9 +67,10 @@ class UsuarioController {
                 login,
                 senha,
                 funcao,
+                credenciamento, 
                 numCredenciamento,
                 comissaoUsuarioId
-                } = data;
+            } = data;
 
             const userData = {
                 nomeCompleto,
@@ -75,6 +81,7 @@ class UsuarioController {
                 login,
                 senha,
                 funcao,
+                credenciamento,
                 numCredenciamento,
                 comissaoUsuarioId,
             };

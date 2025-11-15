@@ -10,7 +10,7 @@ class UsuarioService {
         this.prisma = prisma;
     }
 
-    async criarUsuario(
+    async criarUsuarioComPessoa(
         nomeCompleto: string,
         cidade: string,
         estado: string,
@@ -19,7 +19,8 @@ class UsuarioService {
         login: string,
         senha: string,
         funcao: Funcao,
-        numCredenciamento: Credenciamento,
+        credenciamento?: Credenciamento,
+        numCredenciamento?: number,
         comissaoUsuarioId?: number,
     ) {
         try {
@@ -35,7 +36,8 @@ class UsuarioService {
                     login,
                     senha: senhaCriptografada,
                     funcao,
-                    numCredenciamento,
+                    credenciamento: credenciamento ?? Credenciamento.NAO_CREDENCIADO,
+                    numCredenciamento: numCredenciamento?.toString(),
                     comissaoUsuarioId,
                 },
             });
@@ -50,22 +52,27 @@ class UsuarioService {
     async atualizarUsuario(
         idUsuario: number,
         data: {
-            nomeCompleto?: string,
-            cidade?: string,
-            estado?: string,
-            CTGId?: number,
-            numCarteirinha?: string,
-            login?: string,
-            senha?: string,
-            funcao?: Funcao,
-            numCredenciamento?: Credenciamento,
-            comissaoUsuarioId?: number,
+            nomeCompleto?: string;
+            cidade?: string;
+            estado?: string;
+            CTGId?: number;
+            numCarteirinha?: string;
+            login?: string;
+            senha?: string;
+            funcao?: Funcao;
+            credenciamento?: Credenciamento;
+            numCredenciamento?: number;
+            comissaoUsuarioId?: number;
         },
     ) {
         try {
+            const filteredData = Object.fromEntries(
+                Object.entries(data).filter(([_, value]) => value !== undefined)
+            );
+
             const usuario = await this.prisma.usuario.update({
                 where: { idUsuario },
-                data,
+                data: filteredData, 
             });
 
             return usuario;

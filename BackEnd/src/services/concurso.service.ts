@@ -2,8 +2,8 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient;
 
-class ConcursoService{
-    constructor(protected prisma: PrismaClient){}
+class ConcursoService {
+    constructor(protected prisma: PrismaClient) { }
 
     async criarConcurso(
         nomeConcurso: string,
@@ -28,14 +28,14 @@ class ConcursoService{
                     local,
                 },
             });
-    
+
             console.log("Concurso criado com sucesso.");
             return concurso;
         } catch (error) {
             console.error("Erro detalhado:", error);
             throw new Error("Erro ao criar Concurso. Verifique os dados fornecidos.");
         }
-    }    
+    }
 
     async atualizarConcurso(
         idConcurso: number,
@@ -54,7 +54,7 @@ class ConcursoService{
             if (!idConcurso || isNaN(idConcurso)) {
                 throw new Error("ID do concurso inválido.");
             }
-    
+
             const dataAtualizada = {
                 ...data,
                 lancamentoEdital: new Date(data.lancamentoEdital),
@@ -64,7 +64,7 @@ class ConcursoService{
                 dataProvasPraticas: new Date(data.dataProvasPraticas),
                 dataResultado: new Date(data.dataResultado),
             };
-    
+
             const concurso = await this.prisma.concurso.update({
                 where: { idConcurso },
                 data: dataAtualizada,
@@ -78,35 +78,35 @@ class ConcursoService{
         }
     }
 
-    async buscarConcursoPorId(idConcurso: number){
-        try{
+    async buscarConcursoPorId(idConcurso: number) {
+        try {
             const concurso = await this.prisma.concurso.findUnique({
                 where: { idConcurso: idConcurso }
             });
             return concurso;
-        }catch(error){
+        } catch (error) {
             throw new Error("Erro ao buscar Concurso.");
         }
     }
 
-    async buscarConcursos(){
-        try{
+    async buscarConcursos() {
+        try {
             const concursos = await this.prisma.concurso.findMany();
             return concursos;
-        }catch(erro){
+        } catch (erro) {
             throw new Error("Erro ao buscar concursos");
         }
     }
 
-    async deletarConcuro(idConcurso: number){
-        try{
+    async deletarConcuro(idConcurso: number) {
+        try {
             console.log("IdConcurso", idConcurso);
 
             const concurso = await this.prisma.concurso.findUnique({
                 where: { idConcurso }
             });
 
-            if(!concurso){
+            if (!concurso) {
                 throw new Error("Concurso não encontrado.");
             }
 
@@ -115,26 +115,32 @@ class ConcursoService{
             });
 
             return { mensagem: "Concurso deletado com sucesso." };
-        }catch(error){
-            console.error(error);
-            throw new Error("Erro ao deletar concurso.");
 
+        } catch (error: any) {
+            console.error(error);
+
+            if (error.code === "P2003") {
+                throw new Error("Não é possível excluir o concurso pois existem registros vinculados.");
+            }
+
+            throw new Error("Erro ao deletar concurso.");
         }
     }
 
-   /*  async buscarCandidatosConcurso(idConcurso: number) {
-        try {
-            if (!idConcurso || isNaN(idConcurso)) {
-                throw new Error("ID do concurso inválido.");
-            }
-            return candidatos;
-        } catch (error) {
-            console.error("Erro ao buscar candidatos do concurso:", error);
-            throw new Error("Erro ao buscar candidatos do concurso.");
-        }
-    } */
-    
-    
+
+    /*  async buscarCandidatosConcurso(idConcurso: number) {
+         try {
+             if (!idConcurso || isNaN(idConcurso)) {
+                 throw new Error("ID do concurso inválido.");
+             }
+             return candidatos;
+         } catch (error) {
+             console.error("Erro ao buscar candidatos do concurso:", error);
+             throw new Error("Erro ao buscar candidatos do concurso.");
+         }
+     } */
+
+
     async anexarEdital(idConcurso: number, editalAnexo: Partial<{ anexarEdital: Buffer }>) {
         try {
             const concurso = await prisma.concurso.update({
@@ -143,9 +149,9 @@ class ConcursoService{
             });
             return concurso;
         } catch (error) {
-        throw new Error("Erro ao anexar Edital: " + error);
+            throw new Error("Erro ao anexar Edital: " + error);
         }
-    }   
+    }
 
 }
 
