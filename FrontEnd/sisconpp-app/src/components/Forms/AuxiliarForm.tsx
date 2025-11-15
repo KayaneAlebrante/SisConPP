@@ -25,11 +25,11 @@ export default function AuxiliarForm({ onClose, auxiliarToEdit }: AuxiliarFormPr
         login: '',
         senha: '',
         funcao: Funcao.AUXILIAR,
-        numCredenciamento: "" as unknown as Credenciamento,
+        credenciamento: "" as unknown as Credenciamento,
+        numCredenciamento: 0,
         comissaoUsuarioId: 0,
     });
 
-    // Carregar CTGs
     useEffect(() => {
         const fetchCTGs = async () => {
             try {
@@ -51,7 +51,22 @@ export default function AuxiliarForm({ onClose, auxiliarToEdit }: AuxiliarFormPr
             setFormData({
                 ...auxiliarToEdit,
                 funcao: Funcao.AUXILIAR,
-                numCredenciamento: auxiliarToEdit.numCredenciamento ?? "" as Credenciamento
+                credenciamento: auxiliarToEdit.credenciamento ?? "" as Credenciamento
+            });
+        }else{
+            setFormData({
+                idUsuario: 0,
+                nomeCompleto: '',
+                cidade: '',
+                estado: '',
+                CTGId: 0,
+                numCarteirinha: '',
+                login: '',
+                senha: '',
+                funcao: Funcao.AUXILIAR,
+                credenciamento: "" as unknown as Credenciamento,
+                numCredenciamento: 0,
+                comissaoUsuarioId: 0,
             });
         }
     }, [auxiliarToEdit]);
@@ -68,7 +83,7 @@ export default function AuxiliarForm({ onClose, auxiliarToEdit }: AuxiliarFormPr
     const handleCredenciamentoChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setFormData(prev => ({
             ...prev,
-            numCredenciamento: e.target.value as Credenciamento,
+            credenciamento: e.target.value as Credenciamento,
         }));
     };
 
@@ -80,7 +95,7 @@ export default function AuxiliarForm({ onClose, auxiliarToEdit }: AuxiliarFormPr
                 funcao: Funcao.AUXILIAR,
             };
 
-            if (!auxiliarPayload.numCredenciamento) {
+            if (!auxiliarPayload.credenciamento) {
                 toast.error("Selecione o credenciamento.");
                 return;
             }
@@ -193,6 +208,18 @@ export default function AuxiliarForm({ onClose, auxiliarToEdit }: AuxiliarFormPr
                         <option value={Credenciamento.CREDENCIADO}>Credenciado</option>
                         <option value={Credenciamento.NAO_CREDENCIADO}>Não Credenciado</option>
                     </select>
+                </div>
+
+                <div className="flex flex-col mb-4">
+                    <label className="text-sm font-medium mb-1">Número de Credenciamento</label>
+                    <input
+                        type="number"
+                        name="numCredenciamento"
+                        value={formData.numCredenciamento}
+                        onChange={handleChange}
+                        required
+                        className="rounded-lg p-2 bg-surface-containerHigh border border-outline focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
                 </div>
 
                 <div className="flex flex-col mb-4">

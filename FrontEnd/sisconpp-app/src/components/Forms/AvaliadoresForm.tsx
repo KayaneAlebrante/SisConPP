@@ -24,7 +24,8 @@ export default function AvaliadoresForm({ onClose, avaliadorToEdit }: AvaliadorF
         login: '',
         senha: '',
         funcao: Funcao.AVALIADOR,
-        numCredenciamento: Credenciamento.CREDENCIADO,
+        credenciamento: "" as unknown as Credenciamento,
+        numCredenciamento: 0,
         comissaoUsuarioId: 0,
     });
 
@@ -59,7 +60,8 @@ export default function AvaliadoresForm({ onClose, avaliadorToEdit }: AvaliadorF
                 login: avaliadorToEdit.login,
                 senha: avaliadorToEdit.senha,
                 funcao: avaliadorToEdit.funcao,
-                numCredenciamento: avaliadorToEdit.numCredenciamento || '',
+                credenciamento: avaliadorToEdit.credenciamento,
+                numCredenciamento: avaliadorToEdit.numCredenciamento || 0,
                 comissaoUsuarioId: avaliadorToEdit.comissaoUsuarioId || 0,
 
             });
@@ -83,7 +85,8 @@ export default function AvaliadoresForm({ onClose, avaliadorToEdit }: AvaliadorF
                 login: '',
                 senha: '',
                 funcao: Funcao.AVALIADOR,
-                numCredenciamento: Credenciamento.CREDENCIADO,
+                credenciamento: "" as unknown as Credenciamento,
+                numCredenciamento: 0,
                 comissaoUsuarioId: 0,
             });
         }
@@ -98,22 +101,25 @@ export default function AvaliadoresForm({ onClose, avaliadorToEdit }: AvaliadorF
         }));
     };
 
+    const handleCredenciamentoChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setFormData(prev => ({
+            ...prev,
+            credenciamento: e.target.value as Credenciamento,
+        }));
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
             const avaliadorPayload: Usuario = {
-                idUsuario: formData.idUsuario,
-                nomeCompleto: formData.nomeCompleto,
-                cidade: formData.cidade,
-                estado: formData.estado,
-                CTGId: formData.CTGId,
-                numCarteirinha: formData.numCarteirinha,
-                login: formData.login,
-                senha: formData.senha,
-                funcao: formData.funcao,
-                numCredenciamento: formData.numCredenciamento,
-                comissaoUsuarioId: formData.comissaoUsuarioId,                
+                ...formData,
+                funcao: Funcao.AVALIADOR,             
             };
+
+            if (!avaliadorPayload.credenciamento) {
+                toast.error("Selecione o credenciamento.");
+                return;
+            }
 
             if (formData.senha.trim()) {
                 avaliadorPayload.senha = formData.senha;
@@ -214,9 +220,9 @@ export default function AvaliadoresForm({ onClose, avaliadorToEdit }: AvaliadorF
                 <div className="flex flex-col mb-4">
                     <label className="text-sm font-medium mb-1">Número de Credenciamento</label>
                     <select
-                        name="numCredenciamento"
-                        value={formData.numCredenciamento}
-                        onChange={handleChange}
+                        name="credenciamento"
+                        value={formData.credenciamento}
+                        onChange={handleCredenciamentoChange}
                         required
                         className="rounded-lg p-2 bg-surface-containerHigh border border-outline focus:outline-none focus:ring-2 focus:ring-primary"
                     >
@@ -224,6 +230,18 @@ export default function AvaliadoresForm({ onClose, avaliadorToEdit }: AvaliadorF
                         <option value={Credenciamento.CREDENCIADO}>Credenciado</option>
                         <option value={Credenciamento.NAO_CREDENCIADO}>Não Credenciado</option>
                     </select>
+                </div>
+
+                <div className="flex flex-col mb-4">
+                    <label className="text-sm font-medium mb-1">Número de Credenciamento</label>
+                    <input
+                        type="number"
+                        name="numCredenciamento"
+                        value={formData.numCredenciamento}
+                        onChange={handleChange}
+                        required
+                        className="rounded-lg p-2 bg-surface-containerHigh border border-outline focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
                 </div>
 
                 <div className="flex flex-col mb-4">
