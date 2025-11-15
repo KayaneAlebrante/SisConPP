@@ -5,6 +5,8 @@ import { Pencil, Trash2, Search } from "lucide-react";
 import { Usuario, Funcao, Credenciamento } from "../../types/Usuario";
 import { CTG } from "../../types/CTG";
 import Dialog from "../Modal/Dialog";
+import AvaliadorView from "../View/AvaliadorView";
+import Modal from "../Modal/Modal";
 
 interface AvaliadorListProps {
     onEdit: (avaliador: Usuario) => void;
@@ -12,9 +14,11 @@ interface AvaliadorListProps {
     onCredenciar: (avaliador: Usuario) => void;
 }
 
-export default function AvaliadorList({ onEdit, onVisualizar }: AvaliadorListProps) {
+export default function AvaliadorList({ onEdit}: AvaliadorListProps) {
     const [avaliadores, setAvaliadores] = useState<Usuario[]>([]);
     const [ctgs, setCTGs] = useState<CTG[]>([]);
+    const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+    const [selectedAvaliador, setSelectedAvaliador] = useState<Usuario | null>(null);
 
     const fetchAvaliadores = async () => {
         try {
@@ -28,7 +32,8 @@ export default function AvaliadorList({ onEdit, onVisualizar }: AvaliadorListPro
                 login: string;
                 senha: string;
                 funcao: Funcao;
-                numCredenciamento: Credenciamento;
+                credenciamento: Credenciamento;
+                numCredenciamento: number;
                 comissaoUsuarioId?: number;
             };
 
@@ -44,7 +49,8 @@ export default function AvaliadorList({ onEdit, onVisualizar }: AvaliadorListPro
                 login: usuario.login,
                 senha: usuario.senha,
                 funcao: usuario.funcao,
-                numCredenciamento: usuario.numCredenciamento || "",
+                credenciamento: usuario.numCredenciamento === 1 ? Credenciamento.CREDENCIADO : Credenciamento.NAO_CREDENCIADO, // Mapeamento explícito
+                numCredenciamento: usuario.numCredenciamento || 0,
                 comissaoIdUsuario: usuario.comissaoUsuarioId,
             }));
 
@@ -117,7 +123,10 @@ export default function AvaliadorList({ onEdit, onVisualizar }: AvaliadorListPro
                             <td className="p-3 flex gap-2">
                                 <button
                                     className="text-green-600 hover:text-green-800"
-                                    onClick={() => onVisualizar(avaliador)}
+                                    onClick={() => {
+                                        setSelectedAvaliador(avaliador);
+                                        setIsViewModalOpen(true);
+                                    }}
                                 >
                                     <Search size={18} />
                                 </button>
@@ -154,8 +163,20 @@ export default function AvaliadorList({ onEdit, onVisualizar }: AvaliadorListPro
                         handleConfirmDelete(avaliadorSelecionadoId);
                     }
                 }}
-                menssage="Tem certeza que deseja excluir este avaliador?"
+                message="Tem certeza que deseja excluir este avaliador?"
             />
+            <Modal
+                isOpen={isViewModalOpen}
+                onClose={() => setIsViewModalOpen(false)}
+            >
+                {selectedAvaliador && (
+                    <AvaliadorView
+                        avaliador={selectedAvaliador}
+                        ctg={ctgs.find((ctg) => ctg.idCTG === selectedAvaliador.CTGId)}
+                        onVoltar={() => setIsViewModalOpen(false)}
+                    />
+                )}
+            </Modal>
 
         </div>
     );
