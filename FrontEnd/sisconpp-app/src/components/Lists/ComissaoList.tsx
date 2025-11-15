@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { listarComissoes } from "../../services/api";
 import { toast } from "react-toastify";
 import { Pencil, Trash2, UserPlus } from "lucide-react";
-import AvaliadorComissaoForm from "../Forms/AvaliadorComissaoForm";
+import UsuarioComissaoForm from "../Forms/UsuarioComissaoForm";
 import Modal from "../Modal/Modal"; 
 
 interface Usuario {
@@ -20,7 +20,7 @@ interface Comissao {
 }
 
 const ComissaoList = () => {
-    const [selectedComissao, setSelectedComissao] = useState<Comissao | null>(null);
+    const [selecteidComissao, setSelecteidComissao] = useState<Comissao | null>(null);
     const [comissoes, setComissoes] = useState<Comissao[]>([]);
 
     useEffect(() => {
@@ -76,13 +76,19 @@ const ComissaoList = () => {
                                 <td className="p-3 flex gap-2">
                                 <button
                                     className="text-green-600 hover:text-green-800"
-                                    onClick={() => setSelectedComissao(comissao)}
+                                    onClick={() => setSelecteidComissao(comissao)}
                                 >
                                     <UserPlus size={18} />
                                 </button>
-                                {selectedComissao?.idComissao === comissao.idComissao && (
-                                    <Modal isOpen={selectedComissao?.idComissao === comissao.idComissao} onClose={() => setSelectedComissao(null)}>
-                                        <AvaliadorComissaoForm comissao={selectedComissao} onClose={() => setSelectedComissao(null)} />
+                                {selecteidComissao?.idComissao === comissao.idComissao && (
+                                    <Modal
+                                        isOpen={selecteidComissao?.idComissao === comissao.idComissao}
+                                        onClose={() => setSelecteidComissao(null)}
+                                    >
+                                        <UsuarioComissaoForm
+                                            comissao={selecteidComissao}
+                                            onClose={() => setSelecteidComissao(null)}
+                                        />
                                     </Modal>
                                 )}
                                 <button

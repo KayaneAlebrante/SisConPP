@@ -165,7 +165,7 @@ export default function CandidatoList({ onEdit }: CandidatoListProps) {
                         handleConfirmDelete(candidatoSelecionadoId);
                     }
                 }}
-                menssage="Tem certeza que deseja excluir este candidato?"
+                message="Tem certeza que deseja excluir este candidato?"
             />
 
             <Modal
