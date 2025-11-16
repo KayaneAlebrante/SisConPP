@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Comissao } from "../../types/Comissao";
 import { Concurso } from "../../types/Concurso";
-import { criarComissao, listarConcurso } from "../../services/api";
+import { criarComissao, listarConcurso, atualizarComissao } from "../../services/api";
 import { toast } from 'react-toastify';
 
 interface ComissaoFormProps {
@@ -14,6 +14,19 @@ export default function ComissaoForm({ onClose, comissaoToEdit }: ComissaoFormPr
         idComissao: 0,
         nomeComissao: '',
         concursoId: 0,
+        concurso: {
+            idConcurso: 0,
+            nomeConcurso: '',
+            lancamentoEdital: '',
+            inscricoesInicio: '',
+            inscricoesFinal: '',
+            dataProvaEscrita: '',
+            dataProvasPraticas: '',
+            dataResultado: '',
+            local: '',
+            anexoEdital: null,
+        },
+        usuarios: [],
     });
 
     const [concursos, setConcursos] = useState<Concurso[]>([]);
@@ -54,26 +67,21 @@ export default function ComissaoForm({ onClose, comissaoToEdit }: ComissaoFormPr
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            if (!formData.concursoId) {
-                toast.error('Selecione um concurso válido.');
+            if(formData.idComissao > 0){
+                await atualizarComissao(formData);
+                toast.success("Comissão atualizada com sucesso!");
+                onClose();
+                return;
+            }else{
+                await criarComissao(formData);
+                toast.success("Comissão cadastrada com sucesso!");
+                onClose();
                 return;
             }
-
-            const comissaoPayload: Comissao = {
-                idComissao: comissaoToEdit ? comissaoToEdit.idComissao : 0,
-                nomeComissao: formData.nomeComissao,
-                concursoId: formData.concursoId, 
-            };
-            console.log(comissaoPayload);
-            await criarComissao(comissaoPayload);
-            toast.success("Comissão cadastrada com sucesso!");
-
-            console.log("Criou comissão, entrando no onClose");
             onClose();
         } catch (error) {
             console.error('Erro ao salvar Comissão:', error);
             toast.error('Erro ao salvar Comissão. Verifique os dados e tente novamente.');
-            console.log("Entrou no Catch");
         }
     };
 

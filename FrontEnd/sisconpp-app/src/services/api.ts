@@ -30,7 +30,7 @@ export const deleteRT = async (id: number) => {
 
 export const cadastrarCTG = async (novoCTG: CTG) => {
   return await api.post('/ctg', novoCTG);
-}
+};
 
 export const listarCTGs = async () => {
   const response = await api.get("/ctg");
@@ -53,7 +53,7 @@ export const cadastrarUsuario = async (criarUsuario: Usuario) => {
 export const listarUsuarios = async () => {
   const response = await api.get("/usuario");
   return response.data;
-}
+};
 
 export const atualizarUsuario = (usuario: Usuario) => {
   return api.put(`/usuario/${usuario.idUsuario}`, usuario);
@@ -66,21 +66,21 @@ export const deleteUsuario = async (id: number) => {
 export const listarUsuriosAvaliadores = async (): Promise<Usuario[]> =>{
   const response = await api.get<Usuario[]>("/usuario/usuarios/avaliadores");
   return response.data;
-}
+};
 
 export const listarUsuriosAuxiliares = async (): Promise<Usuario[]> => {
   const response = await api.get<Usuario[]>("/usuario/usuarios/auxiliares");
   return response.data;
-}
+};
 
 export const listarCategorias = async () => {
   const response = await api.get("/categoria");
   return response.data;
-}
+};
 
 export const cadastrarCandidato = async (criarCandidato: Candidato) => {
   return await api.post("/candidato", criarCandidato);
-}
+};
 
 export const atualizarCandidato = (candidato: Candidato) => {
   return api.put(`/candidato/${candidato.idCandidato}`, candidato);
@@ -89,50 +89,64 @@ export const atualizarCandidato = (candidato: Candidato) => {
 export const listarCandidatos = async () => {
   const response = await api.get("/candidato");
   return response.data;
-}
+};
 
 export const deletarCandidato = async (id: number) => {
   return await api.delete(`/candidato/${id}`);
-}
+};
 
 export const cadastrarConcurso = async (cadastrarConcurso: Concurso) => {
   return await api.post("/concurso", cadastrarConcurso);
-}
+};
 
 export const atualizarConcurso = (concurso: Concurso) => {
   return api.put(`/concurso/${concurso.idConcurso}`, concurso);
-}
+};
 
 export const deletarConcurso = async (id: number) => {
   return await api.delete(`/concurso/${id}`);
-}
+};
 
 export const listarConcurso = async () => {
   const response = await api.get("/concurso");
   return response.data;
-}
+};
 
 export const criarComissao = async (criarComissao: Comissao) => {
   return await api.post("/comissao", criarComissao);
-}
+};
 
 export const listarComissoes = async () => {
-  const response = await api.get("/comissao");
+  const response = await api.get<Comissao[]>("/comissao");
   return response.data;
-}
+};
 
-export const adicionarAvaliadorComissao = async (idUsuario: number, idComissao: number) => {
-  return await api.post("/comissao/avaliador", { idUsuario, idComissao });
-}
+export const atualizarComissao = (comissao: Comissao) => {
+  return api.put(`/comissao/${comissao.idComissao}`, comissao);
+};
 
-export const adicionarAuxiliarComissao = async (idUsuario: number, idComissao: number) => {
-  return await api.post("/comissao/auxiliar", { idUsuario, idComissao });
-}
+export const deletarComissao = async (id: number) => {
+  const response = await api.delete(`/comissao/${id}`);
+  return response.data ?? true;
+};
+
+export const adicionarAvaliadorComissao = async (usuarioId: number, comissaoId: number) => {
+  return await api.post("/comissao/avaliador", { usuarioId, comissaoId });
+};
+
+export const adicionarAuxiliarComissao = async (usuarioId: number, comissaoId: number) => {
+  return await api.post("/comissao/auxiliar", { usuarioId, comissaoId });
+};
 
 export const listarUsuariosComissao = async () => {
   const response = await api.get("/comissao/usuarios");
   return response.data;
-}
+};
+
+export const deletarUsuarioComissao = async (idUsuario: number, idComissao: number) => {
+  return await api.delete(`/comissao/usuario/${idUsuario}/${idComissao}`);
+};
+
 
 // ---- AUTENTICAÇÃO ----
 export interface LoginRequest {

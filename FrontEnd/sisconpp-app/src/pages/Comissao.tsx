@@ -21,6 +21,11 @@ export default function ComissaoPage() {
     setComissaoToEdit(undefined);
   };
 
+  const handleEdit = (comissao: Comissao) => {
+    setComissaoToEdit(comissao);
+    setIsModalOpen(true);
+  }
+
   return (
     <div className="flex flex-row min-h-screen w-full bg-neutral-background">
       <SideNavBar />
@@ -36,7 +41,10 @@ export default function ComissaoPage() {
         </div>
 
         <div className="w-full max-w-6xl h-full bg-secondary-light p-8 rounded-2xl shadow-lg">
-          <ComissaoList key={refreshList.toString()}/>
+          <ComissaoList 
+            key={refreshList.toString()} 
+            onEdit={handleEdit}
+          />
         </div>
       </div>
 

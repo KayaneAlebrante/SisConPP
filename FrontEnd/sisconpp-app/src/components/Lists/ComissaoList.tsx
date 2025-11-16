@@ -1,44 +1,73 @@
 import { useEffect, useState } from "react";
-import { listarComissoes } from "../../services/api";
+import { listarComissoes, deletarComissao } from "../../services/api";
 import { toast } from "react-toastify";
-import { Pencil, Trash2, UserPlus } from "lucide-react";
+import { Pencil, Trash2, UserPlus, UserMinus } from "lucide-react";
 import UsuarioComissaoForm from "../Forms/UsuarioComissaoForm";
-import Modal from "../Modal/Modal"; 
+import DeleteUsuarioForm from "../Forms/RemoverUsuariocomissãoForm";
+import Modal from "../Modal/Modal";
+import { Comissao } from "../../types/Comissao";
+import Dialog from "../Modal/Dialog";
 
-interface Usuario {
-    idUsuario: number;
-    nomeCompleto: string;
-    funcao: "AVALIADOR" | "AUXILIAR";
+interface ComissaoListProps {
+    onEdit: (comissao: Comissao) => void;
 }
 
-interface Comissao {
-    idComissao: number;
-    nomeComissao: string;
-    usuarios: {
-        Usuarios: Usuario;
-    }[];
-}
-
-const ComissaoList = () => {
+export default function ComissaoList({ onEdit }: ComissaoListProps) {
     const [selecteidComissao, setSelecteidComissao] = useState<Comissao | null>(null);
     const [comissoes, setComissoes] = useState<Comissao[]>([]);
+    const [modalDeleteComissao, setModalDeleteComissao] = useState<Comissao | null>(null);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [comissoesSelecionadaId, setComissoesSelecionadaId] = useState<number | null>(null);
+
+    const fetchComissoes = async () => {
+        try {
+            const data: Comissao[] = await listarComissoes();
+            setComissoes(data);
+        } catch (error) {
+            toast.error("Erro ao carregar comissões");
+            console.error(error);
+        }
+    };
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const data = await listarComissoes() as Comissao[];
-                setComissoes(data);
-            } catch (error) {
-                toast.error("Erro ao carregar comissões");
-                console.error(error);
-            }
-        };
-        fetchData();
+        fetchComissoes();
     }, []);
+
+    const handleConfirmDelete = async (idComissao: number) => {
+        try {
+            const response = await deletarComissao(idComissao);
+            if (response) {
+                await fetchComissoes();
+                toast.success("Comissão excluída com sucesso!");
+                setComissoesSelecionadaId(null);
+                setIsDialogOpen(false);
+            } else {
+                throw new Error("Falha ao excluir comissão");
+            }
+
+        } catch {
+            const response = await fetch("/api/comissoes", {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ idComissao }),
+            });
+            if (!response.ok) {
+                const erroApi = await response.json();
+                toast.error(erroApi.mensagem || "Erro ao excluir comissão.");
+                setIsDialogOpen(false);
+                setComissoesSelecionadaId(null);
+            }
+        }
+    }
 
     return (
         <div className="flex flex-col h-full">
-            <h2 className="text-xl font-bold mb-4 text-secondary-on">Lista de Concursos</h2>
+            <h2 className="text-xl font-bold mb-4 text-secondary-on">
+                Lista das Comissões
+            </h2>
+
             <table className="w-full bg-white rounded-xl shadow-md overflow-hidden">
                 <thead>
                     <tr className="text-left bg-secondary-dark text-secondary-light">
@@ -48,67 +77,122 @@ const ComissaoList = () => {
                         <th className="p-3 last:rounded-tr-xl">Ações</th>
                     </tr>
                 </thead>
+
                 <tbody>
                     {comissoes.map((comissao) => {
                         const avaliadores = comissao.usuarios.filter(
-                            (u) => u.Usuarios.funcao === "AVALIADOR"
+                            (usuario) => usuario.Usuarios.funcao === "AVALIADOR" 
                         );
-                        const auxiliar = comissao.usuarios.find(
-                            (u) => u.Usuarios.funcao === "AUXILIAR"
+
+                        const auxiliares = comissao.usuarios.filter(
+                            (usuario) => usuario.Usuarios.funcao === "AUXILIAR" 
                         );
+
 
                         return (
                             <tr key={comissao.idComissao} className="border-t">
                                 <td className="px-3 py-2">{comissao.nomeComissao}</td>
                                 <td className="px-3 py-2">
                                     <ul className="list-disc pl-4">
-                                        {avaliadores.map((a) => (
-                                            <li key={a.Usuarios.idUsuario}>
-                                                {a.Usuarios.nomeCompleto}
-                                            </li>
+                                        {avaliadores.map((usuario) => (
+                                            <li key={usuario.Usuarios.idUsuario}>{usuario.Usuarios.nomeCompleto}</li>
                                         ))}
+
+                                        {avaliadores.length === 0 && (
+                                            <span className="text-gray-400">Nenhum avaliador</span>
+                                        )}
                                     </ul>
                                 </td>
-                                
+
                                 <td className="px-3 py-2">
-                                    {auxiliar?.Usuarios.nomeCompleto || <span className="text-gray-400 italic">Nenhum</span>}
+                                    <ul className="list-disc pl-4">
+                                        {auxiliares.map((usuario) => (
+                                            <li key={usuario.Usuarios.idUsuario}>{usuario.Usuarios.nomeCompleto}</li>
+                                        ))}
+
+                                        {auxiliares.length === 0 && (
+                                            <span className="text-gray-400">Nenhum auxiliar</span>
+                                        )}
+                                    </ul>
                                 </td>
+
                                 <td className="p-3 flex gap-2">
-                                <button
-                                    className="text-green-600 hover:text-green-800"
-                                    onClick={() => setSelecteidComissao(comissao)}
-                                >
-                                    <UserPlus size={18} />
-                                </button>
-                                {selecteidComissao?.idComissao === comissao.idComissao && (
-                                    <Modal
-                                        isOpen={selecteidComissao?.idComissao === comissao.idComissao}
-                                        onClose={() => setSelecteidComissao(null)}
+                                    <button
+                                        className="text-green-600 hover:text-green-800"
+                                        onClick={() => setSelecteidComissao(comissao)}
                                     >
-                                        <UsuarioComissaoForm
-                                            comissao={selecteidComissao}
+                                        <UserPlus size={18} />
+                                    </button>
+
+                                    {selecteidComissao?.idComissao === comissao.idComissao && (
+                                        <Modal
+                                            isOpen={true}
                                             onClose={() => setSelecteidComissao(null)}
-                                        />
-                                    </Modal>
-                                )}
-                                <button
-                                    className="text-blue-600 hover:text-blue-800"
-                                >
-                                    <Pencil size={18} />
-                                </button>
-                                <button
-                                    className="text-red-600 hover:text-red-800"
-                                >
-                                    <Trash2 size={18} />
-                                </button>
-                            </td>
+                                        >
+                                            <UsuarioComissaoForm
+                                                comissao={selecteidComissao}
+                                                onClose={() => setSelecteidComissao(null)}
+                                                onSaved={fetchComissoes}
+                                            />
+                                        </Modal>
+                                    )}
+
+                                    <button
+                                        className="text-red-600 hover:text-red-800"
+                                        onClick={() => setModalDeleteComissao(comissao)}
+                                    >
+                                        <UserMinus size={18} />
+                                    </button>
+
+                                    {modalDeleteComissao?.idComissao === comissao.idComissao && (
+                                        <Modal
+                                            isOpen={true}
+                                            onClose={() => setModalDeleteComissao(null)}
+                                        >
+                                            <DeleteUsuarioForm
+                                                comissao={modalDeleteComissao}
+                                                onClose={() => setModalDeleteComissao(null)}
+                                                onDeleted={fetchComissoes}
+                                            />
+                                        </Modal>
+                                    )}
+
+                                    <button className="text-blue-600 hover:text-blue-800"
+                                        onClick={() => onEdit(comissao)}
+                                    >
+                                        <Pencil size={18} />
+                                    </button>
+
+                                    <button
+                                        className="text-red-600 hover:text-red-800"
+                                        onClick={() => {
+                                            setComissoesSelecionadaId(comissao.idComissao);
+                                            setIsDialogOpen(true);
+                                        }}
+                                    >
+                                        <Trash2 size={18} />
+                                    </button>
+                                </td>
                             </tr>
                         );
                     })}
                 </tbody>
-            </table>
-        </div>
-  );
-};
 
-export default ComissaoList;
+                <Dialog
+                    isOpen={isDialogOpen}
+                    onClose={() => {
+                        setIsDialogOpen(false);
+                        setComissoesSelecionadaId(null);
+                    }}
+                    onConfirm={() => {
+                        if (comissoesSelecionadaId !== null) {
+                            handleConfirmDelete(comissoesSelecionadaId);
+                            setIsDialogOpen(false);
+                        }
+                    }}
+                    message="Tem certeza que deseja excluir esta comissão?"
+                />
+            </table>
+        </div >
+    );
+};

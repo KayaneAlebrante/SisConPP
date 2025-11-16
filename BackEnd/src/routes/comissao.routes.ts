@@ -3,19 +3,19 @@ import comissaoController from "../controllers/comissao.controller";
 
 const router = express.Router();
 
-router.post("/comissao/avaliador", async (req: Request, res: Response) => {
+router.post("/avaliador", async (req: Request, res: Response) => {
     await comissaoController.adicionarAvaliadorComissao(req, res);
 });
 
-router.post("/comissao/auxiliar", async (req: Request, res: Response) => {
+router.post("/auxiliar", async (req: Request, res: Response) => {
     await comissaoController.adicionarAuxiliarComissao(req, res);
 });
 
-router.get("/comissao/usuarios", async (req: Request, res: Response) => {
+router.get("/usuarios", async (req: Request, res: Response) => {
     await comissaoController.listarUsuariosComissao(req, res);
 });
 
-router.delete("/comissao/usuario/:usuarioId/:comissaoId", async (req: Request, res: Response) => {
+router.delete("/usuario/:usuarioId/:comissaoId", async (req: Request, res: Response) => {
     await comissaoController.deletarUsuarioComissao(req, res);
 });
 
@@ -24,7 +24,7 @@ router.post("/", async (req: Request, res: Response) => {
 });
 
 router.put("/:id", async (req: Request, res: Response) => {
-    await comissaoController.atualziarComissao(req, res);
+    await comissaoController.atualizarComissao(req, res);
 });
 
 router.get("/:id", async (req: Request, res: Response) => {

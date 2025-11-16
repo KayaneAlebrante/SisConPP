@@ -22,7 +22,7 @@ class ComissaoController {
         }
     }
 
-    async atualziarComissao(req: Request, res: Response) {
+    async atualizarComissao(req: Request, res: Response) {
         const { id } = req.params;
         const dadosAtualizados = req.body;
 
