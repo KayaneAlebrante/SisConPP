@@ -121,9 +121,9 @@ class ConcursoService {
 
             if (error.code === "P2003") {
                 throw new Error("Não é possível excluir o concurso pois existem registros vinculados.");
+            }else{
+                throw new Error("Erro ao deletar concurso.");
             }
-
-            throw new Error("Erro ao deletar concurso.");
         }
     }
 

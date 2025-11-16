@@ -6,7 +6,7 @@ export enum Funcao {
 
 export enum Credenciamento{
     CREDENCIADO = 'CREDENCIADO',
-    NAO_CREDENCIADO = 'NÃO CREDENCIADO'
+    NAO_CREDENCIADO = 'NAO_CREDENCIADO'
 }
 
 export interface Usuario {

@@ -51,7 +51,7 @@ export default function AuxiliaresList({ onEdit}: AuxiliaresListProps) {
                 login: usuario.login,
                 senha: usuario.senha,
                 funcao: usuario.funcao,
-                credenciamento: usuario.numCredenciamento === 1 ? Credenciamento.CREDENCIADO : Credenciamento.NAO_CREDENCIADO, // Mapeamento explícito
+                credenciamento: usuario.credenciamento, 
                 numCredenciamento: usuario.numCredenciamento || 0,
                 comissaoIdUsuario: usuario.comissaoUsuarioId,
             }));
@@ -91,9 +91,21 @@ export default function AuxiliaresList({ onEdit}: AuxiliaresListProps) {
             } else {
                 throw new Error("Falha ao excluir auxiliar");
             }
-        } catch (error) {
-            console.error("Erro ao excluir auxiliar:", error);
-            toast.error("Erro ao excluir auxiliar. Tente novamente.");
+        } catch{
+            const response = await fetch("/api/usuarios",{
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ id }),
+            });
+
+            if (!response.ok) {
+                const erroApi = await response.json();
+                toast.error(erroApi.mensagem || "Erro ao excluir auxiliar.");               
+                setIsDialogOpen(false);
+                setAuxiliarSelecionadoId(null);
+            }
         }
     };
 

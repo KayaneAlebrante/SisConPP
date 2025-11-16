@@ -14,6 +14,8 @@ const estados = [
 ];
 
 export default function AvaliadoresForm({ onClose, avaliadorToEdit }: AvaliadorFormProps) {
+    const [ctgs, setCTGs] = useState<{ id: string; nome: string }[]>([]);
+
     const [formData, setFormData] = useState<Usuario>({
         idUsuario: 0,
         nomeCompleto: '',
@@ -28,9 +30,6 @@ export default function AvaliadoresForm({ onClose, avaliadorToEdit }: AvaliadorF
         numCredenciamento: 0,
         comissaoUsuarioId: 0,
     });
-
-
-    const [ctgs, setCTGs] = useState<{ id: string; nome: string }[]>([]);
 
     useEffect(() => {
         const fetchCTGs = async () => {
@@ -51,39 +50,20 @@ export default function AvaliadoresForm({ onClose, avaliadorToEdit }: AvaliadorF
     useEffect(() => {
         if (avaliadorToEdit) {
             setFormData({
-                idUsuario: avaliadorToEdit.idUsuario,
-                nomeCompleto: avaliadorToEdit.nomeCompleto || '',
-                cidade: avaliadorToEdit.cidade || '',
-                estado: avaliadorToEdit.estado || '',
-                CTGId: avaliadorToEdit.CTGId || 0,
-                numCarteirinha: avaliadorToEdit.numCarteirinha || '',
-                login: avaliadorToEdit.login,
-                senha: avaliadorToEdit.senha,
-                funcao: avaliadorToEdit.funcao,
-                credenciamento: avaliadorToEdit.credenciamento,
-                numCredenciamento: avaliadorToEdit.numCredenciamento || 0,
-                comissaoUsuarioId: avaliadorToEdit.comissaoUsuarioId || 0,
-
-            });
-        }
-    }, [avaliadorToEdit]);
-
-    useEffect(() => {
-        if (avaliadorToEdit) {
-            setFormData({
                 ...avaliadorToEdit,
-                CTGId: avaliadorToEdit.CTGId,
+                funcao: Funcao.AVALIADOR,
+                credenciamento: avaliadorToEdit.credenciamento ?? "" as Credenciamento,
             });
         } else {
             setFormData({
                 idUsuario: 0,
-                nomeCompleto: '',
-                cidade: '',
-                estado: '',
+                nomeCompleto: "",
+                cidade: "",
+                estado: "",
                 CTGId: 0,
-                numCarteirinha: '',
-                login: '',
-                senha: '',
+                numCarteirinha: "",
+                login: "",
+                senha: "",
                 funcao: Funcao.AVALIADOR,
                 credenciamento: "" as unknown as Credenciamento,
                 numCredenciamento: 0,
@@ -92,12 +72,15 @@ export default function AvaliadoresForm({ onClose, avaliadorToEdit }: AvaliadorF
         }
     }, [avaliadorToEdit]);
 
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
 
         setFormData(prev => ({
             ...prev,
-            [name]: ( name === 'CTGId') ? Number(value) : value
+            [name]: name === 'CTGId' || name === 'numCredenciamento'
+                ? Number(value)
+                : value,
         }));
     };
 
@@ -105,19 +88,21 @@ export default function AvaliadoresForm({ onClose, avaliadorToEdit }: AvaliadorF
         setFormData(prev => ({
             ...prev,
             credenciamento: e.target.value as Credenciamento,
+            numCredenciamento: 0,
         }));
     };
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
             const avaliadorPayload: Usuario = {
                 ...formData,
-                funcao: Funcao.AVALIADOR,             
+                funcao: Funcao.AVALIADOR,
             };
 
-            if (!avaliadorPayload.credenciamento) {
-                toast.error("Selecione o credenciamento.");
+            if (formData.credenciamento === Credenciamento.CREDENCIADO && !formData.numCredenciamento) {
+                toast.error("Informe o número de credenciamento.");
                 return;
             }
 
@@ -218,13 +203,13 @@ export default function AvaliadoresForm({ onClose, avaliadorToEdit }: AvaliadorF
                 </div>
 
                 <div className="flex flex-col mb-4">
-                    <label className="text-sm font-medium mb-1">Número de Credenciamento</label>
+                    <label className="text-sm font-medium mb-1">Credenciamento</label>
                     <select
                         name="credenciamento"
-                        value={formData.credenciamento}
+                        value={formData.credenciamento || ""}
                         onChange={handleCredenciamentoChange}
                         required
-                        className="rounded-lg p-2 bg-surface-containerHigh border border-outline focus:outline-none focus:ring-2 focus:ring-primary"
+                        className="rounded-lg p-2 bg-surface-containerHigh border border-outline"
                     >
                         <option value="">Selecione uma Opção</option>
                         <option value={Credenciamento.CREDENCIADO}>Credenciado</option>
@@ -232,17 +217,19 @@ export default function AvaliadoresForm({ onClose, avaliadorToEdit }: AvaliadorF
                     </select>
                 </div>
 
-                <div className="flex flex-col mb-4">
-                    <label className="text-sm font-medium mb-1">Número de Credenciamento</label>
-                    <input
-                        type="number"
-                        name="numCredenciamento"
-                        value={formData.numCredenciamento}
-                        onChange={handleChange}
-                        required
-                        className="rounded-lg p-2 bg-surface-containerHigh border border-outline focus:outline-none focus:ring-2 focus:ring-primary"
-                    />
-                </div>
+                {formData.credenciamento === Credenciamento.CREDENCIADO && (
+                    <div className="flex flex-col mb-4">
+                        <label className="text-sm font-medium mb-1">Número de Credenciamento</label>
+                        <input
+                            type="number"
+                            name="numCredenciamento"
+                            value={formData.numCredenciamento || ""}
+                            onChange={handleChange}
+                            required
+                            className="rounded-lg p-2 bg-surface-containerHigh border border-outline"
+                        />
+                    </div>
+                )}
 
                 <div className="flex flex-col mb-4">
                     <label className="text-sm font-medium mb-1">Login</label>

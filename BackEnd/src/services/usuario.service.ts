@@ -36,12 +36,11 @@ class UsuarioService {
                     login,
                     senha: senhaCriptografada,
                     funcao,
-                    credenciamento: credenciamento ?? Credenciamento.NAO_CREDENCIADO,
-                    numCredenciamento: numCredenciamento?.toString(),
+                    credenciamento,
+                    numCredenciamento,
                     comissaoUsuarioId,
                 },
             });
-
             return { usuario };
         } catch (error) {
             console.error("Erro detalhado:", error);
@@ -70,6 +69,10 @@ class UsuarioService {
                 Object.entries(data).filter(([_, value]) => value !== undefined)
             );
 
+            if (data.credenciamento === Credenciamento.NAO_CREDENCIADO) {
+            filteredData.numCredenciamento = 0;
+            }
+            
             const usuario = await this.prisma.usuario.update({
                 where: { idUsuario },
                 data: filteredData, 
@@ -144,14 +147,27 @@ class UsuarioService {
 
     async deletarUsuario(idUsuario: number) {
         try {
-            const usuario = await this.prisma.usuario.delete({
+            const usuario = await this.prisma.usuario.findUnique({
                 where: { idUsuario: idUsuario }
-            })
+            });
+
+            if(!usuario) {
+                throw new Error("Usuário não encontrado.");
+            }
+
+            await this.prisma.usuario.delete({
+                where: { idUsuario: idUsuario }
+            });
 
             return { mensagem: "Usuário deletado com sucesso." };
-        } catch (error) {
+
+        } catch (error: any) {
             console.error(error);
-            throw new Error("Erro ao deletar usuário.");
+            if(error.code === 'P2003') {
+                throw new Error("Não é possível deletar o usuário pois ele está associado a outros registros.");
+            }else{
+                throw new Error("Erro ao deletar usuário.");
+            }            
         }
     }
 }

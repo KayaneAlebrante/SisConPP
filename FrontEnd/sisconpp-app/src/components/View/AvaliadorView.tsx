@@ -9,7 +9,7 @@ interface Props {
 }
 
 export default function VisualizacaoAvaliador({ avaliador, ctg, onVoltar }: Props) {
-    return (
+        return (
         <div className="w-full max-w-xl">
             <button className="text-green-600 mb-4 flex items-center" onClick={onVoltar}>
                 <ArrowLeft className="mr-1" size={20} /> Voltar

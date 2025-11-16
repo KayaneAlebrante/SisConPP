@@ -14,7 +14,7 @@ interface AvaliadorListProps {
     onCredenciar: (avaliador: Usuario) => void;
 }
 
-export default function AvaliadorList({ onEdit}: AvaliadorListProps) {
+export default function AvaliadorList({ onEdit }: AvaliadorListProps) {
     const [avaliadores, setAvaliadores] = useState<Usuario[]>([]);
     const [ctgs, setCTGs] = useState<CTG[]>([]);
     const [isViewModalOpen, setIsViewModalOpen] = useState(false);
@@ -49,7 +49,7 @@ export default function AvaliadorList({ onEdit}: AvaliadorListProps) {
                 login: usuario.login,
                 senha: usuario.senha,
                 funcao: usuario.funcao,
-                credenciamento: usuario.numCredenciamento === 1 ? Credenciamento.CREDENCIADO : Credenciamento.NAO_CREDENCIADO, // Mapeamento explícito
+                credenciamento: usuario.credenciamento,
                 numCredenciamento: usuario.numCredenciamento || 0,
                 comissaoIdUsuario: usuario.comissaoUsuarioId,
             }));
@@ -80,7 +80,7 @@ export default function AvaliadorList({ onEdit}: AvaliadorListProps) {
     const [avaliadorSelecionadoId, setAvaliadorSelecionadoId] = useState<number | null>(null);
 
 
-    const handleConfirmDelete = async (id: number) => {
+    const handleDeleteAvaliador = async (id: number) => {
         try {
             const response = await deleteAvaliador(id);
             console.log("Resposta da exclusão:", response);
@@ -92,9 +92,21 @@ export default function AvaliadorList({ onEdit}: AvaliadorListProps) {
             } else {
                 throw new Error("Falha ao excluir avaliador");
             }
-        } catch (error) {
-            console.error("Erro ao excluir avaliador:", error);
-            toast.error("Erro ao excluir avaliador. Tente novamente.");
+        } catch{
+            const response = await fetch("/api/usuarios",{
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ id }),
+            });
+
+            if (!response.ok) {
+                const erroApi = await response.json();
+                toast.error(erroApi.mensagem || "Erro ao excluir avaliador."); 
+                setIsDialogOpen(false);
+                setAvaliadorSelecionadoId(null);
+            }
         }
     };
 
@@ -160,7 +172,7 @@ export default function AvaliadorList({ onEdit}: AvaliadorListProps) {
                 }}
                 onConfirm={() => {
                     if (avaliadorSelecionadoId !== null) {
-                        handleConfirmDelete(avaliadorSelecionadoId);
+                        handleDeleteAvaliador(avaliadorSelecionadoId);
                     }
                 }}
                 message="Tem certeza que deseja excluir este avaliador?"

@@ -62,7 +62,7 @@ model Usuario {
   senha             String
   funcao            Funcao
   credenciamento    Credenciamento @default(NAO_CREDENCIADO)
-  numCredenciamento String?
+  numCredenciamento Int?
 
   comissaoUsuarioId      Int?
   ComissaoUsuario        ComissaoUsuario?       @relation

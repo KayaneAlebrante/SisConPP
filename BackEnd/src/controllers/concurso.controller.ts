@@ -120,7 +120,7 @@ class ConcursoController{
             return res.status(204).send();
         }catch(error: unknown){
             if (error instanceof Error) {
-                console.error("Erro ao deletar concruso:", error);
+                console.error("Erro ao deletar concurso:", error);
                 return res.status(400).json({ mensagem: error.message });
             }
             return res.status(400).json({ mensagem: "Erro desconhecido." });

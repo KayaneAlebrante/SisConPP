@@ -4,7 +4,6 @@ import { toast } from "react-toastify";
 import { Pencil, Trash2, Search } from "lucide-react";
 import Dialog from "../Modal/Dialog";
 import { listarConcurso, deletarConcurso } from "../../services/api";
-import { AxiosError } from "axios";
 import Modal from "../Modal/Modal";
 import ConcursoView from "../View/ConcursoView";
 
@@ -47,13 +46,21 @@ export default function ConcursoList({ onEdit }: ConcursoListProps) {
             } else {
                 throw new Error("Falha ao excluir concurso");
             }
-        } catch (error) {
-            toast.error("Erro ao excluir concurso.");
-            console.error(error);
+        } catch{
+            const response = await fetch("/api/usuarios",{
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ id }),
+            });
 
-            const menssagemErro = (error as AxiosError)?.response?.data?.mensagem || "Erro ao excluir concurso.";
-            toast.error(menssagemErro);
-
+            if (!response.ok) {
+                const erroApi = await response.json();
+                toast.error(erroApi.mensagem || "Erro ao excluir concurso.");               
+                setIsDialogOpen(false);
+                setConcursoSelecionadoId(null);
+            }
         }
     };
 

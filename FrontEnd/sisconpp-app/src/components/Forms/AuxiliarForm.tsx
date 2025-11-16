@@ -53,7 +53,7 @@ export default function AuxiliarForm({ onClose, auxiliarToEdit }: AuxiliarFormPr
                 funcao: Funcao.AUXILIAR,
                 credenciamento: auxiliarToEdit.credenciamento ?? "" as Credenciamento
             });
-        }else{
+        } else {
             setFormData({
                 idUsuario: 0,
                 nomeCompleto: '',
@@ -76,7 +76,7 @@ export default function AuxiliarForm({ onClose, auxiliarToEdit }: AuxiliarFormPr
 
         setFormData(prev => ({
             ...prev,
-            [name]: ['CTGId', 'comissaoUsuarioId'].includes(name) ? Number(value) : value,
+            [name]: ['CTGId', 'comissaoUsuarioId', 'numCredenciamento'].includes(name) ? Number(value) : value,
         }));
     };
 
@@ -84,6 +84,7 @@ export default function AuxiliarForm({ onClose, auxiliarToEdit }: AuxiliarFormPr
         setFormData(prev => ({
             ...prev,
             credenciamento: e.target.value as Credenciamento,
+            numCredenciamento: 0, 
         }));
     };
 
@@ -95,8 +96,8 @@ export default function AuxiliarForm({ onClose, auxiliarToEdit }: AuxiliarFormPr
                 funcao: Funcao.AUXILIAR,
             };
 
-            if (!auxiliarPayload.credenciamento) {
-                toast.error("Selecione o credenciamento.");
+            if (formData.credenciamento === Credenciamento.CREDENCIADO && !formData.numCredenciamento) {
+                toast.error("Informe o número de credenciamento.");
                 return;
             }
 
@@ -126,7 +127,8 @@ export default function AuxiliarForm({ onClose, auxiliarToEdit }: AuxiliarFormPr
             </h1>
 
             <form onSubmit={handleSubmit}>
-        
+
+                {/* Campos básicos */}
                 <div className="flex flex-col mb-4">
                     <label className="text-sm font-medium mb-1">Nome Completo</label>
                     <input
@@ -194,12 +196,12 @@ export default function AuxiliarForm({ onClose, auxiliarToEdit }: AuxiliarFormPr
                         className="rounded-lg p-2 bg-surface-containerHigh border border-outline"
                     />
                 </div>
-                
+
                 <div className="flex flex-col mb-4">
                     <label className="text-sm font-medium mb-1">Credenciamento</label>
                     <select
-                        name="numCredenciamento"
-                        value={formData.numCredenciamento || ""}
+                        name="credenciamento"
+                        value={formData.credenciamento || ""}
                         onChange={handleCredenciamentoChange}
                         required
                         className="rounded-lg p-2 bg-surface-containerHigh border border-outline"
@@ -210,17 +212,20 @@ export default function AuxiliarForm({ onClose, auxiliarToEdit }: AuxiliarFormPr
                     </select>
                 </div>
 
-                <div className="flex flex-col mb-4">
-                    <label className="text-sm font-medium mb-1">Número de Credenciamento</label>
-                    <input
-                        type="number"
-                        name="numCredenciamento"
-                        value={formData.numCredenciamento}
-                        onChange={handleChange}
-                        required
-                        className="rounded-lg p-2 bg-surface-containerHigh border border-outline focus:outline-none focus:ring-2 focus:ring-primary"
-                    />
-                </div>
+               
+                {formData.credenciamento === Credenciamento.CREDENCIADO && (
+                    <div className="flex flex-col mb-4">
+                        <label className="text-sm font-medium mb-1">Número de Credenciamento</label>
+                        <input
+                            type="number"
+                            name="numCredenciamento"
+                            value={formData.numCredenciamento || ""}
+                            onChange={handleChange}
+                            required
+                            className="rounded-lg p-2 bg-surface-containerHigh border border-outline"
+                        />
+                    </div>
+                )}
 
                 <div className="flex flex-col mb-4">
                     <label className="text-sm font-medium mb-1">Login</label>
