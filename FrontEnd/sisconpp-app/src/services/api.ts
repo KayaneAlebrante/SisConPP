@@ -63,13 +63,13 @@ export const deleteUsuario = async (id: number) => {
   return await api.delete(`/usuario/${id}`);
 };
 
-export const listarUsuriosAvaliadores = async () => {
-  const response = await api.get("/usuario/usuarios/avaliadores");
+export const listarUsuriosAvaliadores = async (): Promise<Usuario[]> =>{
+  const response = await api.get<Usuario[]>("/usuario/usuarios/avaliadores");
   return response.data;
 }
 
-export const listarUsuriosAuxiliares = async () => {
-  const response = await api.get("/usuario/usuarios/auxiliares");
+export const listarUsuriosAuxiliares = async (): Promise<Usuario[]> => {
+  const response = await api.get<Usuario[]>("/usuario/usuarios/auxiliares");
   return response.data;
 }
 
