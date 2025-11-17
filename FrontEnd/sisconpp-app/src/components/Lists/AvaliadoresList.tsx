@@ -92,21 +92,11 @@ export default function AvaliadorList({ onEdit }: AvaliadorListProps) {
             } else {
                 throw new Error("Falha ao excluir avaliador");
             }
-        } catch{
-            const response = await fetch("/api/usuarios",{
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ id }),
-            });
-
-            if (!response.ok) {
-                const erroApi = await response.json();
-                toast.error(erroApi.mensagem || "Erro ao excluir avaliador."); 
-                setIsDialogOpen(false);
-                setAvaliadorSelecionadoId(null);
-            }
+        } catch (error) {
+            console.error("Erro ao excluir avaliador:", error);
+            toast.error(error instanceof Error ? error.message : "Erro ao excluir avaliador.");
+            setIsDialogOpen(false);
+            setAvaliadorSelecionadoId(null);
         }
     };
 

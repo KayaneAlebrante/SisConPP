@@ -91,21 +91,11 @@ export default function AuxiliaresList({ onEdit}: AuxiliaresListProps) {
             } else {
                 throw new Error("Falha ao excluir auxiliar");
             }
-        } catch{
-            const response = await fetch("/api/usuarios",{
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ id }),
-            });
-
-            if (!response.ok) {
-                const erroApi = await response.json();
-                toast.error(erroApi.mensagem || "Erro ao excluir auxiliar.");               
-                setIsDialogOpen(false);
-                setAuxiliarSelecionadoId(null);
-            }
+        } catch(error) {
+            console.error("Erro ao excluir auxiliar:", error);
+            toast.error(error instanceof Error ? error.message : "Erro ao excluir auxiliar.");
+            setIsDialogOpen(false);
+            setAuxiliarSelecionadoId(null);
         }
     };
 

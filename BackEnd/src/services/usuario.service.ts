@@ -159,7 +159,7 @@ class UsuarioService {
                 where: { idUsuario: idUsuario }
             });
 
-            return { mensagem: "Usuário deletado com sucesso." };
+            return { measage: "Usuário deletado com sucesso." };
 
         } catch (error: any) {
             console.error(error);

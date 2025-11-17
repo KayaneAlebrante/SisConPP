@@ -171,10 +171,10 @@ class UsuarioController {
             return res.status(204).send();
         } catch (error: unknown) {
             if (error instanceof Error) {
-                return res.status(400).json({ mensagem: error.message });
+                return res.status(400).json({ measage: error.message });
             } else {
                 console.error("Erro desconhecido:", error);
-                return res.status(400).json({ mensagem: "Erro desconhecido." });
+                return res.status(400).json({ measage: "Erro desconhecido." });
             }
         }
     }
