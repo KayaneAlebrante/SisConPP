@@ -8,7 +8,26 @@ interface Props {
     onVoltar: () => void;
 }
 
+const formtFuncao = (funcao: string | undefined) => {
+    switch (funcao) {
+        case "AVALIADOR": return "Avaliador";
+        case "AUXILIAR": return "Auxiliar";
+        default:
+            return funcao || "Não informado";
+    }
+};
+
+const formtCredenciamento = (cred: string | undefined) => {
+    switch (cred) {
+        case "CREDENCIADO": return "Credenciado";
+        case "NAO_CREDENCIADO": return "Não Credenciado";
+        default:
+            return cred || "Não informado";
+    }
+};
+
 export default function VisualizacaoAuxiliar({ auxiliar, ctg, onVoltar }: Props) {
+
     return (
         <div className="w-full max-w-xl">
             <button className="text-green-600 mb-4 flex items-center" onClick={onVoltar}>
@@ -31,10 +50,10 @@ export default function VisualizacaoAuxiliar({ auxiliar, ctg, onVoltar }: Props)
                 </div>
 
                 <div className="flex justify-between">
-                    <p><strong>Função:</strong> {auxiliar.funcao}</p>
+                    <p><strong>Função:</strong> {formtFuncao(auxiliar.funcao)}</p>
                 </div>
                 <div className="flex justify-between">
-                    <p><strong>Credenciamento:</strong> {auxiliar.credenciamento}</p>
+                    <p><strong>Credenciamento:</strong> {formtCredenciamento(auxiliar.credenciamento)}</p>
                     <p><strong>Número Credenciamento:</strong>{auxiliar.numCredenciamento}</p>
                 </div>
 
