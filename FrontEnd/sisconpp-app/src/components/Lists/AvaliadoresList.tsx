@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { listarUsuriosAvaliadores as listarAvaliadores, deleteUsuario as deleteAvaliador, listarCTGs } from "../../services/api";
+import { listarUsuriosAvaliadores as listarAvaliadores, deleteUsuario, listarCTGs} from "../../services/api";
 import { toast } from "react-toastify";
 import { Pencil, Trash2, Search } from "lucide-react";
 import { Usuario, Funcao, Credenciamento } from "../../types/Usuario";
@@ -80,25 +80,50 @@ export default function AvaliadorList({ onEdit }: AvaliadorListProps) {
     const [avaliadorSelecionadoId, setAvaliadorSelecionadoId] = useState<number | null>(null);
 
 
-    const handleDeleteAvaliador = async (id: number) => {
-        try {
-            const response = await deleteAvaliador(id);
-            console.log("Resposta da exclusão:", response);
-            if (response !== null && response !== undefined) {
-                await fetchAvaliadores();
-                toast.success("Avaliador excluído com sucesso!");
-                setIsDialogOpen(false);
-                setAvaliadorSelecionadoId(null);
-            } else {
-                throw new Error("Falha ao excluir avaliador");
+    // const handleDeleteAvaliador = async (id: number) => {
+    //     try {
+    //         const response = await deleteAvaliador(id);
+    //         console.log("Resposta da exclusão:", response);
+    //         if (response !== null && response !== undefined) {
+    //             await fetchAvaliadores();
+    //             toast.success("Avaliador excluído com sucesso!");
+    //             setIsDialogOpen(false);
+    //             setAvaliadorSelecionadoId(null);
+    //         } else {
+    //             throw new Error("Falha ao excluir avaliador");
+    //         }
+    //     } catch (error) {
+    //         console.error("Erro ao excluir avaliador:", error);
+    //         toast.error(error instanceof Error ? error.message : "Erro ao excluir avaliador.");
+    //         setIsDialogOpen(false);
+    //         setAvaliadorSelecionadoId(null);
+    //     }
+    // };
+
+    const handleConfirmDelete = async () =>{
+        if(!avaliadorSelecionadoId) return;
+
+        try{
+            await deleteUsuario(avaliadorSelecionadoId);
+
+            toast.success("Usuário excuído com sucesso!");
+            fetchAvaliadores();
+            setIsDialogOpen(false);
+            setAvaliadorSelecionadoId(null);
+        }catch(error: unknown){
+            let msg = "Erro ao deletar avaliador.";
+
+            if (typeof error === 'object' && error !== null && 'response' in error) {
+                const axiosError = error as { response?: { data?: { message?: string } } };
+                msg = axiosError.response?.data?.message ?? msg;
             }
-        } catch (error) {
-            console.error("Erro ao excluir avaliador:", error);
-            toast.error(error instanceof Error ? error.message : "Erro ao excluir avaliador.");
+
+            toast.error(msg);
             setIsDialogOpen(false);
             setAvaliadorSelecionadoId(null);
         }
-    };
+
+    }
 
     const getCTGNameById = (idCTG: number | undefined) => {
         if (!idCTG) return "CTG não informado";
@@ -162,7 +187,7 @@ export default function AvaliadorList({ onEdit }: AvaliadorListProps) {
                 }}
                 onConfirm={() => {
                     if (avaliadorSelecionadoId !== null) {
-                        handleDeleteAvaliador(avaliadorSelecionadoId);
+                        handleConfirmDelete();
                     }
                 }}
                 message="Tem certeza que deseja excluir este avaliador?"

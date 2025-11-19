@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { listarUsuriosAuxiliares as listarAuxiliares, deleteUsuario, listarCTGs} from "../../services/api";
+import { listarUsuriosAuxiliares as listarAuxiliares, deleteUsuario, listarCTGs } from "../../services/api";
 import { toast } from "react-toastify";
 import { Pencil, Trash2, Search } from "lucide-react";
-import { Usuario, Funcao, Credenciamento} from "../../types/Usuario";
+import { Usuario, Funcao, Credenciamento } from "../../types/Usuario";
 import { CTG } from "../../types/CTG";
 import Dialog from "../Modal/Dialog";
 import AuxiliarView from "../View/AuxiliarView";
@@ -14,7 +14,7 @@ interface AuxiliaresListProps {
     onCredenciar: (auxiliar: Usuario) => void;
 }
 
-export default function AuxiliaresList({ onEdit}: AuxiliaresListProps) {
+export default function AuxiliaresList({ onEdit }: AuxiliaresListProps) {
     const [auxiliares, setAuxiliares] = useState<Usuario[]>([]);
     const [ctgs, setCTGs] = useState<CTG[]>([]);
     const [isViewModalOpen, setIsViewModalOpen] = useState(false);
@@ -51,7 +51,7 @@ export default function AuxiliaresList({ onEdit}: AuxiliaresListProps) {
                 login: usuario.login,
                 senha: usuario.senha,
                 funcao: usuario.funcao,
-                credenciamento: usuario.credenciamento, 
+                credenciamento: usuario.credenciamento,
                 numCredenciamento: usuario.numCredenciamento || 0,
                 comissaoIdUsuario: usuario.comissaoUsuarioId,
             }));
@@ -79,24 +79,30 @@ export default function AuxiliaresList({ onEdit}: AuxiliaresListProps) {
         fetchCTGs();
     }, []);
 
-    const handleConfirmDelete = async (id: number) => {
+    const handleConfirmDelete = async () => {
+        if (!auxiliarSelecionadoId) return;
+
         try {
-            const response = await deleteUsuario(id);
-            console.log("Resposta da exclusão:", response);
-            if (response !== null && response !== undefined) {
-                await fetchAuxiliares();
-                toast.success("Auxiliar excluído com sucesso!");
-                setIsDialogOpen(false);
-                setAuxiliarSelecionadoId(null);
-            } else {
-                throw new Error("Falha ao excluir auxiliar");
+            await deleteUsuario(auxiliarSelecionadoId);
+
+            toast.success("Usuário excluído com sucesso!");
+            fetchAuxiliares();
+            setIsDialogOpen(false);
+            setAuxiliarSelecionadoId(null);
+
+        } catch (error: unknown) {
+            let msg = "Erro ao deletar auxiliar.";
+
+            if (typeof error === 'object' && error !== null && 'response' in error) {
+                const axiosError = error as { response?: { data?: { message?: string } } };
+                msg = axiosError.response?.data?.message ?? msg;
             }
-        } catch(error) {
-            console.error("Erro ao excluir auxiliar:", error);
-            toast.error(error instanceof Error ? error.message : "Erro ao excluir auxiliar.");
+
+            toast.error(msg);
             setIsDialogOpen(false);
             setAuxiliarSelecionadoId(null);
         }
+
     };
 
     const getCTGNameById = (idCTG: number | undefined) => {
@@ -153,23 +159,23 @@ export default function AuxiliaresList({ onEdit}: AuxiliaresListProps) {
             </table>
 
             <Dialog
-                            isOpen={isDialogOpen}
-                            onClose={() => {
-                                setIsDialogOpen(false);
-                                setAuxiliarSelecionadoId(null);
-                            }}
-                            onConfirm={() => {
-                                if (auxiliarSelecionadoId !== null) {
-                                    handleConfirmDelete(auxiliarSelecionadoId);
-                                }
-                            }}
-                            message="Tem certeza que deseja excluir este avaliador?"
+                isOpen={isDialogOpen}
+                onClose={() => {
+                    setIsDialogOpen(false);
+                    setAuxiliarSelecionadoId(null);
+                }}
+                onConfirm={() => {
+                    if (auxiliarSelecionadoId !== null) {
+                        handleConfirmDelete();
+                    }
+                }}
+                message="Tem certeza que deseja excluir este avaliador?"
             />
 
-            <Modal 
+            <Modal
                 isOpen={isViewModalOpen}
                 onClose={() => setIsViewModalOpen(false)}
-                >
+            >
                 {selectedAuxiliar && (
                     <AuxiliarView
                         auxiliar={selectedAuxiliar}
@@ -178,7 +184,7 @@ export default function AuxiliaresList({ onEdit}: AuxiliaresListProps) {
                     />
                 )}
             </Modal>
-                    
+
 
         </div>
     );

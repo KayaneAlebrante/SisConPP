@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import usuarioService from "../services/usuario.service";
+import AppError from "../errors/AppError";
 
 class UsuarioController {
     async criarUsuario(req: Request, res: Response) {
@@ -67,7 +68,7 @@ class UsuarioController {
                 login,
                 senha,
                 funcao,
-                credenciamento, 
+                credenciamento,
                 numCredenciamento,
                 comissaoUsuarioId
             } = data;
@@ -113,7 +114,6 @@ class UsuarioController {
             if (error instanceof Error) {
                 return res.status(400).json({ mensagem: error.message });
             } else {
-                console.error("Erro desconhecido:", error);
                 return res.status(400).json({ mensagem: "Erro desconhecido." });
             }
         }
@@ -170,14 +170,35 @@ class UsuarioController {
             await usuarioService.deletarUsuario(Number(id));
             return res.status(204).send();
         } catch (error: unknown) {
-            if (error instanceof Error) {
-                return res.status(400).json({ measage: error.message });
-            } else {
-                console.error("Erro desconhecido:", error);
-                return res.status(400).json({ measage: "Erro desconhecido." });
+            // Narrowing: se for AppError, usamos o statusCode
+            if (error instanceof AppError) {
+                return res.status(error.statusCode).json({ message: error.message });
             }
+
+            // Erro genérico do JS
+            if (error instanceof Error) {
+                return res.status(400).json({ message: error.message });
+            }
+
+            console.error("Erro desconhecido ao deletar usuário:", error);
+            return res.status(500).json({ message: "Erro desconhecido." });
         }
     }
+    // async deletarUsuario(req: Request, res: Response) {
+    //     const { id } = req.params;
+
+    //     try {
+    //         await usuarioService.deletarUsuario(Number(id));
+    //         return res.status(204).send();
+    //     } catch (error: unknown) {
+    //         if (error instanceof Error) {
+    //             return res.status(400).json({ message: error.message });
+    //         } else {
+    //             console.error("Erro desconhecido:", error);
+    //             return res.status(400).json({ message: error.message });
+    //         }
+    //     }
+    // }
 }
 
 export default new UsuarioController();

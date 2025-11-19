@@ -20,7 +20,6 @@ export default function ConcursoList({ onEdit }: ConcursoListProps) {
     const [isViewModalOpen, setIsViewModalOpen] = useState(false);
     const [selectedConcurso, setSelectedConcurso] = useState<Concurso | null>(null);
 
-
     const fetchConcursos = async () => {
         try {
             const response = await listarConcurso();

@@ -1,5 +1,7 @@
-import { PrismaClient, Funcao, Credenciamento } from "@prisma/client";
+import { PrismaClient, Funcao, Credenciamento, Prisma } from "@prisma/client";
 import bcrypt from "bcrypt";
+import AppError from "../errors/AppError";
+
 
 const prisma = new PrismaClient();
 
@@ -70,12 +72,12 @@ class UsuarioService {
             );
 
             if (data.credenciamento === Credenciamento.NAO_CREDENCIADO) {
-            filteredData.numCredenciamento = 0;
+                filteredData.numCredenciamento = 0;
             }
-            
+
             const usuario = await this.prisma.usuario.update({
                 where: { idUsuario },
-                data: filteredData, 
+                data: filteredData,
             });
 
             return usuario;
@@ -148,26 +150,29 @@ class UsuarioService {
     async deletarUsuario(idUsuario: number) {
         try {
             const usuario = await this.prisma.usuario.findUnique({
-                where: { idUsuario: idUsuario }
+                where: { idUsuario }
             });
 
-            if(!usuario) {
-                throw new Error("Usuário não encontrado.");
+            if (!usuario) {
+                throw new AppError("Usuário não encontrado.", 404);
             }
 
             await this.prisma.usuario.delete({
-                where: { idUsuario: idUsuario }
+                where: { idUsuario }
             });
 
-            return { measage: "Usuário deletado com sucesso." };
+            return { message: "Usuário deletado com sucesso." };
 
-        } catch (error: any) {
-            console.error(error);
-            if(error.code === 'P2003') {
-                throw new Error("Não é possível deletar o usuário pois ele está associado a outros registros.");
-            }else{
-                throw new Error("Erro ao deletar usuário.");
-            }            
+        } catch (error: unknown) {
+            if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2003') {
+                throw new AppError("Não é possível deletar o usuário pois ele está associado a outros registros.", 409);
+            }
+
+            if (error instanceof AppError) {
+                throw error;
+            }
+            
+            throw new AppError("Erro ao deletar usuário.", 500);
         }
     }
 }

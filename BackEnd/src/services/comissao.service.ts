@@ -117,6 +117,14 @@ class ComissaoService {
             throw new Error("Usuário não é um Avaliador");
         }
 
+        const existeVinculo = await prisma.comissaoUsuario.findFirst({
+            where: { usuarioId }
+        });
+
+        if (existeVinculo) {
+            throw new Error("Usuário já está vinculado a uma comissão");
+        }
+
         return await this.createComissaoUsuario(usuarioId, comissaoId);
     }
 
