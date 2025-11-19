@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import concursoService from "../services/concurso.service";
+import AppError from "../errors/AppError";
 
 class ConcursoController{
     async criarConcurso(req: Request, res: Response){
@@ -119,11 +120,16 @@ class ConcursoController{
             await concursoService.deletarConcuro(Number(id));
             return res.status(204).send();
         }catch(error: unknown){
-            if (error instanceof Error) {
-                console.error("Erro ao deletar concurso:", error);
-                return res.status(400).json({ mensagem: error.message });
+            if (error instanceof AppError) {
+                return res.status(error.statusCode).json({ message: error.message });
             }
-            return res.status(400).json({ mensagem: "Erro desconhecido." });
+
+            if (error instanceof Error) {
+                return res.status(400).json({ message: error.message });
+            }
+
+            console.error("Erro desconhecido ao deletar concurso:", error);
+            return res.status(500).json({ message: "Erro desconhecido." });
         }
     }
 

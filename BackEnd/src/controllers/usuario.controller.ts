@@ -170,12 +170,9 @@ class UsuarioController {
             await usuarioService.deletarUsuario(Number(id));
             return res.status(204).send();
         } catch (error: unknown) {
-            // Narrowing: se for AppError, usamos o statusCode
             if (error instanceof AppError) {
                 return res.status(error.statusCode).json({ message: error.message });
             }
-
-            // Erro genérico do JS
             if (error instanceof Error) {
                 return res.status(400).json({ message: error.message });
             }

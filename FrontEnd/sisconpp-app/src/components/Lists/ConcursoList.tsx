@@ -34,32 +34,28 @@ export default function ConcursoList({ onEdit }: ConcursoListProps) {
         fetchConcursos();
     }, []);
 
-    const handleConfirmDelete = async (id: number) => {
-        try {
-            const response = await deletarConcurso(id);
-            if (response) {
-                await fetchConcursos();
-                toast.success("Concurso excluído com sucesso!");
-                setIsDialogOpen(false);
-                setConcursoSelecionadoId(null);
-            } else {
-                throw new Error("Falha ao excluir concurso");
-            }
-        } catch{
-            const response = await fetch("/api/usuarios",{
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ id }),
-            });
+    const handleConfirmDelete = async () => {
+        if (!concursoSelecionadoId) return;
 
-            if (!response.ok) {
-                const erroApi = await response.json();
-                toast.error(erroApi.mensagem || "Erro ao excluir concurso.");               
-                setIsDialogOpen(false);
-                setConcursoSelecionadoId(null);
+        try {
+            await deletarConcurso(concursoSelecionadoId);
+
+            toast.success("Concurso excluído com sucesso!");
+            fetchConcursos();
+            setIsDialogOpen(false);
+            setConcursoSelecionadoId(null);
+
+        } catch (error: unknown) {
+            let msg = "Erro ao deletar concurso.";
+
+            if (typeof error === 'object' && error !== null && 'response' in error) {
+                const axiosError = error as { response?: { data?: { message?: string } } };
+                msg = axiosError.response?.data?.message ?? msg;
             }
+
+            toast.error(msg);
+            setIsDialogOpen(false);
+            setConcursoSelecionadoId(null);
         }
     };
 
@@ -131,7 +127,7 @@ export default function ConcursoList({ onEdit }: ConcursoListProps) {
                 }}
                 onConfirm={() => {
                     if (concursoSelecionadoId !== null) {
-                        handleConfirmDelete(concursoSelecionadoId);
+                        handleConfirmDelete();
                         setIsDialogOpen(false);
                     }
                 }}

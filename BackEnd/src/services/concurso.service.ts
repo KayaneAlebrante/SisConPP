@@ -1,4 +1,5 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Prisma } from "@prisma/client";
+import AppError from "../errors/AppError";
 
 const prisma = new PrismaClient;
 
@@ -100,8 +101,6 @@ class ConcursoService {
 
     async deletarConcuro(idConcurso: number) {
         try {
-            console.log("IdConcurso", idConcurso);
-
             const concurso = await this.prisma.concurso.findUnique({
                 where: { idConcurso }
             });
@@ -116,14 +115,16 @@ class ConcursoService {
 
             return { mensagem: "Concurso deletado com sucesso." };
 
-        } catch (error: any) {
-            console.error(error);
-
-            if (error.code === "P2003") {
+        } catch (error: unknown) {
+            if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2003') {
                 throw new Error("Não é possível excluir o concurso pois existem registros vinculados.");
-            }else{
-                throw new Error("Erro ao deletar concurso.");
             }
+
+            if (error instanceof AppError) {
+                throw error;
+            }
+
+            throw new AppError("Erro ao deletar concurso.", 500);
         }
     }
 

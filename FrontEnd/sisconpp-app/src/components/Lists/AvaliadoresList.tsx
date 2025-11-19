@@ -79,34 +79,13 @@ export default function AvaliadorList({ onEdit }: AvaliadorListProps) {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [avaliadorSelecionadoId, setAvaliadorSelecionadoId] = useState<number | null>(null);
 
-
-    // const handleDeleteAvaliador = async (id: number) => {
-    //     try {
-    //         const response = await deleteAvaliador(id);
-    //         console.log("Resposta da exclusão:", response);
-    //         if (response !== null && response !== undefined) {
-    //             await fetchAvaliadores();
-    //             toast.success("Avaliador excluído com sucesso!");
-    //             setIsDialogOpen(false);
-    //             setAvaliadorSelecionadoId(null);
-    //         } else {
-    //             throw new Error("Falha ao excluir avaliador");
-    //         }
-    //     } catch (error) {
-    //         console.error("Erro ao excluir avaliador:", error);
-    //         toast.error(error instanceof Error ? error.message : "Erro ao excluir avaliador.");
-    //         setIsDialogOpen(false);
-    //         setAvaliadorSelecionadoId(null);
-    //     }
-    // };
-
     const handleConfirmDelete = async () =>{
         if(!avaliadorSelecionadoId) return;
 
         try{
             await deleteUsuario(avaliadorSelecionadoId);
 
-            toast.success("Usuário excuído com sucesso!");
+            toast.success("Usuário excluído com sucesso!");
             fetchAvaliadores();
             setIsDialogOpen(false);
             setAvaliadorSelecionadoId(null);
