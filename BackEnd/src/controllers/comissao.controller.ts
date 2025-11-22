@@ -24,14 +24,14 @@ class ComissaoController {
 
     async atualizarComissao(req: Request, res: Response) {
         const { id } = req.params;
-        const dadosAtualizados = req.body;
+        const { nomeComissao } = req.body
 
         if (!id) {
             return res.status(400).json({ error: "ID da comissão é obrigatório" });
         }
 
         try {
-            const comissao = await comissaoService.atualizarComissao(Number(id), dadosAtualizados);
+            const comissao = await comissaoService.atualizarComissao(Number(id), nomeComissao);
             return res.status(200).json(comissao);
         } catch (error: any) {
             return res.status(500).json({ error: error.message });
