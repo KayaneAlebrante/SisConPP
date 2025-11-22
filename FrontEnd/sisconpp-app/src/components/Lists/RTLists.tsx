@@ -29,25 +29,24 @@ export default function RTList({ onEdit }: RTListProps) {
   }, []);
 
   const handleConfirmDelete = async () => {
-    if (rtSelecionadoId === null) {
-      toast.error("Nenhuma RT selecionada para exclusão.");
-      return;
-    }
+    if (!rtSelecionadoId) return;
 
     try {
-      const response = await deleteRT(rtSelecionadoId);
-      console.log("Resposta deleteRT:", response);
+      await deleteRT(rtSelecionadoId);
 
-      if (response) {
-        await fetchRTs();
-        toast.success("RT excluída com sucesso!");
-      } else {
-        throw new Error("Falha ao excluir a RT.");
+      toast.success("RT exluído com sucesso!");
+      fetchRTs();
+      setIsDialogOpen(false);
+      setRtSelecionadoId(null);
+    } catch (error: unknown) {
+      let msg = "Erro ao deletar RT.";
+
+      if (typeof error === 'object' && error !== null && 'response' in error) {
+        const axiosError = error as { response?: { data?: { message?: string } } };
+        msg = axiosError.response?.data?.message ?? msg;
       }
-    } catch (error) {
-      console.error("Erro ao excluir RT:", error);
-      toast.error("Erro ao excluir RT.");
-    } finally {
+
+      toast.error(msg);
       setIsDialogOpen(false);
       setRtSelecionadoId(null);
     }

@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import RTService from "../services/rt.service";
+import AppError from "../errors/AppError";
 
 class RTController {
     async criarRT(req: Request, res: Response) {
@@ -23,12 +24,10 @@ class RTController {
         }
     }
 
-    // Função para atualizar RT
     async atualizarRT(req: Request, res: Response) {
         const { id } = req.params;
         const data = req.body;
 
-        // Validação simples de dados
         if (!data || Object.keys(data).length === 0) {
             return res.status(400).json({ mensagem: "Dados para atualização são obrigatórios." });
         }
@@ -40,7 +39,7 @@ class RTController {
             if (error instanceof Error) {
                 return res.status(400).json({ mensagem: error.message });
             } else {
-                console.error("Erro desconhecido:", error); 
+                console.error("Erro desconhecido:", error);
                 return res.status(400).json({ mensagem: "Erro desconhecido." });
             }
         }
@@ -59,7 +58,7 @@ class RTController {
             if (error instanceof Error) {
                 return res.status(400).json({ mensagem: error.message });
             } else {
-                console.error("Erro desconhecido:", error); 
+                console.error("Erro desconhecido:", error);
                 return res.status(400).json({ mensagem: "Erro desconhecido." });
             }
         }
@@ -73,7 +72,7 @@ class RTController {
             if (error instanceof Error) {
                 return res.status(400).json({ mensagem: error.message });
             } else {
-                console.error("Erro desconhecido:", error); 
+                console.error("Erro desconhecido:", error);
                 return res.status(400).json({ mensagem: "Erro desconhecido." });
             }
         }
@@ -84,14 +83,17 @@ class RTController {
 
         try {
             await RTService.deletarRT(Number(id));
-            return res.status(200).json({ mensagem: "RT deletado com sucesso." });
+            return res.status(204).send();
         } catch (error: unknown) {
-            if (error instanceof Error) {
-                return res.status(400).json({ mensagem: error.message });
-            } else {
-                console.error("Erro desconhecido:", error); 
-                return res.status(400).json({ mensagem: "Erro desconhecido." });
+            if (error instanceof AppError) {
+                return res.status(error.statusCode).json({ message: error.message });
             }
+            if (error instanceof Error) {
+                return res.status(400).json({ message: error.message });
+            }
+
+            console.error("Erro desconhecido ao deletar RT:", error);
+            return res.status(500).json({ message: "Erro desconhecido." });
         }
     }
 }

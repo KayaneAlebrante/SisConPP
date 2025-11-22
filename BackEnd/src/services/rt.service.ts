@@ -1,4 +1,5 @@
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
+import AppError from '../errors/AppError';
 
 const prisma = new PrismaClient();
 
@@ -59,12 +60,32 @@ class RTService {
 
   async deletarRT(idRt: number) {
     try {
-      const rt = await this.prisma.rT.delete({
-        where: { idRT: idRt },
+      const rt = await this.prisma.rT.findUnique({
+        where: {idRT: idRt }
       });
-      return rt;
-    } catch (error) {
-      throw new Error("Erro ao deletar RT.");
+
+      if(!rt){
+        throw new AppError("RT não encontrada.", 404);
+      }
+
+      await this.prisma.rT.delete({
+        where: { idRT: idRt}
+      });
+
+      return { message: "RT deletada com sucesso."};
+
+    } catch (error: unknown) {
+      if( error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2003'){
+        throw new AppError("Não é possível deletar a RT pois ela está associado a outros registros.", 409);
+
+       
+      };
+      
+      if(error instanceof AppError){
+        throw error;          
+      }
+
+      throw new AppError("Erro ao deletar RT", 500);
     }
   }
 }

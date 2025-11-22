@@ -181,21 +181,6 @@ class UsuarioController {
             return res.status(500).json({ message: "Erro desconhecido." });
         }
     }
-    // async deletarUsuario(req: Request, res: Response) {
-    //     const { id } = req.params;
-
-    //     try {
-    //         await usuarioService.deletarUsuario(Number(id));
-    //         return res.status(204).send();
-    //     } catch (error: unknown) {
-    //         if (error instanceof Error) {
-    //             return res.status(400).json({ message: error.message });
-    //         } else {
-    //             console.error("Erro desconhecido:", error);
-    //             return res.status(400).json({ message: error.message });
-    //         }
-    //     }
-    // }
 }
 
 export default new UsuarioController();
