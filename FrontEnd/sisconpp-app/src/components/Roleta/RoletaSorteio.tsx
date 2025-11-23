@@ -3,6 +3,7 @@ import { Wheel } from "react-custom-roulette";
 import { Quesito, SorteioDanca, DancaSalaoTradicional } from "../../types/SorteioDanca";
 import { realizarSorteio } from "../../services/api";
 import { toast } from "react-toastify";
+import pointerImg from '../../assets/poniter.png'; 
 
 interface RoletaProps {
   candidatoId: number;
@@ -82,6 +83,10 @@ export default function RoletaSorteio({
         innerBorderWidth={2}
         radiusLineColor='#2A5000'
         radiusLineWidth={2}
+        fontSize={16} 
+        pointerProps={{
+          src: pointerImg,
+        }}
         onStopSpinning={() => {
           setMustSpin(false);
           const resultado = quesitos[prizeNumber];
