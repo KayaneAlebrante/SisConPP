@@ -10,6 +10,7 @@ import Auxiliares from "./pages/Auxiliares";
 import Candidatos from "./pages/Candidato";
 import Concurso from "./pages/Concurso";
 import Comissao from "./pages/Comissao";
+import SorteioDanca from "./pages/SorteioDanca";
 
 function App() {
 
@@ -25,6 +26,7 @@ function App() {
         <Route path={RoutesPaths.Candidatos} element={<Candidatos />}/>
         <Route path={RoutesPaths.Concurso} element={<Concurso />}/>
         <Route path={RoutesPaths.Comissao} element={<Comissao />}/>
+        <Route path={RoutesPaths.SorteioDanca} element={<SorteioDanca/>}/>
       </Routes>
       <ToastContainer
         position="top-right"

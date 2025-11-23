@@ -5,6 +5,7 @@ import { Usuario } from '../types/Usuario';
 import { Candidato } from '../types/Candidato';
 import { Concurso } from '../types/Concurso';
 import { Comissao } from '../types/Comissao';
+import { PreferenciaSorteio, Quesito, CriarSorteioPayload } from '../types/SorteioDanca';
 
 export const api = axios.create({
   baseURL: 'http://localhost:3005',
@@ -25,7 +26,7 @@ export const atualizarRT = (rt: RT) => {
 
 export const deleteRT = async (id: number) => {
   const response = await api.delete(`/rt/${id}`);
-  return response.data ?? true ;
+  return response.data ?? true;
 };
 
 export const cadastrarCTG = async (novoCTG: CTG) => {
@@ -63,7 +64,7 @@ export const deleteUsuario = async (id: number) => {
   return await api.delete(`/usuario/${id}`);
 };
 
-export const listarUsuriosAvaliadores = async (): Promise<Usuario[]> =>{
+export const listarUsuriosAvaliadores = async (): Promise<Usuario[]> => {
   const response = await api.get<Usuario[]>("/usuario/usuarios/avaliadores");
   return response.data;
 };
@@ -147,6 +148,23 @@ export const deletarUsuarioComissao = async (idUsuario: number, idComissao: numb
   return await api.delete(`/comissao/usuario/${idUsuario}/${idComissao}`);
 };
 
+export const getDancasTradicionais = async (): Promise<Quesito[]> => {
+  const response = await api.get<Quesito[]>("/quesito/dancasTradicionais");
+  return response.data;
+};
+
+export const getDancasSalao = async (): Promise<Quesito[]> => {
+  const response = await api.get<Quesito[]>("/quesito/dancasSalao");
+  return response.data;
+};
+
+export const criarPreferencia = async (criarPreferencia: PreferenciaSorteio) => {
+  return await api.post("/preferenciaSorteioDanca", criarPreferencia);
+};
+
+export const realizarSorteio = async (realizarSorteio: CriarSorteioPayload) => {
+  return await api.post("/sorteioDanca", realizarSorteio);
+}
 
 // ---- AUTENTICAÇÃO ----
 export interface LoginRequest {

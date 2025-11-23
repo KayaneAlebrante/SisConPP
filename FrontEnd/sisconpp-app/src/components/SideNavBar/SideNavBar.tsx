@@ -24,7 +24,7 @@ const Sidebar: FC = () => {
     { label: "Avaliadores", icon: BookText, href: "/avaliadores" },
     { label: "Auxiliar", icon: User, href: "/auxiliares" },
     { label: "Comissões Avaliadoras", icon: Users, href: "/comissao" },
-    { label: "Sortear Danças", icon: Music },
+    { label: "Sortear Danças", icon: Music, href: "/sorteio-danca"},
     { label: "Relatórios", icon: BookText },
   ];
 
