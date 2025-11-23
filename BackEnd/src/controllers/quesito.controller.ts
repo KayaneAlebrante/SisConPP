@@ -75,6 +75,26 @@ class QuesitoController{
         }
     }
 
+    async buscarDancasTradicionais(req: Request, res: Response){
+        try{
+            const dancas = await quesitoService.buscarDancasTradicionais();
+            return res.status(200).json(dancas);
+        }catch(error){
+            console.error("Erro ao buscar danças", error);
+            return res.status(400).json({mensagem: "Erro ao buscar Danças."});
+        }
+    }
+
+    async buscarDancasSalao(req: Request, res: Response){
+        try{
+            const dancas = await quesitoService.buscarDancasSalao();
+            return res.status(200).json(dancas);
+        }catch(error){
+            console.error("Erro ao buscar danças", error);
+            return res.status(400).json({mensagem: "Erro ao buscar Danças."});
+        }
+    }
+
     async deletarQuesito(req: Request, res: Response){
         const { id } = req.params;
 
