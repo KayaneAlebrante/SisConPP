@@ -1,13 +1,7 @@
 import { useEffect, useState } from "react";
 import SideNavBar from "../components/SideNavBar/SideNavBar";
-import {
-    listarCandidatos,
-    listarCategorias,
-    getDancasTradicionais,
-    getDancasSalao,
-    criarPreferencia,
-} from "../services/api";
-import { DancaSalaoTradicional, Quesito} from "../types/SorteioDanca";
+import { listarCandidatos, listarCategorias, getDancasTradicionais, getDancasSalao, criarPreferencia, } from "../services/api";
+import { DancaSalaoTradicional, Quesito } from "../types/SorteioDanca";
 import { Candidato } from "../types/Candidato";
 import { Categoria } from "../types/Categoria";
 import DancaForm from "../components/Forms/DancaForm";
@@ -26,6 +20,7 @@ export default function SorteioDancas() {
     const [candidatoSelecionado, setCandidatoSelecionado] = useState<number | null>(null);
     const [preferenciasSalvas, setPreferenciasSalvas] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [resultadoFinal, setResultadoFinal] = useState<Quesito | null>(null); 
 
     const candidatosFiltrados = categoriaSelecionada
         ? candidatos.filter((c) => c.categoriaId === categoriaSelecionada)
@@ -110,22 +105,25 @@ export default function SorteioDancas() {
                                 usuarioId={21} 
                                 tipoDanca={tipoDanca}
                                 quesitos={dancas.filter((d) => selecionados.includes(d.idQuesito))}
-                                onFinish={(resultado) =>
-                                    toast.success(`Sorteio realizado! Resultado: ${resultado.nomeQuesito}`)
+                                onFinish={(resultado) =>{
+                                    setResultadoFinal(resultado);
+                                }
                                 }
                             />
                         )
                     )}
                 </div>
 
-                <div className="w-full max-w-6xl bg-secondary-light p-8 rounded-2xl shadow-lg mb-4">
-                    <DancaList
-                        dancas={dancas}
-                        selecionados={selecionados}
-                        toggleSelecionado={toggleSelecionado}
-                        maxSelecionados={maxSelecionados}
-                    />
-                </div>
+                {!preferenciasSalvas && (
+                    <div className="w-full max-w-6xl bg-secondary-light p-8 rounded-2xl shadow-lg mb-4">
+                        <DancaList
+                            dancas={dancas}
+                            selecionados={selecionados}
+                            toggleSelecionado={toggleSelecionado}
+                            maxSelecionados={maxSelecionados}
+                        />
+                    </div>
+                )}
             </div>
 
             <Modal isOpen={isDialogOpen} onClose={() => setIsDialogOpen(false)}>
@@ -153,6 +151,20 @@ export default function SorteioDancas() {
                             Cancelar
                         </button>
                     </div>
+                </div>
+            </Modal>
+
+            <Modal isOpen={!!resultadoFinal} onClose={() => {
+                setResultadoFinal(null);
+                window.location.reload();
+            }}>
+                <div className="bg-white p-8 rounded-xl text-center">
+                    <h2 className="text-2xl font-bold text-gray-950 mb-4">Resultado do Sorteio</h2>
+                    {resultadoFinal && (
+                        <p className="text-4xl font-extrabold text-primary">
+                            {resultadoFinal.nomeQuesito}
+                        </p>
+                    )}
                 </div>
             </Modal>
         </div>

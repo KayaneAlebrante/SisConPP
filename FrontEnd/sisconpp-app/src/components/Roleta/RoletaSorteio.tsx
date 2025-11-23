@@ -47,7 +47,7 @@ export default function RoletaSorteio({
         toast.warn(sorteioResponse.message || "Sorteio já realizado para este candidato.");
         return;
       }
-      
+
       if (quesitoSorteado) {
         const index = quesitos.findIndex(
           (q) => q.idQuesito === quesitoSorteado.idQuesito
@@ -74,15 +74,17 @@ export default function RoletaSorteio({
         mustStartSpinning={mustSpin}
         prizeNumber={prizeNumber}
         data={data}
-        backgroundColors={["#FFB2BC", "#3A6A00"]}
-        textColors={["#AD2549", "#9ED768"]}
-        pointerProps={{
-          style: { borderColor: "transparent transparent #2563EB transparent" },
-        }}
+        backgroundColors={['#9ED768']}
+        textColors={['#2A5000']}
+        outerBorderColor='#2A5000'
+        outerBorderWidth={3}
+        innerBorderColor='#2A5000'
+        innerBorderWidth={2}
+        radiusLineColor='#2A5000'
+        radiusLineWidth={2}
         onStopSpinning={() => {
           setMustSpin(false);
           const resultado = quesitos[prizeNumber];
-          toast.success(`Resultado: ${resultado.nomeQuesito}`);
           onFinish(resultado);
         }}
       />
