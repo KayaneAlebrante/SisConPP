@@ -3,6 +3,14 @@ import quesitoController from '../controllers/quesito.controller';
 
 const router = express.Router();
 
+router.get("/dancasTradicionais", async(req: Request, res: Response) =>{
+    await quesitoController.buscarDancasTradicionais(req, res);
+});
+
+router.get("/dancasSalao", async(req: Request, res: Response) =>{
+    await quesitoController.buscarDancasSalao(req, res);
+});
+
 router.post("/", async (req: Request, res: Response) => {
     await quesitoController.criarQuesito(req, res);
 });
