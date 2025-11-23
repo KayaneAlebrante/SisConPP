@@ -46,24 +46,24 @@ export default function CTGList({ onEdit }: CTGListProps) {
   }, []);
 
   const handleConfirmDelete = async () => {
-    if (ctgSelecionadoId === null) {
-      toast.error("Nenhum CTG selecionado para exclusão.");
-      return;
-    }
+    if (!ctgSelecionadoId) return;
 
     try {
-      const response = await deleteCTG(ctgSelecionadoId);
+      await deleteCTG(ctgSelecionadoId);
 
-      if (response !== null && response !== undefined) {
-        await fetchCTGs();
-        toast.success("CTG excluído com sucesso!");
-      } else {
-        throw new Error("Falha ao excluir o CTG.");
+      toast.success("CTG exluído com sucesso!");
+      fetchCTGs();
+      setIsDialogOpen(false);
+      setCtgSelecionadoId(null);
+    } catch (error: unknown) {
+      let msg = "Erro ao deletar CTG.";
+
+      if (typeof error === 'object' && error !== null && 'response' in error) {
+        const axiosError = error as { response?: { data?: { message?: string } } };
+        msg = axiosError.response?.data?.message ?? msg;
       }
-    } catch (error) {
-      console.error("Erro ao excluir CTG:", error);
-      toast.error("Erro ao excluir o CTG.");
-    } finally {
+
+      toast.error(msg);
       setIsDialogOpen(false);
       setCtgSelecionadoId(null);
     }

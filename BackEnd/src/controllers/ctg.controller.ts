@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import CTGService from "../services/ctg.service";
+import AppError from "../errors/AppError";
 
 class CTGController {
     async criarCTG(req: Request, res: Response) {
@@ -38,7 +39,7 @@ class CTGController {
             if (error instanceof Error) {
                 return res.status(400).json({ mensagem: error.message });
             } else {
-                console.error("Erro desconhecido:", error); 
+                console.error("Erro desconhecido:", error);
                 return res.status(400).json({ mensagem: "Erro desconhecido." });
             }
         }
@@ -57,7 +58,7 @@ class CTGController {
             if (error instanceof Error) {
                 return res.status(400).json({ mensagem: error.message });
             } else {
-                console.error("Erro desconhecido:", error); 
+                console.error("Erro desconhecido:", error);
                 return res.status(400).json({ mensagem: "Erro desconhecido." });
             }
         }
@@ -71,7 +72,7 @@ class CTGController {
             if (error instanceof Error) {
                 return res.status(400).json({ mensagem: error.message });
             } else {
-                console.error("Erro desconhecido:", error); 
+                console.error("Erro desconhecido:", error);
                 return res.status(400).json({ mensagem: "Erro desconhecido." });
             }
         }
@@ -82,14 +83,17 @@ class CTGController {
 
         try {
             await CTGService.deletarCTG(Number(id));
-            return res.status(200).json({ mensagem: "CTG deletado com sucesso." });
+            return res.status(204).send();
         } catch (error: unknown) {
-            if (error instanceof Error) {
-                return res.status(400).json({ mensagem: error.message });
-            } else {
-                console.error("Erro desconhecido:", error); 
-                return res.status(400).json({ mensagem: "Erro desconhecido." });
+            if (error instanceof AppError) {
+                return res.status(error.statusCode).json({ message: error.message });
             }
+            if (error instanceof Error) {
+                return res.status(400).json({ message: error.message });
+            }
+
+            console.error("Erro desconhecido ao deletar CTG:", error);
+            return res.status(500).json({ message: "Erro desconhecido." });
         }
     }
 }
