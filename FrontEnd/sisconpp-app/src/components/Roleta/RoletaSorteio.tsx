@@ -12,7 +12,6 @@ interface RoletaProps {
   onFinish: (resultado: Quesito) => void;
 }
 
-// Tipagem correta para o retorno do backend
 interface SorteioResponse {
   message: string;
   sorteio: SorteioDanca;
@@ -29,7 +28,6 @@ export default function RoletaSorteio({
   const [mustSpin, setMustSpin] = useState(false);
   const [prizeNumber, setPrizeNumber] = useState(0);
 
-  // transforma os quesitos em dados para a roleta
   const data = quesitos.map((q) => ({ option: q.nomeQuesito }));
 
   const sortear = async () => {
@@ -42,12 +40,14 @@ export default function RoletaSorteio({
       const payload = { candidatoId, usuarioId, tipoDanca };
       const response = await realizarSorteio(payload);
 
-      console.log(payload);
-
-      // Faz cast para SorteioResponse
       const sorteioResponse = response.data as SorteioResponse;
       const { quesitoSorteado } = sorteioResponse;
 
+      if (!sorteioResponse.quesitoSorteado) {
+        toast.warn(sorteioResponse.message || "Sorteio já realizado para este candidato.");
+        return;
+      }
+      
       if (quesitoSorteado) {
         const index = quesitos.findIndex(
           (q) => q.idQuesito === quesitoSorteado.idQuesito
@@ -55,7 +55,7 @@ export default function RoletaSorteio({
 
         if (index >= 0) {
           setPrizeNumber(index);
-          setMustSpin(true); // 🚀 inicia o giro
+          setMustSpin(true);
         } else {
           toast.error("Quesito sorteado não encontrado na lista.");
         }
@@ -74,10 +74,10 @@ export default function RoletaSorteio({
         mustStartSpinning={mustSpin}
         prizeNumber={prizeNumber}
         data={data}
-        backgroundColors={["#FFB2BC", "#3A6A00"]} // cores alternadas dos segmentos
-        textColors={["#AD2549", "#9ED768"]}       // cores do texto
+        backgroundColors={["#FFB2BC", "#3A6A00"]}
+        textColors={["#AD2549", "#9ED768"]}
         pointerProps={{
-          style: { borderColor: "transparent transparent #2563EB transparent" }, // ponteiro azul
+          style: { borderColor: "transparent transparent #2563EB transparent" },
         }}
         onStopSpinning={() => {
           setMustSpin(false);

@@ -77,32 +77,6 @@ export default function SorteioDancas() {
         }
     };
 
-    // const sortear = async () => {
-    //     if (!candidatoSelecionado || !tipoDanca) {
-    //         toast.error("Selecione candidato e tipo de dança antes de sortear.");
-    //         return;
-    //     }
-    //     const sorteado = dancas[Math.floor(Math.random() * dancas.length)];
-
-    //     const sorteio: SorteioDanca = {
-    //         idSorteio: 0,
-    //         resultadoSorteio: sorteado.idQuesito,
-    //         dataSorteio: new Date(),
-    //         tipoDanca: tipoDanca,
-    //         candidatoId: candidatoSelecionado,
-    //         usuarioId: 21,
-    //         quesitoSorteado: sorteado,
-    //     };
-
-    //     try {
-    //         await realizarSorteio(sorteio);
-    //         toast.success("Sorteio realizado com sucesso!");
-    //     } catch (error) {
-    //         console.error(error);
-    //         toast.error("Erro ao realizar sorteio.");
-    //     }
-    // };
-
     return (
         <div className="flex flex-row min-h-screen w-full bg-neutral-background">
             <SideNavBar />
@@ -135,7 +109,7 @@ export default function SorteioDancas() {
                                 candidatoId={candidatoSelecionado}
                                 usuarioId={21} 
                                 tipoDanca={tipoDanca}
-                                quesitos={dancas}
+                                quesitos={dancas.filter((d) => selecionados.includes(d.idQuesito))}
                                 onFinish={(resultado) =>
                                     toast.success(`Sorteio realizado! Resultado: ${resultado.nomeQuesito}`)
                                 }
