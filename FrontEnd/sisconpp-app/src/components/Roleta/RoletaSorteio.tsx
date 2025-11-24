@@ -75,8 +75,8 @@ export default function RoletaSorteio({
         mustStartSpinning={mustSpin}
         prizeNumber={prizeNumber}
         data={data}
-        backgroundColors={['#9ED768']}
-        textColors={['#2A5000']}
+        backgroundColors={['#9ED768', '#FFB2BC','#FFB0C9']}
+        textColors={['#2A5000','#AD2549', '#924561']}
         outerBorderColor='#2A5000'
         outerBorderWidth={3}
         innerBorderColor='#2A5000'
@@ -84,6 +84,7 @@ export default function RoletaSorteio({
         radiusLineColor='#2A5000'
         radiusLineWidth={2}
         fontSize={16} 
+
         pointerProps={{
           src: pointerImg,
         }}
