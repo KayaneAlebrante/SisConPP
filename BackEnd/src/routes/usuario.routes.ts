@@ -1,36 +1,37 @@
 import express, { Request, Response } from 'express';
 import UsuarioController from '../controllers/usuario.controller';
+import { authMiddleware } from "../middlewares/authMiddleware";
 
 const router = express.Router();
 
-router.post('/', async (req: Request, res: Response) => {
+router.post('/', authMiddleware, async (req: Request, res: Response) => {
     await UsuarioController.criarUsuario(req, res);
 });
 
-router.put('/:id', async (req: Request, res: Response) => {
+router.put('/:id', authMiddleware, async (req: Request, res: Response) => {
     await UsuarioController.atualizarUsuario(req, res);
 });
 
-router.get('/:id', async (req: Request, res: Response) => {
+router.get('/:id', authMiddleware, async (req: Request, res: Response) => {
     await UsuarioController.buscarUsuarioPorId(req, res);
 });
 
-router.get('/usuarios/avaliadores', async (req: Request, res: Response) => {
+router.get('/usuarios/avaliadores', authMiddleware, async (req: Request, res: Response) => {
     await UsuarioController.buscarUsuariosAvaliadores(req, res);
 });
-router.get('/usuarios/secretarios', async (req: Request, res: Response) => {
+router.get('/usuarios/secretarios', authMiddleware, async (req: Request, res: Response) => {
     await UsuarioController.buscarUsuariosSecretarios(req, res);
 });
 
-router.get('/usuarios/auxiliares', async (req: Request, res: Response) => {
+router.get('/usuarios/auxiliares', authMiddleware, async (req: Request, res: Response) => {
     await UsuarioController.buscarUsuariosAuxiliares(req, res);
 });
 
-router.get('/', async (req: Request, res: Response) => {
+router.get('/', authMiddleware, async (req: Request, res: Response) => {
     await UsuarioController.buscarUsuarios(req, res);
 });
 
-router.delete('/:id', async (req: Request, res: Response) => {
+router.delete('/:id', authMiddleware, async (req: Request, res: Response) => {
     await UsuarioController.deletarUsuario(req, res);
 });
 

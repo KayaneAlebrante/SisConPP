@@ -1,21 +1,22 @@
 import express, { Request, Response } from "express";
 import CategoriaController from "../controllers/categoria.controller";
+import { authMiddleware } from "../middlewares/authMiddleware";
 
 const router = express.Router();
 
-router.post("/", async(req: Request, res: Response) => {
+router.post("/", authMiddleware, async(req: Request, res: Response) => {
     await CategoriaController.criarCategoria(req, res);
 });
 
-router.put("/:id", async(req: Request, res: Response) => {
+router.put("/:id", authMiddleware,  async(req: Request, res: Response) => {
     await CategoriaController.atualizarCategoria(req, res);
 });
 
-router.get("/", async(req: Request, res: Response) => {
+router.get("/", authMiddleware,  async(req: Request, res: Response) => {
     await CategoriaController.buscarCategorias(req, res);
 });
 
-router.delete("/:id", async(req: Request, res: Response) =>{
+router.delete("/:id", authMiddleware,  async(req: Request, res: Response) =>{
     await CategoriaController.deletarCategoria(req, res);
 })
 

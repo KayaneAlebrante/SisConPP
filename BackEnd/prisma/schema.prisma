@@ -5,6 +5,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Candidato {
@@ -47,6 +48,7 @@ model Candidato {
 enum ProvaCampeiraEsportiva {
   CAMPEIRA
   ESPORTIVA
+  AMBAS
   NENHUMA
 }
 

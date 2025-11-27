@@ -11,8 +11,7 @@ const SECRET = process.env.JWT_SECRET || "chave-secreta";
 class AuthService {
   async login(login: string, senha: string) {
     const usuario = await prisma.usuario.findUnique({
-      where: { login },
-      include: { CTG: true },
+      where: { login }
     });
 
     if (!usuario) {
@@ -27,19 +26,16 @@ class AuthService {
     const token = jwt.sign(
       { id: usuario.idUsuario, login: usuario.login, funcao: usuario.funcao },
       process.env.JWT_SECRET || "segredo",
-      { expiresIn: "1h" }
+      { expiresIn: "1d" }
     );
 
     return {
-      message: "Login realizado com sucesso.",
       token,
       usuario: {
         id: usuario.idUsuario,
         nome: usuario.nomeCompleto,
+        login: usuario.login,
         funcao: usuario.funcao,
-        ctg: usuario.CTG?.nomeCTG,
-        cidade: usuario.cidade,
-        estado: usuario.estado,
       },
     };
   }

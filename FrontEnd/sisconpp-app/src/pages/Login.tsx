@@ -26,13 +26,18 @@ function Login() {
       toast.success("Login realizado com sucesso!");
 
       navigate("/tela-inicial");
-    }catch (error: unknown) {
-      if(erro)
-       if (error instanceof Error) {
-          setErro(error.message);
-      } else {
-        toast.error("Falha no login. Verifique suas credenciais.");
+    } catch (error: unknown) {
+      let mensagem = "Falha no login. Verifique suas credenciais.";
+      console.error("Erro no login:", error);
+
+      if (error instanceof Error){
+        mensagem = error.message;
       }
+
+      setErro(mensagem);
+      toast.error(mensagem);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -52,7 +57,9 @@ function Login() {
           </h2>
 
           <div className="flex flex-col py-2">
-            <label className="text-sm font-medium text-neutral-onBackground">Usuário</label>
+            <label className="text-sm font-medium text-neutral-onBackground">
+              Usuário
+            </label>
             <input
               type="text"
               value={usuario}
@@ -64,7 +71,9 @@ function Login() {
           </div>
 
           <div className="flex flex-col py-2">
-            <label className="text-sm font-medium text-neutral-onBackground">Senha</label>
+            <label className="text-sm font-medium text-neutral-onBackground">
+              Senha
+            </label>
             <input
               type="password"
               value={senha}

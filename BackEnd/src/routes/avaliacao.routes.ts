@@ -1,17 +1,18 @@
 import express, { Request, Response } from "express";
 import avaliacaoController from "../controllers/avaliacao.controller";
+import { authMiddleware } from "../middlewares/authMiddleware";
 
 const router = express.Router();
 
-router.post("/", async (req: Request, res: Response) => {
+router.post("/", authMiddleware, async (req: Request, res: Response) => {
     await avaliacaoController.adicionarAvaliacao(req, res);
 });
 
-router.get("/avaliacao/:idAvaliacao", async (req: Request, res: Response) => {
+router.get("/avaliacao/:idAvaliacao", authMiddleware, async (req: Request, res: Response) => {
     await avaliacaoController.visualizarAvaliacoes(req, res);
 });
 
-router.put("/avaliacao/:idAvaliacao", async (req: Request, res: Response) => {
+router.put("/avaliacao/:idAvaliacao", authMiddleware, async (req: Request, res: Response) => {
     await avaliacaoController.editarAvaliacao(req, res);
 });
 
