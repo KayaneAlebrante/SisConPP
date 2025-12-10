@@ -13,7 +13,7 @@ model Candidato {
   cidade                      String
   estado                      String
   CTG                         CTG                       @relation(fields: [CTGId], references: [idCTG])
-  CTGId                       Int                       
+  CTGId                       Int
   numCarteirinha              String
   CPF                         String
   RG                          String
@@ -37,11 +37,11 @@ model Candidato {
   Categoria                   Categoria                 @relation(fields: [categoriaId], references: [idCategoria])
   categoriaId                 Int
 
-  avalicoes              Avaliacao[]
-  sorteioDanca           SorteioDanca[]
-  Recurso                Recurso[]
-  Concurso               Concurso?              @relation(fields: [concursoIdConcurso], references: [idConcurso])
-  concursoIdConcurso     Int?
+  avalicoes          Avaliacao[]
+  sorteioDanca       SorteioDanca[]
+  Recurso            Recurso[]
+  Concurso           Concurso?      @relation(fields: [concursoIdConcurso], references: [idConcurso])
+  concursoIdConcurso Int?
 }
 
 enum ProvaCampeiraEsportiva {
@@ -57,7 +57,7 @@ model Usuario {
   cidade            String
   estado            String
   CTG               CTG            @relation(fields: [CTGId], references: [idCTG])
-  CTGId             Int           
+  CTGId             Int
   numCarteirinha    String
   login             String         @unique
   senha             String
@@ -65,11 +65,11 @@ model Usuario {
   credenciamento    Credenciamento @default(NAO_CREDENCIADO)
   numCredenciamento Int?
 
-  comissaoUsuarioId      Int?
-  ComissaoUsuario        ComissaoUsuario?       @relation
-  avalicoes              Avaliacao[]
-  recursos               Recurso[]
-  sorteioDanca           SorteioDanca[]
+  comissaoUsuarioId Int?
+  ComissaoUsuario   ComissaoUsuario? @relation
+  avalicoes         Avaliacao[]
+  recursos          Recurso[]
+  sorteioDanca      SorteioDanca[]
 }
 
 enum Funcao {
@@ -82,7 +82,6 @@ enum Credenciamento {
   CREDENCIADO
   NAO_CREDENCIADO
 }
-
 
 model CTG {
   idCTG   Int    @id @default(autoincrement())
@@ -123,8 +122,8 @@ model Concurso {
   local              String   @db.VarChar(255)
   anexoEdital        Bytes?
 
-  candidatos           Candidato[]
-  comissoes            Comissao[]
+  candidatos Candidato[]
+  comissoes  Comissao[]
 }
 
 model Comissao {
@@ -144,7 +143,7 @@ model ComissaoUsuario {
   Comissao          Comissao @relation(fields: [comissaoId], references: [idComissao])
   Usuarios          Usuario  @relation(fields: [usuarioId], references: [idUsuario])
 
-  @@unique([comissaoId, usuarioId]) 
+  @@unique([comissaoId, usuarioId])
 }
 
 model Categoria {

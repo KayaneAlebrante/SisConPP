@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "Candidato" ALTER COLUMN "CTGId" DROP DEFAULT;
+
+-- AlterTable
+ALTER TABLE "Usuario" ALTER COLUMN "CTGId" DROP DEFAULT;

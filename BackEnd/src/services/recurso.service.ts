@@ -1,12 +1,11 @@
 import { PrismaClient } from "@prisma/client";
+import { prisma } from '../prisma';
 
-const prisma = new PrismaClient;
-
-class RecursoServie{
-    constructor(protected prisma: PrismaClient){}
+class RecursoServie {
+    constructor(protected prisma: PrismaClient) { }
 
     async solicitarRecurso(
-        nomeRecurso: string, 
+        nomeRecurso: string,
         justificativa: string,
         arquivo: Buffer,
         candidato: number,
@@ -20,17 +19,17 @@ class RecursoServie{
                 data: {
                     nomeRecurso,
                     justificativa,
-                    status: false, 
-                    dataRecurso: new Date(), 
-                    arquivos: arquivo,
+                    status: false,
+                    dataRecurso: new Date(),
+                    arquivos: new Uint8Array(arquivo),
                     candidato,
                     avaliador,
                     quesitoRecurso,
                     provaTeoricaIdprovaTeorica,
                     provaPraticaIdProvaPratica
-                }, 
+                },
             });
-    
+
             return recurso;
         } catch (error) {
             console.error("Erro ao criar recurso:", error);

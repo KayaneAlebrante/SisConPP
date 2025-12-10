@@ -1,9 +1,10 @@
 import { DancaSalaoTradicional, PrismaClient } from "@prisma/client";
 import preferenciaSorteioDanca from "./preferenciaSorteioDanca.service";
-
-const prisma = new PrismaClient();
+import { prisma } from '../prisma';
 
 class SorteioDanca {
+    constructor(private prisma: PrismaClient){}
+
     async realizarSorteio(
         candidatoId: number,
         usuarioId: number,
@@ -72,5 +73,5 @@ class SorteioDanca {
     }
 }
 
-const sorteioDanca = new SorteioDanca();
+const sorteioDanca = new SorteioDanca(prisma);
 export default sorteioDanca;

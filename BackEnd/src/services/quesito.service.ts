@@ -1,6 +1,5 @@
 import { DancaSalaoTradicional, PrismaClient, Recurso, SubQuesitos } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from '../prisma';
 
 class QuesitoService {
     constructor(private prisma: PrismaClient) { }

@@ -1,6 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from '../prisma';
 
 class CategoriaService {
     constructor(private prisma: PrismaClient){}

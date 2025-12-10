@@ -1,96 +1,88 @@
-import {  BlocoProva, Categoria, PrismaClient } from "@prisma/client";
-import ProvaService from "./prova.service";
+import { Categoria, PrismaClient } from "@prisma/client";
+import { ProvaService } from "./prova.service";
+import { prisma } from "../prisma";
 
-const prisma = new PrismaClient();
+export class ProvaPraticaService extends ProvaService {
 
-class ProvaPraticaService extends ProvaService{
-    constructor(protected prisma: PrismaClient) {
-        super(prisma);
+    constructor() {
+        super(); 
     }
 
     async criarProvaPratica(
-       nomeProva: string,
-       notaMaxima: number,    
-       categorias: number[],
-       blocodProva: number[]
+        nomeProva: string,
+        notaMaxima: number,
+        categorias: number[],
+        blocosProva: number[],
     ) {
-        const prova = await this.criarProva(
-            nomeProva,
-            notaMaxima,
-            categorias,
-        );
 
-        try{
-            const provaPratica = await this.prisma.provaPratica.create({
+        try {
+            const prova = await this.criarProva(
+                nomeProva,
+                notaMaxima,
+                categorias
+            );
+            const provaPratica = await prisma.provaPratica.create({
                 data: {
                     provaId: prova.idProva,
                     blocosProvas: {
-                        connect: blocodProva.map(id => ({ idBloco: id }))
-                    },
+                        connect: blocosProva.map(id => ({ idBloco: id }))
+                    }
                 }
             });
+
             return provaPratica;
-        }catch(error){
+
+        } catch (error) {
             console.error("Erro ao criar prova prática:", error);
-            throw new Error("Erro ao criar prova prática. Verifique os dados fornecidos.");
+            throw new Error("Erro ao criar prova prática.");
         }
     }
 
     async buscarProvaPraticaPorId(idProvaPratica: number) {
-        try {
-            const provaPratica = await this.prisma.provaPratica.findUnique({
-                where: { idProvaPratica }
-            });
-            return provaPratica;
-        } catch (error) {
-            console.error("Erro ao listar prova prática:", error);
-            throw new Error("Erro ao listar prova prática.");
-        }
+        return prisma.provaPratica.findUnique({
+            where: { idProvaPratica }
+        });
     }
 
     async buscarProvasPraticas() {
-        try {
-            const provasPraticas = await this.prisma.provaPratica.findMany();
-            return provasPraticas;
-        } catch (error) {
-            console.error("Erro ao listar provas práticas:", error);
-            throw new Error("Erro ao listar provas práticas.");
-        }
+        return prisma.provaPratica.findMany();
     }
-
 
     async atualizarProvaPratica(
         idProvaPratica: number,
-        data:{
+        data: {
             blocosProvas?: number[],
         },
-        provaData:{
+        provaData?: {
             nomeProva?: string,
             categorias?: Categoria[],
         }
     ) {
+
         try {
-            const provaPratica = await this.prisma.provaPratica.update({
+            const provaPratica = await prisma.provaPratica.update({
                 where: { idProvaPratica },
                 data: {
-                    blocosProvas: {
-                        set: data.blocosProvas?.map(id => ({ idBloco: id })) || [],
-                    },
-                },
+                    blocosProvas: data.blocosProvas
+                        ? { set: data.blocosProvas.map(id => ({ idBloco: id })) }
+                        : undefined
+                }
             });
 
-            if(provaData && provaPratica.provaId) {
+            if (provaData && provaPratica.provaId) {
                 const prova = await this.atualizarProva(provaPratica.provaId, provaData);
                 return { provaPratica, prova };
             }
+
             return provaPratica;
+
         } catch (error) {
             console.error("Erro ao atualizar prova prática:", error);
-            throw new Error("Erro ao atualizar prova prática. Verifique os dados fornecidos.");
+            throw new Error("Erro ao atualizar prova prática.");
         }
     }
+
 }
 
-const provaPraticaService = new ProvaPraticaService(prisma);
+export const provaPraticaService = new ProvaPraticaService();
 export default provaPraticaService;
-

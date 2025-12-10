@@ -2,10 +2,10 @@ import { PrismaClient } from "@prisma/client";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
+import { prisma } from '../prisma';
 
 dotenv.config();
 
-const prisma = new PrismaClient();
 const SECRET = process.env.JWT_SECRET || "chave-secreta";
 
 class AuthService {

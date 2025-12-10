@@ -1,6 +1,5 @@
 import { PrismaClient, Avaliacao, ComissaoUsuario } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from '../prisma';
 
 class ComissaoService {
     constructor(private prisma: PrismaClient) { }

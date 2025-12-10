@@ -10,9 +10,9 @@
 */
 
 export const ProvaCampeiraEsportiva = {
-  AMBAS: 'AMBAS',
   CAMPEIRA: 'CAMPEIRA',
   ESPORTIVA: 'ESPORTIVA',
+  AMBAS: 'AMBAS',
   NENHUMA: 'NENHUMA'
 } as const
 

@@ -1,7 +1,6 @@
 import { PrismaClient, Prisma } from "@prisma/client";
 import AppError from '../errors/AppError';
-
-const prisma = new PrismaClient();
+import { prisma } from '../prisma';
 
 class CTGService {
     constructor(private prisma: PrismaClient) { }
@@ -76,7 +75,7 @@ class CTGService {
 
         } catch (error: unknown) {
             if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2003') {
-                throw new AppError("Não é possível deletar a CTG pois ela está associado a outros registros.", 409);
+               throw new AppError("Não é possível deletar a CTG pois ela está associado a outros registros.", 409);
             };
 
             if (error instanceof AppError) {

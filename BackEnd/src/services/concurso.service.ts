@@ -1,7 +1,6 @@
 import { PrismaClient, Prisma } from "@prisma/client";
 import AppError from "../errors/AppError";
-
-const prisma = new PrismaClient;
+import { prisma } from '../prisma';
 
 class ConcursoService {
     constructor(protected prisma: PrismaClient) { }
@@ -146,7 +145,7 @@ class ConcursoService {
         try {
             const concurso = await prisma.concurso.update({
                 where: { idConcurso },
-                data: { anexoEdital: editalAnexo.anexarEdital }
+                data: { anexoEdital: editalAnexo.anexarEdital ? new Uint8Array(editalAnexo.anexarEdital) : undefined }
             });
             return concurso;
         } catch (error) {

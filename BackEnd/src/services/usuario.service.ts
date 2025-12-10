@@ -1,16 +1,10 @@
 import { PrismaClient, Funcao, Credenciamento, Prisma } from "@prisma/client";
 import bcrypt from "bcrypt";
+import { prisma } from '../prisma';
 import AppError from "../errors/AppError";
 
-
-const prisma = new PrismaClient();
-
 class UsuarioService {
-    private prisma: PrismaClient;
-
-    constructor(prisma: PrismaClient) {
-        this.prisma = prisma;
-    }
+    constructor(private prisma: PrismaClient){}
 
     async criarUsuarioComPessoa(
         nomeCompleto: string,

@@ -1,95 +1,99 @@
-import { Categoria, PrismaClient } from "@prisma/client";
-import ProvaService from "./prova.service";
+import { Categoria } from "@prisma/client";
+import { ProvaService } from "./prova.service";
+import { prisma } from "../prisma";
 
-const prisma = new PrismaClient;
+export class ProvaTeoricaService extends ProvaService {
 
-class ProvaTeoricaService extends ProvaService {
-    constructor(protected prisma: PrismaClient) {
-        super(prisma);
+    constructor() {
+        super();
     }
 
     async criarProvaTeorica(
         nome: string,
         notaMaxima: number,
         categorias: number[],
-        gabaritoOficial: Buffer,
-        numQuestao: number       
-    ){
-        const prova = await this.criarProva(
-            nome,
-            notaMaxima,
-            categorias,
-        );
+        gabaritoOficinal: Buffer,
+        numQuestao: number
+    ) {
+        try {
+            const prova = await this.criarProva(
+                nome,
+                notaMaxima,
+                categorias
+            );
 
-        try{
-            const provaTeorica = await this.prisma.provaTeorica.create({
+            const provaTeorica = await prisma.provaTeorica.create({
                 data: {
                     provaId: prova.idProva,
-                    gabaritoOficinal: gabaritoOficial,
-                    numQuestao,
+                    gabaritoOficinal: new Uint8Array(gabaritoOficinal),
+                    numQuestao
                 }
             });
+
             return provaTeorica;
-    }catch(error){
-        console.error("Erro ao criar prova Teorica:", error);
-        throw new Error("Erro ao criar prova Teorica. Verifique os dados fornecidos.");
-    }
+
+        } catch (error) {
+            console.error("Erro ao criar prova Teórica:", error);
+            throw new Error("Erro ao criar prova téorica. Verifique os dados fornecidos.");
+        }
     }
 
-    async buscarProvaTeoricaPorId(provaTeoricaId: number) {
+    async buscarProvaTeoricaPorId(idProvaTeorica: number) {
         try {
-            const provaTeorica = await this.prisma.provaTeorica.findUnique({
-                where: { idprovaTeorica: provaTeoricaId }
+            return await prisma.provaTeorica.findUnique({
+                where: { idprovaTeorica: idProvaTeorica } 
             });
-            return provaTeorica;
         } catch (error) {
-            console.error("Erro ao listar prova Teorica:", error);
-            throw new Error("Erro ao listar prova Teorica.");
+            console.error("Erro ao buscar prova Teórica:", error);
+            throw new Error("Erro ao buscar prova teórica.");
         }
     }
 
     async buscarProvasTeoricas() {
         try {
-            const provasTeoricas = await this.prisma.provaTeorica.findMany();
-            return provasTeoricas;
+            return await prisma.provaTeorica.findMany();
         } catch (error) {
-            console.error("Erro ao listar provas Teoricas:", error);
-            throw new Error("Erro ao listar provas Teoricas.");
+            console.error("Erro ao listar provas teóricas:", error);
+            throw new Error("Erro ao listar provas teóricas.");
         }
     }
 
     async atualizarProvaTeorica(
-        provaTeoricaId: number,
+        idProvaTeorica: number,
         data: {
             gabaritoOficinal?: Buffer,
             numQuestao?: number
         },
-        provaData:{
+        provaData?: {
             nome?: string,
             notaMaxima?: number,
             categorias?: Categoria[],
         }
-    ){
-        try{
-            const provaTeorica = await this.prisma.provaTeorica.update({
-                where: { idprovaTeorica: provaTeoricaId },
+    ) {
+        try {
+            const provaTeorica = await prisma.provaTeorica.update({
+                where: { idprovaTeorica: idProvaTeorica },
                 data: {
-                    gabaritoOficinal: data.gabaritoOficinal,
+                    gabaritoOficinal: data.gabaritoOficinal 
+                        ? new Uint8Array(data.gabaritoOficinal)
+                        : undefined,
                     numQuestao: data.numQuestao
-                },
+                }
             });
 
-            if(provaData && provaTeorica.provaId) {
+            if (provaData && provaTeorica.provaId) {
                 const prova = await this.atualizarProva(provaTeorica.provaId, provaData);
                 return { provaTeorica, prova };
             }
+
             return provaTeorica;
-        }catch(error){
-            throw new Error("Erro ao atualizar Prova Teorica. Verefique os dados fornecidos.");
+
+        } catch (error) {
+            console.error("Erro ao atualizar prova Teórica:", error);
+            throw new Error("Erro ao atualizar prova teórica.");
         }
     }
-
 }
 
-const provaTeoricaService = new ProvaTeoricaService(prisma);
+export const provaTeoricaService = new ProvaTeoricaService();
 export default provaTeoricaService;

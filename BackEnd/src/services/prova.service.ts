@@ -1,15 +1,14 @@
-import { Categoria, PrismaClient } from "@prisma/client";
+import { Categoria } from "@prisma/client";
+import { prisma } from '../prisma';
 
-const prisma = new PrismaClient();
+export class ProvaService {
 
-class ProvaService{
-    constructor(protected prisma: PrismaClient){}
+    protected prisma = prisma; // ← agora a classe tem o prisma internamente, sem construtor
 
     async criarProva(
         nomeProva: string,
         notaMaxima: number, 
         categorias: number[]
-
     ){
         try{
             const prova = await this.prisma.prova.create({
@@ -27,7 +26,6 @@ class ProvaService{
             console.error("Erro ao criar Prova:", error);
             throw error;
         }
-
     }
 
     async atualizarProva(
@@ -39,24 +37,21 @@ class ProvaService{
     ){
         try{
             const prova = await this.prisma.prova.update({
-                where: { idProva: idProva },
+                where: { idProva },
                 data: {
                     nomeProva: data.nomeProva,
-                    categorias: data.categorias ? {
-                        set: data.categorias
-                    } : undefined
+                    categorias: data.categorias ? { set: data.categorias } : undefined
                 },
             });
             return prova;
         }catch(error){
-            throw new Error("Erro ao atualizar Prova. Verefique os dados fornecidos.");
+            throw new Error("Erro ao atualizar Prova.");
         }
     }
 
     async buscarProvas(){
         try{
-            const provas = await this.prisma.prova.findMany();
-            return provas;
+            return await this.prisma.prova.findMany();
         }catch(error){
             throw new Error("Erro ao buscar provas.");
         }
@@ -64,14 +59,15 @@ class ProvaService{
 
     async deletarProvas(idProva: number){
         try{
-            const prova = await this.prisma.prova.delete({
-                where: { idProva: idProva },
+            return await this.prisma.prova.delete({
+                where: { idProva },
             });
         }catch(error){
-            throw new Error("Erro ao deltar Prova.");
+            throw new Error("Erro ao deletar Prova.");
         }
     }
 
 }
 
-export default ProvaService;
+
+export const provaService = new ProvaService();

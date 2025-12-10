@@ -1,10 +1,8 @@
 import { PrismaClient } from "@prisma/client";
+import { prisma } from '../prisma';
 
 class Avaliacao{
-    protected prisma: PrismaClient;
-    constructor() {
-        this.prisma = new PrismaClient();
-    }
+    constructor(private prisma: PrismaClient){}
 
     async adicionarAvaliacao(
         comissaoId: number,
@@ -61,5 +59,5 @@ class Avaliacao{
     }
 }
 
-const avaliacao = new Avaliacao();
+const avaliacao = new Avaliacao(prisma);
 export default avaliacao;
