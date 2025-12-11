@@ -52,7 +52,7 @@ class CandidatoService{
                     anexoResidencia: anexoResidencia ? new Uint8Array(anexoResidencia) : undefined,
                     anexoAtaConcurso: anexoAtaConcurso ? new Uint8Array(anexoAtaConcurso) : undefined,
                     fichaInscricao: fichaInscricao ? new Uint8Array(fichaInscricao) : undefined,
-                    anexoTermoCandidato: anexoTermoCandidato ? new Uint8Array(anexoTermoCandidato) : undefined,
+                    anexoTermoCandidato: anexoTermoCandidato ? new Uint8Array(anexoTermoCandidato) : undefined  ,
                     anexoRelatorioVivencia: anexoRelatorioVivencia ? new Uint8Array(anexoRelatorioVivencia) : undefined,
                     anexoResponsavel: anexoResponsavel ? new Uint8Array(anexoResponsavel) : undefined,
                     anexoProvaEsportivaCampeira: anexoProvaEsportivaCampeira ? new Uint8Array(anexoProvaEsportivaCampeira) : undefined,
@@ -107,9 +107,9 @@ class CandidatoService{
 
             const candidatoAtualizado = await this.prisma.candidato.update({
                 where: { idCandidato },
-                data: {
+                data:{
                     ...data,
-                    anexoDocumento: data.anexoDocumento ? new Uint8Array(data.anexoDocumento) : candidatoExistente.anexoDocumento,     
+                    anexoDocumento: data.anexoDocumento ? new Uint8Array(data.anexoDocumento) : candidatoExistente.anexoDocumento,
                     anexoCarteirinha: data.anexoCarteirinha ? new Uint8Array(data.anexoCarteirinha) : candidatoExistente.anexoCarteirinha,
                     anexoEscolaridade: data.anexoEscolaridade ? new Uint8Array(data.anexoEscolaridade) : candidatoExistente.anexoEscolaridade,
                     anexoResidencia: data.anexoResidencia ? new Uint8Array(data.anexoResidencia) : candidatoExistente.anexoResidencia,
@@ -120,8 +120,7 @@ class CandidatoService{
                     anexoResponsavel: data.anexoResponsavel ? new Uint8Array(data.anexoResponsavel) : candidatoExistente.anexoResponsavel,
                     anexoProvaEsportivaCampeira: data.anexoProvaEsportivaCampeira ? new Uint8Array(data.anexoProvaEsportivaCampeira) : candidatoExistente.anexoProvaEsportivaCampeira,
                 }
-                });
-            
+            });
 
             return candidatoAtualizado;
         } catch (error) {
@@ -188,7 +187,7 @@ class CandidatoService{
         try {
             const candidato = await this.prisma.candidato.update({
                 where: { idCandidato: idCandidato },
-                data:{
+                data: {
                     anexoDocumento: anexos.anexoDocumento ? new Uint8Array(anexos.anexoDocumento) : undefined,
                     anexoCarteirinha: anexos.anexoCarteirinha ? new Uint8Array(anexos.anexoCarteirinha) : undefined,
                     anexoEscolaridade: anexos.anexoEscolaridade ? new Uint8Array(anexos.anexoEscolaridade) : undefined,
@@ -249,7 +248,7 @@ class CandidatoService{
         try {
             const candidato = await this.prisma.candidato.update({
                 where: { idCandidato: idCandidato },
-                data: {
+                data:{
                     anexoDocumento: anexos.anexoDocumento ? new Uint8Array(anexos.anexoDocumento) : undefined,
                     anexoCarteirinha: anexos.anexoCarteirinha ? new Uint8Array(anexos.anexoCarteirinha) : undefined,
                     anexoEscolaridade: anexos.anexoEscolaridade ? new Uint8Array(anexos.anexoEscolaridade) : undefined,
