@@ -1,29 +1,47 @@
-import { DancaSalaoTradicional, PrismaClient, Quesitos } from "@prisma/client";
+import { DancaSalaoTradicional, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
 class PreferenciaSorteioDancaService {
+    
     async selecionarPreferenciaSorteioDanca(
-        nomeSorteioDanca: DancaSalaoTradicional,
+        nomeSorteioDanca: DancaSalaoTradicional, 
         candidatoId: number,
-        quesitos: number[]
+        quesitosIds: number[]
     ) {
-        try{
+        try {
+            const preferenciaExistente = await prisma.preferenciaSorteioDanca.findFirst({
+                where: {
+                    candidatoId: candidatoId,
+                    nomeSorteioDanca: nomeSorteioDanca
+                }
+            });
+
+            if (preferenciaExistente) {
+                throw new Error(`O candidato já definiu suas preferências para a modalidade: ${nomeSorteioDanca}.`);
+            }
+
             const preferenciasCriadas = await prisma.preferenciaSorteioDanca.create({
                 data: {
                     nomeSorteioDanca, 
                     candidatoId,
                     quesitos: {
-                        connect: quesitos.map(id => ({ idQuesito: id })),
+                        connect: quesitosIds.map(id => ({ idQuesito: id })),
                     },
                 },
+                include: {
+                    quesitos: true
+                }
             });
 
             return preferenciasCriadas;
-        }catch (error: any) {
-            throw new Error("Erro ao criar preferências de sorteio de dança: " + error.message);
+
+        } catch (error: any) {
+            if (error.code === 'P2002') {
+                throw new Error(`Já existe um grupo de preferências cadastrado para ${nomeSorteioDanca}.`);
+            }
+            throw new Error("Erro ao criar preferências: " + error.message);
         }
-        
     }
 
     async visualizarPreferencias(candidatoId: number) {
@@ -31,9 +49,6 @@ class PreferenciaSorteioDancaService {
             where: { candidatoId },
             include: { quesitos: true },
         });
-
-        if (!preferencias) throw new Error("Nenhuma preferência encontrada");
-
         return preferencias;
     }
 
@@ -42,34 +57,21 @@ class PreferenciaSorteioDancaService {
         sorteioDancaId: number,
         nomeSorteioDanca: DancaSalaoTradicional
     ) {
-        const preferenciaAtualizada = await prisma.preferenciaSorteioDanca.updateMany({
-            where: {
-                candidatoId,
-                nomeSorteioDanca,
-            },
-            data: {
-                sorteioDancaId,
-            },
+        return await prisma.preferenciaSorteioDanca.updateMany({
+            where: { candidatoId, nomeSorteioDanca },
+            data: { sorteioDancaId },
         });
-
-        return preferenciaAtualizada;
     }
 
     async verificarSorteioDancaId(candidatoId: number, tipoDanca: DancaSalaoTradicional): Promise<boolean> {
-        try {
-            const sorteioDanca = await prisma.preferenciaSorteioDanca.findFirst({
-                where: {
-                    candidatoId,
-                    nomeSorteioDanca: tipoDanca, 
-                    sorteioDancaId: { not: null }, 
-                },
-            });
-    
-            return sorteioDanca !== null;
-        } catch (error: any) {
-            console.error("Erro ao verificar sorteio de dança:", error);
-            throw new Error("Erro ao verificar sorteio de dança: " + error.message);
-        }
+        const sorteio = await prisma.preferenciaSorteioDanca.findFirst({
+            where: {
+                candidatoId,
+                nomeSorteioDanca: tipoDanca,
+                sorteioDancaId: { not: null },
+            },
+        });
+        return sorteio !== null;
     }
 }
 

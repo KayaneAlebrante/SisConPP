@@ -3,7 +3,7 @@ import { Wheel } from "react-custom-roulette";
 import { Quesito, SorteioDanca, DancaSalaoTradicional } from "../../types/SorteioDanca";
 import { realizarSorteio } from "../../services/api";
 import { toast } from "react-toastify";
-import pointerImg from '../../assets/poniter.png'; 
+import pointerImg from '../../assets/poniter.png';
 
 interface RoletaProps {
   candidatoId: number;
@@ -50,9 +50,9 @@ export default function RoletaSorteio({
       }
 
       if (quesitoSorteado) {
-        const index = quesitos.findIndex(
-          (q) => q.idQuesito === quesitoSorteado.idQuesito
-        );
+        const index = quesitos.findIndex((quesito) => quesito.idQuesito === quesitoSorteado.idQuesito);
+
+        console.log("Quesito Sorteado:", quesitoSorteado);
 
         if (index >= 0) {
           setPrizeNumber(index);
@@ -75,15 +75,15 @@ export default function RoletaSorteio({
         mustStartSpinning={mustSpin}
         prizeNumber={prizeNumber}
         data={data}
-        backgroundColors={['#9ED768', '#FFB2BC','#FFB0C9']}
-        textColors={['#2A5000','#AD2549', '#924561']}
+        backgroundColors={['#9ED768', '#FFB2BC', '#FFB0C9']}
+        textColors={['#2A5000', '#AD2549', '#924561']}
         outerBorderColor='#2A5000'
         outerBorderWidth={3}
         innerBorderColor='#2A5000'
         innerBorderWidth={2}
         radiusLineColor='#2A5000'
         radiusLineWidth={2}
-        fontSize={16} 
+        fontSize={16}
 
         pointerProps={{
           src: pointerImg,

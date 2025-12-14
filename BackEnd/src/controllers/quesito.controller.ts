@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
 import quesitoService from "../services/quesito.service";
 
-class QuesitoController{
-    async criarQuesito(req: Request, res: Response){
-        const{
+class QuesitoController {
+    async criarQuesito(req: Request, res: Response) {
+        const {
             nomeQuesito,
             notaMaximaQuesito,
-            danca, 
+            danca,
             dancaSalaoTradicional,
             blocoProvaIdBloco,
             provaTeoricaIdProvaTeorica
@@ -25,7 +25,7 @@ class QuesitoController{
                 blocoProvaIdBloco,
                 provaTeoricaIdProvaTeorica
             );
-        
+
             return res.status(201).json(quesito);
         } catch (error) {
             console.error("Erro ao criar Quesito", error);
@@ -33,7 +33,7 @@ class QuesitoController{
         }
     }
 
-    async atualizarQuesito(req: Request, res: Response){
+    async atualizarQuesito(req: Request, res: Response) {
         const { id } = req.params;
         const data = req.body;
 
@@ -50,7 +50,7 @@ class QuesitoController{
         }
     }
 
-    async buscarQuesitoPorId(req: Request, res: Response){
+    async buscarQuesitoPorId(req: Request, res: Response) {
         const { id } = req.params;
 
         try {
@@ -65,7 +65,7 @@ class QuesitoController{
         }
     }
 
-    async buscarQuesitos(req: Request, res: Response){
+    async buscarQuesitos(req: Request, res: Response) {
         try {
             const quesitos = await quesitoService.buscarQuesitos();
             return res.status(200).json(quesitos);
@@ -75,27 +75,27 @@ class QuesitoController{
         }
     }
 
-    async buscarDancasTradicionais(req: Request, res: Response){
-        try{
+    async buscarDancasTradicionais(req: Request, res: Response) {
+        try {
             const dancas = await quesitoService.buscarDancasTradicionais();
             return res.status(200).json(dancas);
-        }catch(error){
+        } catch (error) {
             console.error("Erro ao buscar danças", error);
-            return res.status(400).json({mensagem: "Erro ao buscar Danças."});
+            return res.status(400).json({ mensagem: "Erro ao buscar Danças." });
         }
     }
 
-    async buscarDancasSalao(req: Request, res: Response){
-        try{
+    async buscarDancasSalao(req: Request, res: Response) {
+        try {
             const dancas = await quesitoService.buscarDancasSalao();
             return res.status(200).json(dancas);
-        }catch(error){
+        } catch (error) {
             console.error("Erro ao buscar danças", error);
-            return res.status(400).json({mensagem: "Erro ao buscar Danças."});
+            return res.status(400).json({ mensagem: "Erro ao buscar Danças." });
         }
     }
 
-    async deletarQuesito(req: Request, res: Response){
+    async deletarQuesito(req: Request, res: Response) {
         const { id } = req.params;
 
         try {

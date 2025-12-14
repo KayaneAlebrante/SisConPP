@@ -5,6 +5,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Candidato {
@@ -109,6 +110,7 @@ model PreferenciaSorteioDanca {
   SorteioDanca     SorteioDanca?         @relation(fields: [sorteioDancaId], references: [idSorteio])
   sorteioDancaId   Int?
   quesitos         Quesitos[]
+  @@unique([candidatoId, nomeSorteioDanca])
 }
 
 model Concurso {

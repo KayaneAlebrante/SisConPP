@@ -27,6 +27,6 @@ export interface SorteioDanca {
 
 export interface CriarSorteioPayload{
   candidatoId: number;
-   usuarioId: number;
+  usuarioId: number;
   tipoDanca: DancaSalaoTradicional;
 }

@@ -102,7 +102,7 @@ export default function SorteioDancas() {
                         tipoDanca && (
                             <RoletaSorteio
                                 candidatoId={candidatoSelecionado}
-                                usuarioId={21} 
+                                usuarioId={1} 
                                 tipoDanca={tipoDanca}
                                 quesitos={dancas.filter((d) => selecionados.includes(d.idQuesito))}
                                 onFinish={(resultado) =>{
