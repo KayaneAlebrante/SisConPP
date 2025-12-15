@@ -135,6 +135,11 @@ export const listarCandidatos = async () => {
   return response.data;
 };
 
+export const buscarCandidatoPorId = async (idConcurso: number) => {
+  const response = await api.get(`/candidato/${idConcurso}`);
+  return response.data;
+};
+
 export const deletarCandidato = async (id: number) => {
   return await api.delete(`/candidato/${id}`);
 };

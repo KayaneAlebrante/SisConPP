@@ -16,8 +16,10 @@ class CandidatoController {
             numEndereco,
             bairro,
             escolaridade,
-            filiacao,
+            filiacaoPai,
+            filiacaoMae,
             ProvaCampeiraEsportiva,
+            anexoFoto,
             anexoDocumento,
             anexoCarteirinha,
             anexoEscolaridade,
@@ -30,7 +32,7 @@ class CandidatoController {
             anexoProvaEsportivaCampeira,
         } = req.body;
 
-        if(!categoriaId || !CPF || !RG || !endereco || !numEndereco || !bairro || !escolaridade || !filiacao || !ProvaCampeiraEsportiva){
+        if(!categoriaId || !CPF || !RG || !endereco || !numEndereco || !bairro || !escolaridade || !filiacaoPai || !filiacaoMae || !ProvaCampeiraEsportiva){
             return res.status(400).json({mensagem: "CategoriaId, CPF, RG, endereco, numEndereco, bairro, escolaridade, filiacao, ProvaCampeiraEsportica, concursoId são Obrigatórios"});
         }
 
@@ -48,8 +50,10 @@ class CandidatoController {
                 numEndereco,
                 bairro,
                 escolaridade,
-                filiacao,
+                filiacaoPai,
+                filiacaoMae,
                 ProvaCampeiraEsportiva,
+                anexoFoto,
                 anexoDocumento,
                 anexoCarteirinha,
                 anexoEscolaridade,
@@ -95,12 +99,13 @@ class CandidatoController {
                 numEndereco,
                 bairro,
                 escolaridade,
-                filiacao,
+                filiacaoPai,
+                filiacaoMae,
                 ProvaCampeiraEsportiva,
                 concursoId} = data;
 
             const candidatoData = { nomeCompleto, cidade, estado, CTGId, numCarteirinha, categoriaId,CPF,RG,
-                endereco,numEndereco,bairro,escolaridade,filiacao, ProvaCampeiraEsportiva,concursoId};
+                endereco,numEndereco,bairro,escolaridade,filiacaoPai, filiacaoMae, ProvaCampeiraEsportiva,concursoId};
 
             const Candidato = await candidatoService.atualizarCandidato(Number(id), candidatoData);          
             return res.status(200).json(Candidato);
@@ -161,6 +166,7 @@ class CandidatoController {
     async anexarAnexos(req: Request, res: Response) {
         const { id } = req.params;
         const {
+            anexoFoto,
             anexoDocumento,
             anexoCarteirinha,
             anexoEscolaridade,
@@ -175,6 +181,7 @@ class CandidatoController {
 
         try {
             const anexos = {
+                anexoFoto,
                 anexoDocumento,
                 anexoCarteirinha,
                 anexoEscolaridade,
@@ -215,6 +222,7 @@ class CandidatoController {
     async editarAnexos(req: Request, res: Response) {
         const { id } = req.params;
         const {
+            anexoFoto,
             anexoDocumento,
             anexoCarteirinha,
             anexoEscolaridade,
@@ -229,6 +237,7 @@ class CandidatoController {
 
         try {
             const anexos = {
+                anexoFoto,
                 anexoDocumento,
                 anexoCarteirinha,
                 anexoEscolaridade,

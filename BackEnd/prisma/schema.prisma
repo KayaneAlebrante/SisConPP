@@ -22,8 +22,10 @@ model Candidato {
   numEndereco                 Int
   bairro                      String
   escolaridade                String
-  filiacao                    String
+  filiacaoPai                 String
+  filiacaoMae                 String
   ProvaCampeiraEsportiva      ProvaCampeiraEsportiva?
+  anexoFoto                   Bytes?
   anexoDocumento              Bytes?
   anexoCarteirinha            Bytes?
   anexoEscolaridade           Bytes?
@@ -38,11 +40,11 @@ model Candidato {
   Categoria                   Categoria                 @relation(fields: [categoriaId], references: [idCategoria])
   categoriaId                 Int
 
-  avalicoes              Avaliacao[]
-  sorteioDanca           SorteioDanca[]
-  Recurso                Recurso[]
-  Concurso               Concurso?              @relation(fields: [concursoIdConcurso], references: [idConcurso])
-  concursoIdConcurso     Int?
+  avalicoes          Avaliacao[]
+  sorteioDanca       SorteioDanca[]
+  Recurso            Recurso[]
+  Concurso           Concurso?      @relation(fields: [concursoIdConcurso], references: [idConcurso])
+  concursoIdConcurso Int?
 }
 
 enum ProvaCampeiraEsportiva {
@@ -66,11 +68,11 @@ model Usuario {
   credenciamento    Credenciamento @default(NAO_CREDENCIADO)
   numCredenciamento Int?
 
-  comissaoUsuarioId      Int?
-  ComissaoUsuario        ComissaoUsuario?       @relation
-  avalicoes              Avaliacao[]
-  recursos               Recurso[]
-  sorteioDanca           SorteioDanca[]
+  comissaoUsuarioId Int?
+  ComissaoUsuario   ComissaoUsuario? @relation
+  avalicoes         Avaliacao[]
+  recursos          Recurso[]
+  sorteioDanca      SorteioDanca[]
 }
 
 enum Funcao {
@@ -83,7 +85,6 @@ enum Credenciamento {
   CREDENCIADO
   NAO_CREDENCIADO
 }
-
 
 model CTG {
   idCTG   Int    @id @default(autoincrement())
@@ -110,6 +111,7 @@ model PreferenciaSorteioDanca {
   SorteioDanca     SorteioDanca?         @relation(fields: [sorteioDancaId], references: [idSorteio])
   sorteioDancaId   Int?
   quesitos         Quesitos[]
+
   @@unique([candidatoId, nomeSorteioDanca])
 }
 
@@ -125,8 +127,8 @@ model Concurso {
   local              String   @db.VarChar(255)
   anexoEdital        Bytes?
 
-  candidatos           Candidato[]
-  comissoes            Comissao[]
+  candidatos Candidato[]
+  comissoes  Comissao[]
 }
 
 model Comissao {
@@ -146,7 +148,7 @@ model ComissaoUsuario {
   Comissao          Comissao @relation(fields: [comissaoId], references: [idComissao])
   Usuarios          Usuario  @relation(fields: [usuarioId], references: [idUsuario])
 
-  @@unique([comissaoId, usuarioId]) 
+  @@unique([comissaoId, usuarioId])
 }
 
 model Categoria {

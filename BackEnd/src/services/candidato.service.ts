@@ -3,11 +3,7 @@ import { PrismaClient, ProvaCampeiraEsportiva } from "@prisma/client";
 const prisma = new PrismaClient();
 
 class CandidatoService{
-    private prisma: PrismaClient;
-
-    constructor(prisma: PrismaClient) { 
-        this.prisma = prisma;
-    }
+    constructor(private prisma: PrismaClient){}
 
     async criarCandidato(
         nomeCompleto: string,
@@ -22,8 +18,10 @@ class CandidatoService{
         numEndereco: number,
         bairro: string,
         escolaridade: string,
-        filiacao: string,
+        filiacaoPai: string,
+        filiacaoMae: string,
         ProvaCampeiraEsportiva: ProvaCampeiraEsportiva,
+        anexoFoto?: Buffer,
         anexoDocumento?: Buffer,
         anexoCarteirinha?: Buffer,
         anexoEscolaridade?: Buffer,
@@ -49,18 +47,20 @@ class CandidatoService{
                     numEndereco,
                     bairro,
                     escolaridade,
-                    filiacao,
+                    filiacaoPai,
+                    filiacaoMae,
                     ProvaCampeiraEsportiva,
-                    anexoDocumento,
-                    anexoCarteirinha,
-                    anexoEscolaridade,
-                    anexoResidencia,
-                    anexoAtaConcurso,
-                    fichaInscricao,
-                    anexoTermoCandidato,
-                    anexoRelatorioVivencia,
-                    anexoResponsavel,
-                    anexoProvaEsportivaCampeira,
+                    anexoFoto: anexoFoto ? new Uint8Array(anexoFoto) : undefined,
+                    anexoDocumento: anexoDocumento ? new Uint8Array(anexoDocumento) : undefined,
+                    anexoCarteirinha: anexoCarteirinha ? new Uint8Array(anexoCarteirinha) : undefined,
+                    anexoEscolaridade: anexoEscolaridade ? new Uint8Array(anexoEscolaridade) : undefined,
+                    anexoResidencia: anexoResidencia ? new Uint8Array(anexoResidencia) : undefined,
+                    anexoAtaConcurso: anexoAtaConcurso ? new Uint8Array(anexoAtaConcurso) : undefined,
+                    fichaInscricao: fichaInscricao ? new Uint8Array(fichaInscricao) : undefined,
+                    anexoTermoCandidato: anexoTermoCandidato ? new Uint8Array(anexoTermoCandidato) : undefined  ,
+                    anexoRelatorioVivencia: anexoRelatorioVivencia ? new Uint8Array(anexoRelatorioVivencia) : undefined,
+                    anexoResponsavel: anexoResponsavel ? new Uint8Array(anexoResponsavel) : undefined,
+                    anexoProvaEsportivaCampeira: anexoProvaEsportivaCampeira ? new Uint8Array(anexoProvaEsportivaCampeira) : undefined,
                     categoriaId
                 }
             });
@@ -87,8 +87,10 @@ class CandidatoService{
             numEndereco?: number,
             bairro?: string,
             escolaridade?: string,
-            filiacao?: string,
+            filiacaoPai?: string,
+            filiacaoMae?: string,
             ProvaCampeiraEsportiva?: ProvaCampeiraEsportiva,
+            anexoFoto?: Buffer,
             anexoDocumento?: Buffer,
             anexoCarteirinha?: Buffer,
             anexoEscolaridade?: Buffer,
@@ -112,7 +114,20 @@ class CandidatoService{
 
             const candidatoAtualizado = await this.prisma.candidato.update({
                 where: { idCandidato },
-                data
+                data:{
+                    ...data,
+                    anexoFoto: data.anexoFoto ? new Uint8Array(data.anexoFoto) : candidatoExistente.anexoFoto,
+                    anexoDocumento: data.anexoDocumento ? new Uint8Array(data.anexoDocumento) : candidatoExistente.anexoDocumento,
+                    anexoCarteirinha: data.anexoCarteirinha ? new Uint8Array(data.anexoCarteirinha) : candidatoExistente.anexoCarteirinha,
+                    anexoEscolaridade: data.anexoEscolaridade ? new Uint8Array(data.anexoEscolaridade) : candidatoExistente.anexoEscolaridade,
+                    anexoResidencia: data.anexoResidencia ? new Uint8Array(data.anexoResidencia) : candidatoExistente.anexoResidencia,
+                    anexoAtaConcurso: data.anexoAtaConcurso ? new Uint8Array(data.anexoAtaConcurso) : candidatoExistente.anexoAtaConcurso,
+                    fichaInscricao: data.fichaInscricao ? new Uint8Array(data.fichaInscricao) : candidatoExistente.fichaInscricao,
+                    anexoTermoCandidato: data.anexoTermoCandidato ? new Uint8Array(data.anexoTermoCandidato) : candidatoExistente.anexoTermoCandidato,
+                    anexoRelatorioVivencia: data.anexoRelatorioVivencia ? new Uint8Array(data.anexoRelatorioVivencia) : candidatoExistente.anexoRelatorioVivencia,
+                    anexoResponsavel: data.anexoResponsavel ? new Uint8Array(data.anexoResponsavel) : candidatoExistente.anexoResponsavel,
+                    anexoProvaEsportivaCampeira: data.anexoProvaEsportivaCampeira ? new Uint8Array(data.anexoProvaEsportivaCampeira) : candidatoExistente.anexoProvaEsportivaCampeira,
+                }
             });
 
             return candidatoAtualizado;
@@ -125,7 +140,11 @@ class CandidatoService{
     async buscarCandidatoPorId(idCandidato: number) {
         try {
             const candidato = await this.prisma.candidato.findUnique({
-                where: { idCandidato: idCandidato }
+                where: { idCandidato: idCandidato },
+                include: {
+                    Categoria: true,
+                    CTG: true
+                }
             });
             return candidato;
         } catch (error) {
@@ -166,6 +185,7 @@ class CandidatoService{
     }
 
     async anexarAnexos(idCandidato: number, anexos: Partial<{
+        anexoFoto: Buffer,
         anexoDocumento: Buffer,
         anexoCarteirinha: Buffer,
         anexoEscolaridade: Buffer,
@@ -180,7 +200,19 @@ class CandidatoService{
         try {
             const candidato = await this.prisma.candidato.update({
                 where: { idCandidato: idCandidato },
-                data: anexos
+                data: {
+                    anexoFoto: anexos.anexoFoto ? new Uint8Array(anexos.anexoFoto) : undefined,
+                    anexoDocumento: anexos.anexoDocumento ? new Uint8Array(anexos.anexoDocumento) : undefined,
+                    anexoCarteirinha: anexos.anexoCarteirinha ? new Uint8Array(anexos.anexoCarteirinha) : undefined,
+                    anexoEscolaridade: anexos.anexoEscolaridade ? new Uint8Array(anexos.anexoEscolaridade) : undefined,
+                    anexoResidencia: anexos.anexoResidencia ? new Uint8Array(anexos.anexoResidencia) : undefined,
+                    anexoAtaConcurso: anexos.anexoAtaConcurso ? new Uint8Array(anexos.anexoAtaConcurso) : undefined,
+                    fichaInscricao: anexos.fichaInscricao ? new Uint8Array(anexos.fichaInscricao) : undefined,
+                    anexoTermoCandidato: anexos.anexoTermoCandidato ? new Uint8Array(anexos.anexoTermoCandidato) : undefined,
+                    anexoRelatorioVivencia: anexos.anexoRelatorioVivencia ? new Uint8Array(anexos.anexoRelatorioVivencia) : undefined,
+                    anexoResponsavel: anexos.anexoResponsavel ? new Uint8Array(anexos.anexoResponsavel) : undefined,
+                    anexoProvaEsportivaCampeira: anexos.anexoProvaEsportivaCampeira ? new Uint8Array(anexos.anexoProvaEsportivaCampeira) : undefined
+                }
             });
             return candidato;
         } catch (error) {
@@ -196,6 +228,7 @@ class CandidatoService{
             });
             if (candidato) {
                 return {
+                    anexoFoto: candidato.anexoFoto,
                     anexoDocumento: candidato.anexoDocumento,
                     anexoCarteirinha: candidato.anexoCarteirinha,
                     anexoEscolaridade: candidato.anexoEscolaridade,
@@ -216,6 +249,7 @@ class CandidatoService{
     }
 
     async editarAnexos(idCandidato: number, anexos: Partial<{
+        anexoFoto: Buffer,
         anexoDocumento: Buffer,
         anexoCarteirinha: Buffer,
         anexoEscolaridade: Buffer,
@@ -230,7 +264,19 @@ class CandidatoService{
         try {
             const candidato = await this.prisma.candidato.update({
                 where: { idCandidato: idCandidato },
-                data: anexos
+                data:{
+                    anexoFoto: anexos.anexoFoto ? new Uint8Array(anexos.anexoFoto) : undefined,
+                    anexoDocumento: anexos.anexoDocumento ? new Uint8Array(anexos.anexoDocumento) : undefined,
+                    anexoCarteirinha: anexos.anexoCarteirinha ? new Uint8Array(anexos.anexoCarteirinha) : undefined,
+                    anexoEscolaridade: anexos.anexoEscolaridade ? new Uint8Array(anexos.anexoEscolaridade) : undefined,
+                    anexoResidencia: anexos.anexoResidencia ? new Uint8Array(anexos.anexoResidencia) : undefined,
+                    anexoAtaConcurso: anexos.anexoAtaConcurso ? new Uint8Array(anexos.anexoAtaConcurso) : undefined,
+                    fichaInscricao: anexos.fichaInscricao ? new Uint8Array(anexos.fichaInscricao) : undefined,
+                    anexoTermoCandidato: anexos.anexoTermoCandidato ? new Uint8Array(anexos.anexoTermoCandidato) : undefined,
+                    anexoRelatorioVivencia: anexos.anexoRelatorioVivencia ? new Uint8Array(anexos.anexoRelatorioVivencia) : undefined,
+                    anexoResponsavel: anexos.anexoResponsavel ? new Uint8Array(anexos.anexoResponsavel) : undefined,
+                    anexoProvaEsportivaCampeira: anexos.anexoProvaEsportivaCampeira ? new Uint8Array(anexos.anexoProvaEsportivaCampeira) : undefined
+                }
             });
             return candidato;
         } catch (error) {

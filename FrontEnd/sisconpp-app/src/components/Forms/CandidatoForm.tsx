@@ -28,8 +28,10 @@ export default function CandidatoForm({ onClose, candidatoToEdit }: CandidatoFor
         numEndereco: 0,
         bairro: '',
         escolaridade: '',
-        filiacao: '',
+        filiacaoPai: '', // Inicializando separado
+        filiacaoMae: '', // Inicializando separado
         ProvaCampeiraEsportiva: undefined,
+        anexoFoto: undefined,
         anexoDocumento: undefined,
         anexoCarteirinha: undefined,
         anexoEscolaridade: undefined,
@@ -89,8 +91,10 @@ export default function CandidatoForm({ onClose, candidatoToEdit }: CandidatoFor
                 numEndereco: candidatoToEdit.numEndereco || 0,
                 bairro: candidatoToEdit.bairro || '',
                 escolaridade: candidatoToEdit.escolaridade || '',
-                filiacao: candidatoToEdit.filiacao || '',
+                filiacaoPai: candidatoToEdit.filiacaoPai || '', // Carrega Pai
+                filiacaoMae: candidatoToEdit.filiacaoMae || '', // Carrega Mãe
                 ProvaCampeiraEsportiva: candidatoToEdit.ProvaCampeiraEsportiva,
+                anexoFoto: candidatoToEdit.anexoFoto,
                 anexoDocumento: candidatoToEdit.anexoDocumento,
                 anexoCarteirinha: candidatoToEdit.anexoCarteirinha,
                 anexoEscolaridade: candidatoToEdit.anexoEscolaridade,
@@ -144,8 +148,10 @@ export default function CandidatoForm({ onClose, candidatoToEdit }: CandidatoFor
                 numEndereco: formData.numEndereco,
                 bairro: formData.bairro,
                 escolaridade: formData.escolaridade,
-                filiacao: formData.filiacao,
+                filiacaoPai: formData.filiacaoPai, // Envia Pai
+                filiacaoMae: formData.filiacaoMae, // Envia Mãe
                 ProvaCampeiraEsportiva: formData.ProvaCampeiraEsportiva,
+                anexoFoto: formData.anexoFoto || undefined,
                 anexoDocumento: formData.anexoDocumento || undefined,
                 anexoCarteirinha: formData.anexoCarteirinha || undefined,
                 anexoEscolaridade: formData.anexoEscolaridade || undefined,
@@ -183,7 +189,6 @@ export default function CandidatoForm({ onClose, candidatoToEdit }: CandidatoFor
                 {candidatoToEdit ? 'Editar' : 'Cadastrar'} Candidato
             </h1>
             <form onSubmit={handleSubmit}>
-                {/* Campos*/}
                 <div className="flex flex-col mb-4">
                     <label className="text-sm font-medium mb-1">Nome Completo</label>
                     <input
@@ -340,12 +345,25 @@ export default function CandidatoForm({ onClose, candidatoToEdit }: CandidatoFor
                     </select>
                 </div>
 
+                <h3 className="text-lg font-semibold mt-4 mb-2">Filiação</h3>
                 <div className="flex flex-col mb-4">
-                    <label className="text-sm font-medium mb-1">Filiação</label>
+                    <label className="text-sm font-medium mb-1">Pai</label>
                     <input
                         type="text"
-                        name="filiacao"
-                        value={formData.filiacao}
+                        name="filiacaoPai"
+                        value={formData.filiacaoPai}
+                        onChange={handleChange}
+                        required
+                        className="rounded-lg p-2 bg-surface-containerHigh border border-outline focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
+                </div>
+                
+                <div className="flex flex-col mb-4">
+                    <label className="text-sm font-medium mb-1">Mãe</label>
+                    <input
+                        type="text"
+                        name="filiacaoMae"
+                        value={formData.filiacaoMae}
                         onChange={handleChange}
                         required
                         className="rounded-lg p-2 bg-surface-containerHigh border border-outline focus:outline-none focus:ring-2 focus:ring-primary"
@@ -386,10 +404,10 @@ export default function CandidatoForm({ onClose, candidatoToEdit }: CandidatoFor
                 </div>
 
                 <div className="flex flex-col mb-4">
-                    <label className="text-sm font-medium mb-1">Documento com Foto</label>
+                    <label className="text-sm font-medium mb-1">Foto Candidato</label>
                     <input
                         type="file"
-                        name="anexoDocumento"
+                        name="anexoFoto"
                         onChange={handleFileChange}
                         className="rounded-lg p-2 bg-surface-containerHigh border border-outline"
                     />

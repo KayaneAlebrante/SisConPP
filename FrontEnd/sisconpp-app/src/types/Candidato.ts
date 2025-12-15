@@ -18,8 +18,10 @@ export interface Candidato {
     numEndereco: number;
     bairro: string;
     escolaridade: string;
-    filiacao: string;
+    filiacaoPai: string;
+    filiacaoMae: string;
     ProvaCampeiraEsportiva?: ProvaCampeiraEsportiva;
+    anexoFoto?: Blob;
     anexoDocumento?: Blob;
     anexoCarteirinha?: Blob;
     anexoEscolaridade?: Blob;

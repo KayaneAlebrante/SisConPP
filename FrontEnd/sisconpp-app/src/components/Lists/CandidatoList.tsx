@@ -5,7 +5,7 @@ import { Categoria } from "../../types/Categoria";
 import { toast } from "react-toastify";
 import { Pencil, Trash2, Search } from "lucide-react";
 import Dialog from "../Modal/Dialog";
-import { listarCTGs, listarCategorias, listarCandidatos, deletarCandidato } from "../../services/api";
+import { listarCTGs, listarCategorias, listarCandidatos, deletarCandidato, buscarCandidatoPorId } from "../../services/api";
 import Modal from "../Modal/Modal";
 import CandidatoView from "../View/CandidadoView";
 
@@ -15,10 +15,20 @@ interface CandidatoListProps {
     onCredenciar: (candidato: Candidato) => void;
 }
 
+interface CandidatoCompleto extends Candidato {
+    ctg?: CTG;
+    categoria?: Categoria;
+}
+
 export default function CandidatoList({ onEdit }: CandidatoListProps) {
     const [candidatos, setCandidatos] = useState<Candidato[]>([]);
     const [ctgs, setCTGs] = useState<CTG[]>([]);
     const [categorias, setCategorias] = useState<Categoria[]>([]);
+    const [candidatoSelecionadoId, setCandidatoSelecionadoId] = useState<number | null>(null);
+    const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [selectedCandidato, setSelectedCandidato] = useState<CandidatoCompleto | null>(null);
+
 
     const fetchCandidatos = async () => {
         try {
@@ -36,7 +46,8 @@ export default function CandidatoList({ onEdit }: CandidatoListProps) {
                 numEndereco: candidato.numEndereco || 0,
                 bairro: candidato.bairro || '',
                 escolaridade: candidato.escolaridade || '',
-                filiacao: candidato.filiacao || '',
+                filiacaoPai: candidato.filiacaoPai || '',
+                filiacaoMae: candidato.filiacaoMae || '',
                 categoriaId: candidato.categoriaId || 0
             }));
             setCandidatos(candidatosFormatados);
@@ -71,10 +82,16 @@ export default function CandidatoList({ onEdit }: CandidatoListProps) {
         fetchCategorias();
     }, []);
 
-    const [candidatoSelecionadoId, setCandidatoSelecionadoId] = useState<number | null>(null);
-    const [isViewModalOpen, setIsViewModalOpen] = useState(false);
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [selectedCandidato, setSelectedCandidato] = useState<Candidato | null>(null);
+    const handleVisualizarCandidato = async (id: number) => {
+        try {
+            const candidatoCompleto = await buscarCandidatoPorId(id);
+            setSelectedCandidato(candidatoCompleto as CandidatoCompleto);
+            console.log("Candidato selecionado para visualização:", candidatoCompleto); 
+        } catch (error) {
+            console.error("Erro ao buscar detalhes do candidato:", error);
+            toast.error("Erro ao buscar detalhes do candidato.");
+        }
+    };
 
     const handleConfirmDelete = async (id: number) => {
         try {
@@ -127,7 +144,7 @@ export default function CandidatoList({ onEdit }: CandidatoListProps) {
                                 <button
                                     className="text-green-600 hover:text-green-800"
                                     onClick={() => {
-                                        setSelectedCandidato(candidato);
+                                        handleVisualizarCandidato(candidato.idCandidato);
                                         setIsViewModalOpen(true);
                                     }}
                                 >
@@ -174,7 +191,7 @@ export default function CandidatoList({ onEdit }: CandidatoListProps) {
             >
                 {selectedCandidato && (
                     <CandidatoView 
-                        candidato={selectedCandidato}
+                        candidato={selectedCandidato}                  
                         onVoltar={() => setIsViewModalOpen(false)}
                     />
                 )}
