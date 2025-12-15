@@ -184,7 +184,7 @@ export default function CandidatoForm({ onClose, candidatoToEdit }: CandidatoFor
     
 
     return (
-        <div className="w-full max-w-xl">
+        <div className="w-full">
             <h1 className="xt-xl font-semibold text-neutral-onBackground mb-4">
                 {candidatoToEdit ? 'Editar' : 'Cadastrar'} Candidato
             </h1>

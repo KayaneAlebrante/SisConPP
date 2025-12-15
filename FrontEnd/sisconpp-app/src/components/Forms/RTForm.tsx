@@ -47,7 +47,7 @@ export default function RTForm({ onClose, rtToEdit }: RTFormProps) {
   };
 
   return (
-    <div className="w-full max-w-xl">
+    <div className="w-full">
       <h2 className="text-xl font-semibold text-neutral-onBackground mb-4">
         {rtToEdit ? 'Editar' : 'Cadastrar'} Região Tradicionalista
       </h2>

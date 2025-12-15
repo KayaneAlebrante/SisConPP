@@ -79,7 +79,7 @@ export default function CTGForm({ onClose, ctgToEdit }: CTGFormProps) {
 
 
     return (
-        <div className="w-full max-w-xl">
+        <div className="w-full">
             <h1 className="text-xl font-semibold text-neutral-onBackground mb-4">
                 {ctgToEdit ? 'Editar' : 'Cadastrar'} CTG - Centro de Tradições Gaúchas
             </h1>

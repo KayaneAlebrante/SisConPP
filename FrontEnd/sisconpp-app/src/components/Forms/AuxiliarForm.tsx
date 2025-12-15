@@ -121,7 +121,7 @@ export default function AuxiliarForm({ onClose, auxiliarToEdit }: AuxiliarFormPr
     };
 
     return (
-        <div className="w-full max-w-xl">
+        <div className="w-full">
             <h1 className="text-xl font-semibold text-neutral-onBackground mb-4">
                 {auxiliarToEdit ? 'Editar' : 'Cadastrar'} Auxiliar
             </h1>

@@ -66,7 +66,7 @@ export default function ConcursoForm({ onClose, concursoToEdit }: ConcursoFormPr
   const renderDate = (date: Date) => new Date(date).toISOString().split('T')[0];
 
   return (
-    <div className="w-full max-w-xl">
+    <div className="w-full">
       <h2 className="text-xl font-semibold text-neutral-onBackground mb-4">
         {concursoToEdit ? 'Editar' : 'Cadastrar'} Concurso
       </h2>

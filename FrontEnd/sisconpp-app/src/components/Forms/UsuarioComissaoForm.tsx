@@ -59,7 +59,7 @@ export default function UsuarioComissaoForm({ comissao, onClose, onSaved }: Usua
     return (
         <div>
             <form className="bg-secondary-light p-6 rounded-lg shadow-md" onSubmit={handleSubmit}>
-                <div className="w-full max-w-xl">
+                <div className="w-full">
                     <h1 className="text-xl font-semibold text-neutral-onBackground mb-4">
                         Adicionar Usuário à Comissão
                     </h1>
