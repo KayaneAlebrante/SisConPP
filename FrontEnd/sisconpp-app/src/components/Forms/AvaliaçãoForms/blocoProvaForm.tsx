@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BlocoProva } from '../../../types/ProvaPratica';
 import { toast } from 'react-toastify';
+import { criarBlocoProva } from '../../../services/api';
 
 export interface BlocoProvaFormState {
     idBloco?: number;
@@ -63,8 +64,7 @@ export default function BlocoProvaForm({ onClose, blocoToEdit, provaPraticaId }:
             };
 
             console.log('Salvando Bloco:', payload);
-            // await saveBloco(payload);
-
+            await criarBlocoProva(payload);            
             toast.success(blocoToEdit ? 'Bloco atualizado!' : 'Bloco criado!');
             onClose();
 

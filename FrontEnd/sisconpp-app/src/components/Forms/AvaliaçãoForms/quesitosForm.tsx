@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Quesitos, DancaSalaoTradicional } from '../../../types/ProvaPratica';
 import { toast } from 'react-toastify';
+import { criarQuesito } from '../../../services/api';
 
 export interface QuesitoFormState {
     idQuesito?: number;
@@ -73,8 +74,8 @@ export default function QuesitoForm({ onClose, quesitoToEdit, blocoId }: Quesito
             };
 
             console.log('Salvando Quesito:', payload);
-            // Aqui entraria a chamada da API (await criarQuesito...)
-            
+            await criarQuesito(payload);
+                
             toast.success(quesitoToEdit ? 'Quesito atualizado!' : 'Quesito criado!');
             onClose();
         } catch (error) {
@@ -123,6 +124,23 @@ export default function QuesitoForm({ onClose, quesitoToEdit, blocoId }: Quesito
                     />
                 </div>
 
+                <div className="flex flex-col mb-4">
+                    <label className="text-sm font-medium mb-1" htmlFor="notaMaximaQuesito">
+                        Bloco Prova ID
+                    </label>
+                    <input
+                        type="number"
+                        step="0.1"
+                        id="blocoProvaId"
+                        name="blocoProvaId"
+                        value={formData.blocoProvaId}
+                        onChange={handleChange}
+                        required
+                        min="0"
+                        className="rounded-lg p-2 bg-surface-containerHigh border border-outline focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
+                </div>
+
                 <div className="flex items-center mb-4 gap-2">
                     <input
                         type="checkbox"
@@ -155,6 +173,8 @@ export default function QuesitoForm({ onClose, quesitoToEdit, blocoId }: Quesito
                         </select>
                     </div>
                 )}
+
+
 
                 <div className="flex justify-end gap-2">
                     <button

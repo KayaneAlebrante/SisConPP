@@ -6,6 +6,7 @@ import { Candidato } from '../types/Candidato';
 import { Concurso } from '../types/Concurso';
 import { Comissao } from '../types/Comissao';
 import { PreferenciaSorteio, Quesito, CriarSorteioPayload } from '../types/SorteioDanca';
+import { BlocoProva, ProvaPratica, Quesitos, SubQuesitos } from '../types/ProvaPratica';
 
 // ---- CONFIGURAÇÃO DO AXIOS ----
 export const api = axios.create({
@@ -198,7 +199,7 @@ export const deletarUsuarioComissao = async (idUsuario: number, idComissao: numb
   return await api.delete(`/comissao/usuario/${idUsuario}/${idComissao}`);
 };
 
-//---- Sorteio das Danças ----
+
 export const getDancasTradicionais = async (): Promise<Quesito[]> => {
   const response = await api.get<Quesito[]>("/quesito/dancasTradicionais");
   return response.data;
@@ -216,3 +217,21 @@ export const criarPreferencia = async (criarPreferencia: PreferenciaSorteio) => 
 export const realizarSorteio = async (realizarSorteio: CriarSorteioPayload) => {
   return await api.post("/sorteioDanca", realizarSorteio);
 }
+
+//---- Provas Pratiicas ----
+
+export const criarProvaPratica = async (criarProvaPratica: ProvaPratica) => {
+  return await api.post("/provaPratica", criarProvaPratica);
+};
+
+export const criarBlocoProva = async (criarBlocoProva: BlocoProva) => {
+  return await api.post("/blocoProva", criarBlocoProva);
+};
+
+export const criarQuesito = async (criarQuesito: Quesitos) => {
+  return await api.post("/quesito", criarQuesito);
+};
+
+export const criarSubQuesito = async (criarSubQuesito: SubQuesitos) => {
+  return await api.post("/subQuesito", criarSubQuesito);
+};
