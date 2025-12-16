@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Quesitos, DancaSalaoTradicional } from '../../../types/ProvaPratica';
+import { Quesitos, DancaSalaoTradicional, BlocoProva } from '../../../types/ProvaPratica';
 import { toast } from 'react-toastify';
-import { criarQuesito } from '../../../services/api';
+import { criarQuesito, listarBlocosProva } from '../../../services/api'; 
 
 export interface QuesitoFormState {
     idQuesito?: number;
@@ -15,10 +15,12 @@ export interface QuesitoFormState {
 interface QuesitoFormProps {
     onClose: () => void;
     quesitoToEdit?: Quesitos;
-    blocoId?: number;
+    blocoId?: number; 
 }
 
 export default function QuesitoForm({ onClose, quesitoToEdit, blocoId }: QuesitoFormProps) {
+
+    const [listaBlocos, setListaBlocos] = useState<BlocoProva[]>([]);
 
     const [formData, setFormData] = useState<QuesitoFormState>({
         nomeQuesito: '',
@@ -27,6 +29,19 @@ export default function QuesitoForm({ onClose, quesitoToEdit, blocoId }: Quesito
         dancaSalaoTradicional: DancaSalaoTradicional.NENHUMA, 
         blocoProvaId: blocoId || 0,
     });
+
+    useEffect(() => {
+        const carregarBlocos = async () => {
+            try {
+                const response = await listarBlocosProva();
+                setListaBlocos(response as unknown as BlocoProva[]);
+            } catch (error) {
+                console.error("Erro ao carregar blocos de prova", error);
+                toast.error("Não foi possível carregar a lista de blocos.");
+            }
+        };
+        carregarBlocos();
+    }, []);
 
     useEffect(() => {
         if (quesitoToEdit) {
@@ -43,15 +58,15 @@ export default function QuesitoForm({ onClose, quesitoToEdit, blocoId }: Quesito
         }
     }, [quesitoToEdit, blocoId]);
 
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value, type } = e.target;
         
-        // Verificação segura para checkbox
         const checked = (e.target as HTMLInputElement).checked;
 
         setFormData(prev => ({
             ...prev,
-            [name]: type === 'checkbox' ? checked : (name === 'notaMaximaQuesito' ? Number(value) : value)
+            [name]: type === 'checkbox' ? checked : (name === 'notaMaximaQuesito' || name === 'blocoProvaId' ? Number(value) : value)
         }));
     };
 
@@ -63,6 +78,11 @@ export default function QuesitoForm({ onClose, quesitoToEdit, blocoId }: Quesito
                 return;
             }
 
+            if (!formData.blocoProvaId || formData.blocoProvaId === 0) {
+                toast.warning('Selecione um Bloco de Prova.');
+                return;
+            }
+            
             const payload: Quesitos = {
                 idQuesito: formData.idQuesito || 0,
                 nomeQuesito: formData.nomeQuesito,
@@ -125,20 +145,23 @@ export default function QuesitoForm({ onClose, quesitoToEdit, blocoId }: Quesito
                 </div>
 
                 <div className="flex flex-col mb-4">
-                    <label className="text-sm font-medium mb-1" htmlFor="notaMaximaQuesito">
-                        Bloco Prova ID
+                    <label className="text-sm font-medium mb-1" htmlFor="blocoProvaId">
+                        Bloco de Prova
                     </label>
-                    <input
-                        type="number"
-                        step="0.1"
+                    <select
                         id="blocoProvaId"
                         name="blocoProvaId"
-                        value={formData.blocoProvaId}
+                        value={formData.blocoProvaId || 0}
                         onChange={handleChange}
-                        required
-                        min="0"
                         className="rounded-lg p-2 bg-surface-containerHigh border border-outline focus:outline-none focus:ring-2 focus:ring-primary"
-                    />
+                    >
+                        <option value="0" disabled>Selecione um Bloco</option>
+                        {listaBlocos.map((bloco) => (
+                            <option key={bloco.idBloco} value={bloco.idBloco}>
+                                {bloco.nomeBloco}
+                            </option>
+                        ))}
+                    </select>
                 </div>
 
                 <div className="flex items-center mb-4 gap-2">
@@ -173,8 +196,6 @@ export default function QuesitoForm({ onClose, quesitoToEdit, blocoId }: Quesito
                         </select>
                     </div>
                 )}
-
-
 
                 <div className="flex justify-end gap-2">
                     <button

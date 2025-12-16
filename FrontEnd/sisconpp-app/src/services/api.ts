@@ -228,8 +228,18 @@ export const criarBlocoProva = async (criarBlocoProva: BlocoProva) => {
   return await api.post("/blocoProva", criarBlocoProva);
 };
 
+export const listarBlocosProva = async () => {
+  const response = await api.get<BlocoProva[]>("/blocoProva");
+  return response.data;
+};
+
 export const criarQuesito = async (criarQuesito: Quesitos) => {
   return await api.post("/quesito", criarQuesito);
+};
+
+export const listarQuesitos = async () => {
+  const response = await api.get<Quesitos[]>("/quesito");
+  return response.data;
 };
 
 export const criarSubQuesito = async (criarSubQuesito: SubQuesitos) => {

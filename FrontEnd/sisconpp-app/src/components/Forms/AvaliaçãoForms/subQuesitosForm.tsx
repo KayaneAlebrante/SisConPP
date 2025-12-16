@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify'; 
-import { criarSubQuesito } from '../../../services/api';
+import { criarSubQuesito, listarQuesitos } from '../../../services/api';
+import { Quesitos } from '../../../types/ProvaPratica';
 
 export interface SubQuesitos {
     idSubequestios?: number;
@@ -16,11 +17,27 @@ interface SubQuesitosFormProps {
 
 export default function SubQuesitosForm({ onClose, subQuesitoToEdit }: SubQuesitosFormProps) {
     
+    const [listaQuesitos, setListaQuesitos] = useState<Quesitos[]>([]);
+    
     const [formData, setFormData] = useState({
         nomeSubquesito: '',
         notaSubequesito: 0,
         quesitoId: 0
     });
+
+
+    useEffect(() => {
+        const carregarQuesitos = async () => {
+            try {
+                const response = await listarQuesitos(); 
+                setListaQuesitos(response as unknown as Quesitos[]);
+            } catch (error) {
+                console.error("Erro ao carregar quesitos", error);
+                toast.error("Não foi possível carregar a lista de quesitos.");
+            }
+        };
+        carregarQuesitos();
+    }, []);
 
     useEffect(() => {
         if (subQuesitoToEdit) {
@@ -32,7 +49,7 @@ export default function SubQuesitosForm({ onClose, subQuesitoToEdit }: SubQuesit
         }
     }, [subQuesitoToEdit]);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({
             ...prev,
@@ -48,8 +65,7 @@ export default function SubQuesitosForm({ onClose, subQuesitoToEdit }: SubQuesit
                 toast.warning('Preencha todos os campos obrigatórios.');
                 return;
             }
-
-            // Simulação do payload
+            
             const payload = {
                 idSubequestios: subQuesitoToEdit?.idSubequestios || 0,
                 ...formData
@@ -107,18 +123,23 @@ export default function SubQuesitosForm({ onClose, subQuesitoToEdit }: SubQuesit
 
                 <div className="flex flex-col mb-6">
                     <label className="text-sm font-medium mb-1" htmlFor="quesitoId">
-                        ID do Quesito Pai
+                        Quesito Pai
                     </label>
-                    <input
-                        type="number"
+                    <select
                         id="quesitoId"
                         name="quesitoId"
                         value={formData.quesitoId}
                         onChange={handleChange}
                         required
-                        min="1"
                         className="rounded-lg p-2 bg-surface-containerHigh border border-outline focus:outline-none focus:ring-2 focus:ring-primary"
-                    />
+                    >
+                        <option value="0" disabled>Selecione um Quesito</option>
+                        {listaQuesitos.map((quesito) => (
+                            <option key={quesito.idQuesito} value={quesito.idQuesito}>
+                                {quesito.nomeQuesito}
+                            </option>
+                        ))}
+                    </select>
                 </div>
 
                 <div className="flex justify-end gap-2">
