@@ -9,7 +9,8 @@ export enum RoutesPaths{
     Candidatos = "/candidatos",
     Concurso = "/concurso",
     Comissao = "/comissao",
-    SorteioDanca = "/sorteio-danca"
+    SorteioDanca = "/sorteio-danca",
+    ProvaPraticaCriacao = "/prova-pratica-criacao"
 }
 
 export default RoutesPaths;
