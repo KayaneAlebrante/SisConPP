@@ -245,3 +245,23 @@ export const listarQuesitos = async () => {
 export const criarSubQuesito = async (criarSubQuesito: SubQuesitos) => {
   return await api.post("/subQuesito", criarSubQuesito);
 };
+
+export const listarSubQuesitos = async () => {
+  const response = await api.get<SubQuesitos[]>("/subQuesito");
+  return response.data;
+};
+
+export const deletarBloco = async (idBloco: number) => {
+  const response = await api.delete(`/blocoProva/${idBloco}`);
+  return response.data ?? true;
+};
+
+export const deletarQuesito = async (idQuesito: number) => {
+  const response = await api.delete(`/quesito/${idQuesito}`);
+  return response.data ?? true;
+};
+
+export const deletarSubQuesito = async (idSubQuesito: number) => {
+  const response = await api.delete(`/subQuesito/${idSubQuesito}`);
+  return response.data ?? true;
+};

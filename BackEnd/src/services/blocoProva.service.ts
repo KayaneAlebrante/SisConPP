@@ -2,14 +2,14 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-class BlocoProvaService{
-    constructor(protected prisma: PrismaClient) {}
+class BlocoProvaService {
+    constructor(protected prisma: PrismaClient) { }
 
     async criarBlocoProva(
         nomeBloco: string,
         notaMaximaBloco: number,
         provaPraticaId?: number
-    ) { 
+    ) {
         try {
             const blocoProva = await this.prisma.blocoProva.create({
                 data: {
@@ -33,7 +33,7 @@ class BlocoProvaService{
     ) {
         try {
             const blocoProva = await this.prisma.blocoProva.update({
-                where: { idBloco},
+                where: { idBloco },
                 data: {
                     nomeBloco,
                     notaMaximaBloco,
@@ -50,7 +50,14 @@ class BlocoProvaService{
     async consultarBlocoProva(idBloco: number) {
         try {
             const blocoProva = await this.prisma.blocoProva.findUnique({
-                where: { idBloco }
+                where: { idBloco },
+                include: {
+                    quesitos: {
+                        include: {
+                            subeQuesitos: true,
+                        }
+                    }
+                }
             });
             return blocoProva;
         } catch (error) {
@@ -62,7 +69,21 @@ class BlocoProvaService{
 
     async consultarBlocosProva() {
         try {
-            const blocosProva = await this.prisma.blocoProva.findMany();
+            const blocosProva = await this.prisma.blocoProva.findMany({
+                orderBy: {
+                    idBloco: 'asc'
+                },
+                include: {
+                    quesitos: {
+                        orderBy: {
+                            idQuesito: 'asc'
+                        },
+                        include: {
+                            subeQuesitos: true
+                        }
+                    }
+                }
+            });
             return blocosProva;
         } catch (error) {
             console.error("Erro ao consultar blocos de prova:", error);
