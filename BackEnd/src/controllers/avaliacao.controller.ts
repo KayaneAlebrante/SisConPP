@@ -4,14 +4,14 @@ import exp from "constants";
 
 class AvaliacaoController{
     async adicionarAvaliacao(req: Request, res: Response){
-        const { comissaoId, avaliadorId, candidatoId, provaId, blocoProvaId } = req.body;
+        const { comissaoId, avaliadorId, candidatoId, blocoProvaId } = req.body;
 
-        if (!comissaoId || !avaliadorId || !candidatoId || !provaId || !blocoProvaId) {
+        if (!comissaoId || !avaliadorId || !candidatoId || !blocoProvaId) {
             return res.status(400).json({ mensagem: "Todos os campos são obrigatórios." });
         }
 
         try {
-            const avaliacao = await AvaliacaoService.adicionarAvaliacao(comissaoId, avaliadorId, candidatoId, provaId, blocoProvaId);
+            const avaliacao = await AvaliacaoService.adicionarAvaliacao(comissaoId, avaliadorId, candidatoId, blocoProvaId);
             return res.status(201).json(avaliacao);
         } catch (error: unknown) {
             if (error instanceof Error) {

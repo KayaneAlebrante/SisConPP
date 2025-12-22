@@ -60,7 +60,7 @@ class ProvaTeoricaController{
 
         try {
             const { gabaritoOficinal, numQuestao, ...provaData } = data;
-            const provaTeorica = await provaTeoricaService.atualizarProvaTeorica(Number(id), { gabaritoOficinal, numQuestao }, provaData);
+            const provaTeorica = await provaTeoricaService.atualizarProvaTeorica(Number(id), gabaritoOficinal, numQuestao, provaData);
             return res.status(200).json(provaTeorica);
         } catch (error: unknown) {
             if (error instanceof Error) {

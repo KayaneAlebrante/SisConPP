@@ -1,33 +1,28 @@
 import { Categoria, PrismaClient } from "@prisma/client";
-import ProvaService from "./prova.service";
 
 const prisma = new PrismaClient;
 
-class ProvaTeoricaService extends ProvaService {
-    constructor(protected prisma: PrismaClient) {
-        super(prisma);
-    }
-
+class ProvaTeoricaService{
     async criarProvaTeorica(
-        nome: string,
+        nomeProva: string,
         notaMaxima: number,
         categorias: number[],
         gabaritoOficial: Buffer,
         numQuestao: number       
     ){
-        const prova = await this.criarProva(
-            nome,
-            notaMaxima,
-            categorias,
-        );
-
         try{
-            const provaTeorica = await this.prisma.provaTeorica.create({
+            const provaTeorica = await prisma.provaTeorica.create({
                 data: {
-                    provaId: prova.idProva,
-                    gabaritoOficinal: gabaritoOficial,
-                    numQuestao,
-                }
+                    nomeProva,
+                    notaMaxima,
+                    categorias: {
+                        connect: categorias?.map((id: number) => ({
+                            idCategoria: id,
+                        })),
+                    },
+                    ...(gabaritoOficial && { gabaritoOficial: new Uint8Array(gabaritoOficial) }),
+                    numQuestao
+                }               
             });
             return provaTeorica;
     }catch(error){
@@ -38,7 +33,7 @@ class ProvaTeoricaService extends ProvaService {
 
     async buscarProvaTeoricaPorId(provaTeoricaId: number) {
         try {
-            const provaTeorica = await this.prisma.provaTeorica.findUnique({
+            const provaTeorica = await prisma.provaTeorica.findUnique({
                 where: { idprovaTeorica: provaTeoricaId }
             });
             return provaTeorica;
@@ -50,7 +45,7 @@ class ProvaTeoricaService extends ProvaService {
 
     async buscarProvasTeoricas() {
         try {
-            const provasTeoricas = await this.prisma.provaTeorica.findMany();
+            const provasTeoricas = await prisma.provaTeorica.findMany();
             return provasTeoricas;
         } catch (error) {
             console.error("Erro ao listar provas Teoricas:", error);
@@ -60,29 +55,28 @@ class ProvaTeoricaService extends ProvaService {
 
     async atualizarProvaTeorica(
         provaTeoricaId: number,
-        data: {
-            gabaritoOficinal?: Buffer,
-            numQuestao?: number
-        },
-        provaData:{
-            nome?: string,
-            notaMaxima?: number,
-            categorias?: Categoria[],
-        }
+        nomeProva?: string,
+        notaMaxima?: number,
+        categorias?: number[],
+        data?: { gabaritoOficial?: Buffer; numQuestao?: number },
+        
     ){
         try{
-            const provaTeorica = await this.prisma.provaTeorica.update({
+            const provaTeorica = await prisma.provaTeorica.update({
                 where: { idprovaTeorica: provaTeoricaId },
                 data: {
-                    gabaritoOficinal: data.gabaritoOficinal,
-                    numQuestao: data.numQuestao
-                },
+                    nomeProva,
+                    notaMaxima,
+                    categorias: {
+                        connect: categorias?.map((id: number) => ({
+                            idCategoria: id,
+                        })),
+                    },
+                    ...(data?.gabaritoOficial && { gabaritoOficial: new Uint8Array(data.gabaritoOficial) }),
+                    ...(data?.numQuestao && { numQuestao: data.numQuestao })
+                }
             });
 
-            if(provaData && provaTeorica.provaId) {
-                const prova = await this.atualizarProva(provaTeorica.provaId, provaData);
-                return { provaTeorica, prova };
-            }
             return provaTeorica;
         }catch(error){
             throw new Error("Erro ao atualizar Prova Teorica. Verefique os dados fornecidos.");
@@ -91,5 +85,5 @@ class ProvaTeoricaService extends ProvaService {
 
 }
 
-const provaTeoricaService = new ProvaTeoricaService(prisma);
+const provaTeoricaService = new ProvaTeoricaService();
 export default provaTeoricaService;

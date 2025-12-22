@@ -160,8 +160,6 @@ model Categoria {
   idadeLimite   Int?
 
   candidatos Candidato[]
-  provaId    Int?
-  Prova      Prova?      @relation(fields: [provaId], references: [idProva], onDelete: SetNull)
 
   provaTeoricaId Int?
   ProvaTeorica   ProvaTeorica? @relation(fields: [provaTeoricaId], references: [idprovaTeorica], onDelete: SetNull)
@@ -171,53 +169,56 @@ model Categoria {
 }
 
 model Avaliacao {
-  idAvalicao            Int             @id @default(autoincrement())
-  dataAvaliacao         DateTime        @default(now())
-  comissaoId            Int
-  Comissao              Comissao        @relation(fields: [comissaoId], references: [idComissao])
-  avaliadorId           Int
-  Usuario               Usuario         @relation(fields: [avaliadorId], references: [idUsuario])
-  provaId               Int
-  Prova                 Prova?          @relation(fields: [provaId], references: [idProva])
-  blocoProvaId          Int?
-  BlocoProva            BlocoProva?     @relation(fields: [blocoProvaId], references: [idBloco])
-  quesitos              Quesitos[]
-  nota                  Float
-  candidatoId           Int
-  Candidato             Candidato       @relation(fields: [candidatoId], references: [idCandidato])
-  FichaCandidato        FichaCandidato? @relation(fields: [fichaCandidatoIdFicha], references: [idFicha])
-  fichaCandidatoIdFicha Int?
-}
+  idAvalicao    Int      @id @default(autoincrement())
+  dataAvaliacao DateTime @default(now())
 
-model Prova {
-  idProva      Int            @id @default(autoincrement())
-  nomeProva    String
-  notaMaxima   Float
-  categorias   Categoria[]
-  ProvaTeorica ProvaTeorica[]
-  ProvaPratica ProvaPratica[]
-  recursos     Recurso[]
-  Avaliacao    Avaliacao[]
+  comissaoId Int
+  Comissao   Comissao @relation(fields: [comissaoId], references: [idComissao])
+
+  avaliadorId Int
+  Usuario     Usuario @relation(fields: [avaliadorId], references: [idUsuario])
+
+  provaPraticaId Int?
+  ProvaPratica   ProvaPratica? @relation(fields: [provaPraticaIdProvaPratica], references: [idProvaPratica])
+
+  provaTeoricaId Int?
+  ProvaTeorica   ProvaTeorica? @relation(fields: [provaTeoricaIdprovaTeorica], references: [idprovaTeorica])
+
+  blocoProvaId Int?
+  BlocoProva   BlocoProva? @relation(fields: [blocoProvaId], references: [idBloco])
+
+  quesitos Quesitos[]
+  nota     Float
+
+  candidatoId Int
+  Candidato   Candidato @relation(fields: [candidatoId], references: [idCandidato])
+
+  fichaCandidatoIdFicha      Int?
+  FichaCandidato             FichaCandidato? @relation(fields: [fichaCandidatoIdFicha], references: [idFicha])
+  provaPraticaIdProvaPratica Int?
+  provaTeoricaIdprovaTeorica Int?
 }
 
 model ProvaTeorica {
-  idprovaTeorica   Int         @id @default(autoincrement())
-  provaId          Int?
-  Prova            Prova?      @relation(fields: [provaId], references: [idProva])
-  gabaritoOficinal Bytes
-  numQuestao       Int
-  quesitos         Quesitos[]
-  Categoria        Categoria[]
-  Recurso          Recurso[]
+  idprovaTeorica  Int         @id @default(autoincrement())
+  nomeProva       String
+  notaMaxima      Float
+  gabaritoOficial Bytes
+  numQuestao      Int
+  quesitos        Quesitos[]
+  categorias      Categoria[]
+  avaliacoes      Avaliacao[]
+  recursos         Recurso[]
 }
 
 model ProvaPratica {
-  idProvaPratica   Int          @id @default(autoincrement())
-  provaId          Int?
-  prova            Prova?       @relation(fields: [provaId], references: [idProva])
-  blocosProvas     BlocoProva[]
-  Categoria        Categoria[]
-  Recurso          Recurso[]
+  idProvaPratica Int          @id @default(autoincrement())
+  nomeProva      String
+  notaMaxima     Float
+  blocosProvas   BlocoProva[]
+  categorias     Categoria[]
+  avaliacoes     Avaliacao[]
+  recursos        Recurso[]
 }
 
 model BlocoProva {
@@ -282,8 +283,6 @@ model Recurso {
   provaTeoricaIdprovaTeorica Int?
   ProvaPratica               ProvaPratica? @relation(fields: [provaPraticaIdProvaPratica], references: [idProvaPratica])
   provaPraticaIdProvaPratica Int?
-  Prova                      Prova?        @relation(fields: [provaIdProva], references: [idProva])
-  provaIdProva               Int?
 }
 
 enum DancaSalaoTradicional {

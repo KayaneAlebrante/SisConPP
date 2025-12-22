@@ -10,7 +10,6 @@ class Avaliacao{
         comissaoId: number,
         avaliadorId: number,
         candidatoId: number,
-        provaId: number,
         blocoProvaId: number,
     ){
         try {
@@ -20,7 +19,6 @@ class Avaliacao{
                     comissaoId,
                     avaliadorId,
                     candidatoId,
-                    provaId,
                     blocoProvaId,
                     nota: 0, 
                 },
