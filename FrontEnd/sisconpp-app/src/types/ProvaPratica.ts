@@ -2,17 +2,11 @@ import { Categoria } from "./Categoria";
 
 export interface ProvaPratica {
     idProvaPratica: number;
+    nomeProva: string;
+    notaMaxima: number;
     provaId: number;
-    blocosProvas: [];
+    blocosProvas: BlocoProva[]; 
     categorias: Categoria[];
-}
-
-export interface BlocoProva{
-    idBloco: number;
-    nomeBloco: string;
-    notaMaximaBloco: number;
-    provaPraticaId: number;
-    quesitos: Quesitos[];
 }
 
 export enum DancaSalaoTradicional {
@@ -21,19 +15,27 @@ export enum DancaSalaoTradicional {
     NENHUMA = "NENHUMA"
 }
 
+export interface SubQuesitos {
+    idSubequestios?: number; 
+    nomeSubquesito: string;
+    notaSubequesito: number;
+    quesitoId: number;
+}
+
 export interface Quesitos {
-    idQuesito: number;
+    idQuesito?: number;
     nomeQuesito: string;
     notaMaximaQuesito: number;
     danca: boolean;
     dancaSalaoTradicional: DancaSalaoTradicional;
     blocoProvaId?: number;
-    subQuesitos: SubQuesitos[];
+    subQuesitos?: SubQuesitos[]; 
 }
 
-export interface SubQuesitos {
-    idSubequestios: number;
-    nomeSubquesito: string;
-    notaSubequesito: number;
-    quesitoId: number;
+export interface BlocoProva {
+    idBloco?: number; 
+    nomeBloco: string;
+    notaMaximaBloco: number;
+    provaPraticaId: number;
+    quesitos?: Quesitos[]; 
 }

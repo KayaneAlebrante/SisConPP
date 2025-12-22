@@ -26,6 +26,7 @@ const Sidebar: FC = () => {
     { label: "Comissões Avaliadoras", icon: Users, href: "/comissao" },
     { label: "Sortear Danças", icon: Music, href: "/sorteio-danca"},
     { label: "Relatórios", icon: BookText },
+    { label: "Adicionar planilhas Prova Prática", icon: AlertCircle, href: "/prova-pratica-criacao" }
   ];
 
   return (

@@ -224,6 +224,11 @@ export const criarProvaPratica = async (criarProvaPratica: ProvaPratica) => {
   return await api.post("/provaPratica", criarProvaPratica);
 };
 
+export const buscarProvasPraticas = async () => {
+  const response = await api.get<ProvaPratica[]>("/provaPratica");
+  return response.data;
+};
+
 export const criarBlocoProva = async (criarBlocoProva: BlocoProva) => {
   return await api.post("/blocoProva", criarBlocoProva);
 };
@@ -265,3 +270,4 @@ export const deletarSubQuesito = async (idSubQuesito: number) => {
   const response = await api.delete(`/subQuesito/${idSubQuesito}`);
   return response.data ?? true;
 };
+

@@ -13,9 +13,10 @@ export interface SubQuesitos {
 interface SubQuesitosFormProps {
     onClose: () => void;
     subQuesitoToEdit?: SubQuesitos;
+    quesitoId?: number;
 }
 
-export default function SubQuesitosForm({ onClose, subQuesitoToEdit }: SubQuesitosFormProps) {
+export default function SubQuesitosForm({ onClose, subQuesitoToEdit, quesitoId }: SubQuesitosFormProps) {
     
     const [listaQuesitos, setListaQuesitos] = useState<Quesitos[]>([]);
     
@@ -24,7 +25,6 @@ export default function SubQuesitosForm({ onClose, subQuesitoToEdit }: SubQuesit
         notaSubequesito: 0,
         quesitoId: 0
     });
-
 
     useEffect(() => {
         const carregarQuesitos = async () => {
@@ -46,8 +46,10 @@ export default function SubQuesitosForm({ onClose, subQuesitoToEdit }: SubQuesit
                 notaSubequesito: subQuesitoToEdit.notaSubequesito,
                 quesitoId: subQuesitoToEdit.quesitoId
             });
+        } else if (quesitoId) {
+            setFormData(prev => ({ ...prev, quesitoId: quesitoId }));
         }
-    }, [subQuesitoToEdit]);
+    }, [subQuesitoToEdit, quesitoId]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;

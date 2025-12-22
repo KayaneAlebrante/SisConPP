@@ -212,12 +212,12 @@ model ProvaTeorica {
 }
 
 model ProvaPratica {
-  idProvaPratica Int          @id @default(autoincrement())
-  provaId        Int?
-  prova          Prova?       @relation(fields: [provaId], references: [idProva])
-  blocosProvas   BlocoProva[]
-  Categoria      Categoria[]
-  Recurso        Recurso[]
+  idProvaPratica   Int          @id @default(autoincrement())
+  provaId          Int?
+  prova            Prova?       @relation(fields: [provaId], references: [idProva])
+  blocosProvas     BlocoProva[]
+  Categoria        Categoria[]
+  Recurso          Recurso[]
 }
 
 model BlocoProva {
