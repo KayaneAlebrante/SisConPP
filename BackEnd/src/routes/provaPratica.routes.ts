@@ -16,6 +16,10 @@ router.get("/", authMiddleware, async (req: Request, res: Response) => {
     await ProvaPraticaController.buscarProvasPraticas(req, res);
 });
 
+router.get("/:idCateogira", authMiddleware, async (req: Request, res: Response) => {
+    await ProvaPraticaController.buscarPorCategoria(req, res);
+});
+
 router.put("/:id", authMiddleware, async (req: Request, res: Response) => {
     await ProvaPraticaController.atualizarProvaPratica(req, res);
 });

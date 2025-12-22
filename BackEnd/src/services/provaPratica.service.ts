@@ -26,7 +26,7 @@ class ProvaPraticaService {
                         })),
                     },
                 }
-                });
+            });
             return provaPratica;
         } catch (error) {
             console.error("Erro ao criar prova prática:", error);
@@ -56,6 +56,28 @@ class ProvaPraticaService {
         }
     }
 
+    async buscarProvaPraticaPorCategoria(categoriaId: number) {
+        return prisma.provaPratica.findMany({
+            where: {
+                categorias: {
+                    some: {
+                        idCategoria: categoriaId
+                    }
+                }
+            },
+            include: {
+                blocosProvas: {
+                    include: {
+                        quesitos: {
+                            include: {
+                                subeQuesitos: true
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
 
     async atualizarProvaPratica(
         idProvaPratica: number,

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import provaPraticaService from "../services/provaPratica.service";
 
-class ProvaPraticaController{
+class ProvaPraticaController {
     async criarProvaPratica(req: Request, res: Response) {
         const { nomeProva, notaMaxima, categorias, blocosProvas } = req.body;
 
@@ -23,7 +23,7 @@ class ProvaPraticaController{
     }
 
     async buscarProvaPraticaPorId(req: Request, res: Response) {
-        const { id} = req.params;
+        const { id } = req.params;
 
         try {
             const provaPratica = await provaPraticaService.buscarProvaPraticaPorId(Number(id));
@@ -55,6 +55,21 @@ class ProvaPraticaController{
         }
     }
 
+    async buscarPorCategoria(req: Request, res: Response) {
+        const { categoriaId } = req.query;
+
+        if (!categoriaId) {
+            return res.status(400).json({ error: "Categoria obrigatória" });
+        }
+
+        const provas = await provaPraticaService.buscarProvaPraticaPorCategoria(
+            Number(categoriaId)
+        );
+
+        return res.json(provas);
+    }
+
+
     async atualizarProvaPratica(req: Request, res: Response) {
         const { id } = req.params;
         const data = req.body;
@@ -65,7 +80,7 @@ class ProvaPraticaController{
 
         try {
             const { categorias, blocosProvas, provaData } = data;
-            const provaPratica = await provaPraticaService.atualizarProvaPratica(Number(id), categorias, blocosProvas, provaData); 
+            const provaPratica = await provaPraticaService.atualizarProvaPratica(Number(id), categorias, blocosProvas, provaData);
             return res.status(200).json(provaPratica);
 
 
