@@ -48,7 +48,19 @@ class ProvaPraticaService {
 
     async buscarProvasPraticas() {
         try {
-            const provasPraticas = await prisma.provaPratica.findMany();
+            const provasPraticas = await prisma.provaPratica.findMany({
+                include: {
+                    blocosProvas: {
+                        include: {
+                            quesitos: {
+                                include: {
+                                    subQuesitos: true
+                                }
+                            }
+                        }
+                    }
+                }
+            });
             return provasPraticas;
         } catch (error) {
             console.error("Erro ao listar provas práticas:", error);
@@ -70,7 +82,7 @@ class ProvaPraticaService {
                     include: {
                         quesitos: {
                             include: {
-                                subeQuesitos: true
+                                subQuesitos: true
                             }
                         }
                     }

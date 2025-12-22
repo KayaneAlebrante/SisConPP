@@ -4,7 +4,7 @@ import { authMiddleware } from "../middlewares/authMiddleware";
 
 const route = express.Router();
 
-route.post("/", authMiddleware,  async (req: Request, res: Response) => {
+route.post("/", async (req: Request, res: Response) => {
     await blocoProvaController.criarBlocoProva(req, res);
 });
 

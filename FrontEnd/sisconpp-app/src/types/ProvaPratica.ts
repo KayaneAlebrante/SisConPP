@@ -1,12 +1,9 @@
-import { Categoria } from "./Categoria";
-
 export interface ProvaPratica {
     idProvaPratica: number;
     nomeProva: string;
     notaMaxima: number;
-    provaId: number;
-    blocosProvas: BlocoProva[]; 
-    categorias: Categoria[];
+    categorias: number[];
+    blocosProvas: BlocoProva[];    
 }
 
 export enum DancaSalaoTradicional {

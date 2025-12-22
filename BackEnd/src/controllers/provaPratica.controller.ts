@@ -56,14 +56,14 @@ class ProvaPraticaController {
     }
 
     async buscarPorCategoria(req: Request, res: Response) {
-        const { categoriaId } = req.query;
+        const { idCategoria } = req.params;
 
-        if (!categoriaId) {
+        if (!idCategoria) {
             return res.status(400).json({ error: "Categoria obrigatória" });
         }
 
         const provas = await provaPraticaService.buscarProvaPraticaPorCategoria(
-            Number(categoriaId)
+            Number(idCategoria)
         );
 
         return res.json(provas);

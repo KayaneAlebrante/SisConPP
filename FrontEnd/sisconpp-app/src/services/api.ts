@@ -229,6 +229,11 @@ export const buscarProvasPraticas = async () => {
   return response.data;
 };
 
+export const buscarPorCategoria = async (idCategoria: number) =>{
+  const response = await api.get<ProvaPratica[]>(`/provaPratica?categoriaId=${idCategoria}`);
+  return response.data;
+};
+
 export const criarBlocoProva = async (criarBlocoProva: BlocoProva) => {
   return await api.post("/blocoProva", criarBlocoProva);
 };

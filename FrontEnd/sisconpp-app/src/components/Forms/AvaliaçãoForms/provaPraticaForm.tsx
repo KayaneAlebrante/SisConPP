@@ -1,108 +1,78 @@
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { listarCategorias, criarProvaPratica } from '../../../services/api';
-import { ProvaPratica } from '../../../types/ProvaPratica';
 import { Categoria } from '../../../types/Categoria';
-
-interface ProvaPraticaFormData {
-    nomeProva: string;
-    notaMaxima: number | '';
-    categoriasSelecionadas: number[];
-}
 
 interface ProvaPraticaFormProps {
     onClose: () => void;
-    provaPraticaToEdit?: ProvaPratica;
 }
 
-export default function ProvaPraticaForm({
-    onClose,
-    provaPraticaToEdit
-}: ProvaPraticaFormProps) {
-
-    const [listaCategorias, setListaCategorias] = useState<Categoria[]>([]);
-    const [formData, setFormData] = useState<ProvaPraticaFormData>({
-        nomeProva: '',
-        notaMaxima: '',
-        categoriasSelecionadas: []
-    });
+export default function ProvaPraticaForm({ onClose }: ProvaPraticaFormProps) {
+    const [categorias, setCategorias] = useState<Categoria[]>([]);
+    const [nomeProva, setNomeProva] = useState('');
+    const [notaMaxima, setNotaMaxima] = useState<number | ''>('');
+    const [categoriasSelecionadas, setCategoriasSelecionadas] = useState<number[]>([]);
 
     useEffect(() => {
-        listarCategorias()
-            .then(res => setListaCategorias(res as Categoria[]))
-            .catch(() => toast.error('Erro ao carregar categorias'));
+        const fetchCategorias = async () => {
+            try {
+                const response = await listarCategorias();
+                setCategorias(response as Categoria[]);
+            } catch {
+                toast.error('Erro ao carregar categorias');
+            }
+        };
+
+        fetchCategorias();
     }, []);
 
-    useEffect(() => {
-        if (provaPraticaToEdit) {
-            setFormData({
-                nomeProva: provaPraticaToEdit.nomeProva,
-                notaMaxima: provaPraticaToEdit.notaMaxima,
-                categoriasSelecionadas: provaPraticaToEdit.categorias.map(
-                    c => c.idCategoria
-                )
-            });
-        }
-    }, [provaPraticaToEdit]);
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: name === 'notaMaxima' ? Number(value) : value
-        }));
-    };
-
-    const toggleCategoria = (idCategoria: number) => {
-        setFormData(prev => ({
-            ...prev,
-            categoriasSelecionadas: prev.categoriasSelecionadas.includes(idCategoria)
-                ? prev.categoriasSelecionadas.filter(id => id !== idCategoria)
-                : [...prev.categoriasSelecionadas, idCategoria]
-        }));
+    const toggleCategoria = (id: number) => {
+        setCategoriasSelecionadas(prev =>
+            prev.includes(id)
+                ? prev.filter(c => c !== id)
+                : [...prev, id]
+        );
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!formData.nomeProva.trim()) {
+        if (!nomeProva.trim()) {
             toast.warning('Informe o nome da prova');
             return;
         }
 
-        if (!formData.notaMaxima || Number(formData.notaMaxima) <= 0) {
+        if (!notaMaxima || notaMaxima <= 0) {
             toast.warning('Informe uma nota máxima válida');
             return;
         }
 
-        if (formData.categoriasSelecionadas.length === 0) {
+        if (categoriasSelecionadas.length === 0) {
             toast.warning('Selecione ao menos uma categoria');
             return;
         }
 
-        const payload: Omit<ProvaPratica, 'idProvaPratica' | 'provaId'> = {
-            nomeProva: formData.nomeProva,
-            notaMaxima: Number(formData.notaMaxima),
-            categorias: formData.categoriasSelecionadas
-                .map(id => listaCategorias.find(cat => cat.idCategoria === id))
-                .filter((cat): cat is Categoria => cat !== undefined),
+        const porvaPraticaPayload = {
+            idProvaPratica: 0,
+            nomeProva,
+            notaMaxima: Number(notaMaxima),
+            categorias: categoriasSelecionadas,
             blocosProvas: []
         };
 
         try {
-            await criarProvaPratica(payload as ProvaPratica);
-            toast.success('Prova Prática criada com sucesso');
+            await criarProvaPratica(porvaPraticaPayload);
+            toast.success('Prova prática criada com sucesso');
             onClose();
-        } catch (error) {
-            console.error(error);
-            toast.error('Erro ao salvar prova prática');
+        } catch {
+            toast.error('Erro ao criar prova prática');
         }
     };
 
     return (
         <div className="w-full">
-            <h1 className="text-xl font-semibold mb-4">
-                {provaPraticaToEdit ? 'Editar' : 'Nova'} Prova Prática
+            <h1 className="text-xl font-semibold text-neutral-onBackground mb-4">
+                Nova Prova Prática
             </h1>
 
             <form onSubmit={handleSubmit}>
@@ -112,10 +82,9 @@ export default function ProvaPraticaForm({
                     </label>
                     <input
                         type="text"
-                        name="nomeProva"
-                        value={formData.nomeProva}
-                        onChange={handleChange}
-                        className="rounded-lg p-2 border"
+                        value={nomeProva}
+                        onChange={e => setNomeProva(e.target.value)}
+                        className="rounded-lg p-2 bg-surface-containerHigh border border-outline focus:outline-none focus:ring-2 focus:ring-primary"
                         required
                     />
                 </div>
@@ -126,10 +95,10 @@ export default function ProvaPraticaForm({
                     </label>
                     <input
                         type="number"
-                        name="notaMaxima"
-                        value={formData.notaMaxima}
-                        onChange={handleChange}
-                        className="rounded-lg p-2 border"
+                        value={notaMaxima}
+                        onChange={e => setNotaMaxima(Number(e.target.value))}
+                                                className="rounded-lg p-2 bg-surface-containerHigh border border-outline focus:outline-none focus:ring-2 focus:ring-primary"
+
                         required
                     />
                 </div>
@@ -143,29 +112,18 @@ export default function ProvaPraticaForm({
                             </tr>
                         </thead>
                         <tbody>
-                            {listaCategorias.map(categoria => {
-                                const checked =
-                                    formData.categoriasSelecionadas.includes(
-                                        categoria.idCategoria
-                                    );
-
-                                return (
-                                    <tr key={categoria.idCategoria} className="border-t">
-                                        <td className="p-2">
-                                            {categoria.nomeCategoria}
-                                        </td>
-                                        <td className="p-2 text-center">
-                                            <input
-                                                type="checkbox"
-                                                checked={checked}
-                                                onChange={() =>
-                                                    toggleCategoria(categoria.idCategoria)
-                                                }
-                                            />
-                                        </td>
-                                    </tr>
-                                );
-                            })}
+                            {categorias.map(cat => (
+                                <tr key={cat.idCategoria} className="border-t">
+                                    <td className="p-2">{cat.nomeCategoria}</td>
+                                    <td className="p-2 text-center">
+                                        <input
+                                            type="checkbox"
+                                            checked={categoriasSelecionadas.includes(cat.idCategoria)}
+                                            onChange={() => toggleCategoria(cat.idCategoria)}
+                                        />
+                                    </td>
+                                </tr>
+                            ))}
                         </tbody>
                     </table>
                 </div>
@@ -180,7 +138,7 @@ export default function ProvaPraticaForm({
                     </button>
                     <button
                         type="submit"
-                        className="px-4 py-2 bg-secondary text-secondary-on font-medium rounded-lg hover:bg-secondary-dark"
+                        className="px-4 py-2 bg-secondary text-secondary-on font-medium rounded-lg hover:bg-secondary-dark transition"
                     >
                         Criar
                     </button>

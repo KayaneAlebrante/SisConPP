@@ -54,7 +54,7 @@ class BlocoProvaService {
                 include: {
                     quesitos: {
                         include: {
-                            subeQuesitos: true,
+                            subQuesitos: true,
                         }
                     }
                 }
@@ -79,7 +79,7 @@ class BlocoProvaService {
                             idQuesito: 'asc'
                         },
                         include: {
-                            subeQuesitos: true
+                            subQuesitos: true
                         }
                     }
                 }
