@@ -236,6 +236,7 @@ model Quesitos {
   nomeQuesito           String
   notaMaximaQuesito     Float
   danca                 Boolean
+  opcional              Boolean @default(false)
   dancaSalaoTradicional DancaSalaoTradicional
 
   BlocoProva        BlocoProva? @relation(fields: [blocoProvaIdBloco], references: [idBloco])

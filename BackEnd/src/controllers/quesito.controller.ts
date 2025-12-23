@@ -7,6 +7,7 @@ class QuesitoController {
             nomeQuesito,
             notaMaximaQuesito,
             danca,
+            opcional,
             dancaSalaoTradicional,
             blocoProvaIdBloco,
             provaTeoricaIdProvaTeorica
@@ -21,6 +22,7 @@ class QuesitoController {
                 nomeQuesito,
                 notaMaximaQuesito,
                 danca,
+                opcional,
                 dancaSalaoTradicional,
                 blocoProvaIdBloco,
                 provaTeoricaIdProvaTeorica

@@ -18,6 +18,7 @@ interface QuesitoFormState {
     nomeQuesito: string;
     notaMaximaQuesito: number;
     danca: boolean;
+    opcional: boolean;
     dancaSalaoTradicional: DancaSalaoTradicional;
     blocoProvaIdBloco?: number;
 }
@@ -33,6 +34,7 @@ export default function QuesitoForm({
         nomeQuesito: "",
         notaMaximaQuesito: 0,
         danca: false,
+        opcional: false,
         dancaSalaoTradicional: DancaSalaoTradicional.NENHUMA,
         blocoProvaIdBloco: blocoId,
     });
@@ -57,6 +59,7 @@ export default function QuesitoForm({
                 nomeQuesito: quesitoToEdit.nomeQuesito,
                 notaMaximaQuesito: quesitoToEdit.notaMaximaQuesito,
                 danca: quesitoToEdit.danca,
+                opcional: quesitoToEdit.opcional,
                 dancaSalaoTradicional: quesitoToEdit.dancaSalaoTradicional,
                 blocoProvaIdBloco: quesitoToEdit.blocoProvaIdBloco,
             });
@@ -108,7 +111,7 @@ export default function QuesitoForm({
             return;
         }
 
-        if (!formData.blocoProvaIdBloco){
+        if (!formData.blocoProvaIdBloco) {
             toast.warning("Selecione um Bloco de Prova");
             return;
         }
@@ -119,6 +122,7 @@ export default function QuesitoForm({
             notaMaximaQuesito: formData.notaMaximaQuesito,
             blocoProvaIdBloco: formData.blocoProvaIdBloco,
             danca: formData.danca,
+            opcional: formData.opcional,
             dancaSalaoTradicional: formData.danca
                 ? formData.dancaSalaoTradicional
                 : DancaSalaoTradicional.NENHUMA,
@@ -203,6 +207,21 @@ export default function QuesitoForm({
                         }}
                     />
                     <span>Este quesito envolve avaliação de dança?</span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                    <input
+                        type="checkbox"
+                        checked={formData.opcional}
+                        onChange={(e) => {
+                            const checked = e.target.checked;
+                            setFormData((prev) => ({
+                                ...prev,
+                                opcional: checked,
+                            }));
+                        }}
+                    />
+                    <span>Este quesito é opcional?</span>
                 </div>
 
                 {formData.danca && (
