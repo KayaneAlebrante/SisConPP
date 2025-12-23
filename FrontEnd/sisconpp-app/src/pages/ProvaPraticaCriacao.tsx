@@ -34,6 +34,10 @@ export default function ProvaPraticaCriacao() {
   const [parentProvaId, setParentProvaId] = useState<number>();
   const [parentBlocoId, setParentBlocoId] = useState<number>();
   const [parentQuesitoId, setParentQuesitoId] = useState<number>();
+  const [provasAbertas, setProvasAbertas] = useState<Set<number>>(new Set());
+  const [blocosAbertos, setBlocosAbertos] = useState<Set<number>>(new Set());
+  const [quesitosAbertos, setQuesitosAbertos] = useState<Set<number>>(new Set());
+
 
   const [refresh, setRefresh] = useState(false);
 
@@ -59,7 +63,7 @@ export default function ProvaPraticaCriacao() {
 
         const provasComEstado = (response as ProvaPratica[]).map((p) => ({
           ...p,
-          isOpen: false,
+          isOpen: provasAbertas.has(p.idProvaPratica)
         }));
 
         setProvas(provasComEstado);
@@ -70,14 +74,42 @@ export default function ProvaPraticaCriacao() {
       }
     };
     fetchProvas();
-  }, [categoriaSelecionada, refresh]);
+  }, [categoriaSelecionada, refresh, provasAbertas]);
 
   const toggleProva = (provaId: number) => {
-    setProvas((prev) =>
-      prev.map((p) =>
-        p.idProvaPratica === provaId ? { ...p, isOpen: !p.isOpen } : p
-      )
-    );
+    setProvasAbertas(prev => {
+      const novo = new Set(prev);
+      if (novo.has(provaId)) {
+        novo.delete(provaId);
+      } else {
+        novo.add(provaId);
+      }
+      return novo;
+    });
+  };
+
+  const toggleBloco = (blocoId: number) => {
+    setBlocosAbertos(prev => {
+      const novo = new Set(prev);
+      if (novo.has(blocoId)) {
+        novo.delete(blocoId);
+      } else {
+        novo.add(blocoId);
+      }
+      return novo;
+    });
+  };
+
+  const toggleQuesito = (quesitoId: number) => {
+    setQuesitosAbertos(prev => {
+      const novo = new Set(prev);
+      if (novo.has(quesitoId)) {
+        novo.delete(quesitoId);
+      } else {
+        novo.add(quesitoId);
+      }
+      return novo;
+    });
   };
 
   const closeModalAndRefresh = () => {
@@ -161,18 +193,17 @@ export default function ProvaPraticaCriacao() {
               <ProvaAccordion
                 key={prova.idProvaPratica}
                 prova={prova}
+                isOpen={provasAbertas.has(prova.idProvaPratica)}
                 onToggle={toggleProva}
-                onAddBloco={(provaId) => openBlocoModal(undefined, provaId)}
-                onEditBloco={(bloco, provaId) =>
-                  openBlocoModal(bloco, provaId)
-                }
-                onAddQuesito={(blocoId) =>
-                  openQuesitoModal(undefined, blocoId)
-                }
-                onAddSub={(quesitoId) =>
-                  openSubModal(undefined, quesitoId)
-                }
+                blocosAbertos={blocosAbertos}
+                onToggleBloco={toggleBloco}
+                quesitosAbertos={quesitosAbertos}
+                onToggleQuesito={toggleQuesito}
+                onAddBloco={(id) => openBlocoModal(undefined, id)}
+                onAddQuesito={(id) => openQuesitoModal(undefined, id)}
+                onAddSub={(id) => openSubModal(undefined, id)}
               />
+
             ))}
         </div>
       </div>

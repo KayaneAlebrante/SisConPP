@@ -1,66 +1,61 @@
 import { ChevronDown, ChevronRight, Plus } from "lucide-react";
-import { ProvaPratica, BlocoProva } from "../../types/ProvaPratica";
+import { ProvaPratica } from "../../types/ProvaPratica";
 import BlocoItem from "./BlocoItem";
 
-interface Props {
-  prova: ProvaPratica & { isOpen?: boolean };
+export interface ProvaAccordionProps {
+  prova: ProvaPratica;
+  isOpen: boolean;
   onToggle: (provaId: number) => void;
+  blocosAbertos: Set<number>;
+  onToggleBloco: (blocoId: number) => void;
+  quesitosAbertos: Set<number>;
+  onToggleQuesito: (quesitoId: number) => void;
   onAddBloco: (provaId: number) => void;
-  onEditBloco: (bloco: BlocoProva, provaId: number) => void;
   onAddQuesito: (blocoId: number) => void;
   onAddSub: (quesitoId: number) => void;
 }
 
+
 export default function ProvaAccordion({
   prova,
+  isOpen,
   onToggle,
+  blocosAbertos,
+  onToggleBloco,
+  quesitosAbertos,
+  onToggleQuesito,
   onAddBloco,
   onAddQuesito,
   onAddSub,
-}: Props) {
+}: ProvaAccordionProps) {
   return (
     <div
-      className={`bg-white rounded-xl border transition-all duration-200 overflow-hidden shadow-sm ${
-        prova.isOpen
-          ? "border-primary ring-1 ring-primary/30"
-          : "border-neutral-outline"
-      }`}
+      className={`bg-white rounded-xl border transition-all overflow-hidden shadow-sm ${isOpen ? "border-primary ring-1 ring-primary/30" : "border-neutral-outline"
+        }`}
     >
-      {/* HEADER DA PROVA */}
       <div
         onClick={() => onToggle(prova.idProvaPratica)}
-        className={`flex items-center justify-between p-4 cursor-pointer transition-colors ${
-          prova.isOpen ? "bg-surface-containerHigh" : "hover:bg-gray-50"
-        }`}
+        className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50"
       >
-        <div className="flex items-center gap-4 flex-1">
-          <div
-            className={`p-2 rounded-lg transition-colors ${
-              prova.isOpen
-                ? "bg-primary text-white"
-                : "bg-gray-200 text-gray-600"
-            }`}
-          >
-            {prova.isOpen ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
+        <div className="flex items-center gap-4">
+          <div className={`p-2 rounded-lg ${isOpen ? "bg-primary text-white" : "bg-gray-200"}`}>
+            {isOpen ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
           </div>
 
           <div>
-            <h3 className="text-lg font-bold text-neutral-onBackground">
-              {prova.nomeProva}
-            </h3>
-            <span className="text-sm text-gray-500 font-medium">
+            <h3 className="text-lg font-bold">{prova.nomeProva}</h3>
+            <span className="text-sm text-gray-500">
               Nota Máx: {prova.notaMaxima}
             </span>
           </div>
         </div>
       </div>
 
-      {/* CONTEÚDO DA PROVA */}
-      {prova.isOpen && (
-        <div className="p-4 md:p-6 bg-gray-50 border-t border-gray-200 space-y-4 animate-fadeIn">
+      {isOpen && (
+        <div className="p-4 bg-gray-50 space-y-4">
           {prova.blocosProvas.length === 0 && (
             <p className="text-sm text-gray-400 italic">
-              Nenhum bloco cadastrado nesta prova.
+              Nenhum bloco cadastrado.
             </p>
           )}
 
@@ -68,6 +63,10 @@ export default function ProvaAccordion({
             <BlocoItem
               key={bloco.idBloco}
               bloco={bloco}
+              isOpen={blocosAbertos.has(bloco.idBloco!)}
+              onToggle={onToggleBloco}
+              quesitosAbertos={quesitosAbertos}
+              onToggleQuesito={onToggleQuesito}
               onAddQuesito={onAddQuesito}
               onAddSub={onAddSub}
             />
@@ -75,10 +74,9 @@ export default function ProvaAccordion({
 
           <button
             onClick={() => onAddBloco(prova.idProvaPratica)}
-            className="w-full py-3 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 hover:border-secondary hover:text-secondary hover:bg-secondary/5 transition-all flex justify-center items-center gap-2 font-bold"
+            className=" w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed rounded-xl text-sm font-semibold transition-all hover:border-secondary hover:text-secondary " 
           >
-            <Plus size={18} />
-            Adicionar Bloco Prova
+            <Plus size={18} /> Adicionar Bloco
           </button>
         </div>
       )}

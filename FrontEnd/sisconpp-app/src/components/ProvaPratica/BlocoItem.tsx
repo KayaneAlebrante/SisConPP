@@ -1,65 +1,61 @@
-import { useState } from "react";
 import { BlocoProva } from "../../types/ProvaPratica";
 import { ChevronDown, ChevronRight, Plus } from "lucide-react";
 import QuesitoItem from "./QuesitoItem";
 
-interface Props {
+interface BlocoItemProps {
   bloco: BlocoProva;
+  isOpen: boolean;
+  onToggle: (idBloco: number) => void;
+  quesitosAbertos: Set<number>;
+  onToggleQuesito: (idQuesito: number) => void;
   onAddQuesito: (blocoId: number) => void;
   onAddSub: (quesitoId: number) => void;
-  onEdit?: () => void;
 }
 
 export default function BlocoItem({
   bloco,
+  isOpen,
+  onToggle,
+  quesitosAbertos,
+  onToggleQuesito,
   onAddQuesito,
   onAddSub,
-}: Props) {
-  const [isOpen, setIsOpen] = useState(false);
-
+}: BlocoItemProps) {
   return (
     <div className="bg-white rounded-xl border shadow-sm">
       <div className="flex items-center justify-between p-3">
         <div>
-          <strong className="text-gray-800">{bloco.nomeBloco}</strong>
-          <p className="text-xs text-gray-500">
-            Nota máx: {bloco.notaMaximaBloco}
-          </p>
+          <strong>{bloco.nomeBloco}</strong>
+          <p className="text-xs">Nota máx: {bloco.notaMaximaBloco}</p>
         </div>
 
         <button
           type="button"
-          onClick={() => setIsOpen((prev) => !prev)}
-          className={`p-2 rounded-lg transition-colors ${
-            isOpen
-              ? "bg-primary text-white"
-              : "bg-gray-200 text-gray-600 hover:bg-gray-300"
+          onClick={() => onToggle(bloco.idBloco!)}
+          className={`p-2 rounded-lg ${
+            isOpen ? "bg-primary text-white" : "bg-gray-200"
           }`}
         >
-          {isOpen ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
+          {isOpen ? <ChevronDown /> : <ChevronRight />}
         </button>
       </div>
 
       {isOpen && (
         <div className="p-3 space-y-3 border-t bg-gray-50">
-          {bloco.quesitos && bloco.quesitos.length === 0 && (
-            <p className="text-sm text-gray-400 italic">
-              Nenhum quesito cadastrado neste bloco.
-            </p>
-          )}
-
           {bloco.quesitos?.map((q) => (
             <QuesitoItem
               key={q.idQuesito}
               quesito={q}
-              onAddSub={() => onAddSub(q.idQuesito!)}
+              isOpen={quesitosAbertos.has(q.idQuesito!)}
+              onToggle={onToggleQuesito}
+              onAddSub={onAddSub}
             />
           ))}
 
           <button
             type="button"
             onClick={() => onAddQuesito(bloco.idBloco!)}
-            className="w-full py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-secondary hover:text-secondary hover:bg-secondary/5 transition-all flex justify-center items-center gap-2 text-sm font-semibold"
+            className=" w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed rounded-xl text-sm font-semibold transition-all hover:border-secondary hover:text-secondary " 
           >
             <Plus size={16} />
             Adicionar Quesito
