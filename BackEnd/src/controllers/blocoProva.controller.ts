@@ -5,7 +5,7 @@ class BlocoProvaController{
     async criarBlocoProva(req: Request, res: Response){
         const {nomeBloco, notaMaximaBloco, provaPraticaId} = req.body;
 
-        if(!nomeBloco || !notaMaximaBloco || provaPraticaId){
+        if(!nomeBloco || !notaMaximaBloco || !provaPraticaId){
             return res.status(400).json({mensagem: "Nome do Bloco, Nota Máxima do Bloco e Id da Bloco de Prova são Obrigatórios"});
         }
 
