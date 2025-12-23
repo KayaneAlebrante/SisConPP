@@ -5,7 +5,7 @@ import { Usuario } from '../types/Usuario';
 import { Candidato } from '../types/Candidato';
 import { Concurso } from '../types/Concurso';
 import { Comissao } from '../types/Comissao';
-import { PreferenciaSorteio, Quesito, CriarSorteioPayload } from '../types/SorteioDanca';
+import { PreferenciaSorteio, Danca, CriarSorteioPayload } from '../types/SorteioDanca';
 import { BlocoProva, ProvaPratica, Quesitos, SubQuesitos } from '../types/ProvaPratica';
 
 // ---- CONFIGURAÇÃO DO AXIOS ----
@@ -199,13 +199,13 @@ export const deletarUsuarioComissao = async (idUsuario: number, idComissao: numb
   return await api.delete(`/comissao/usuario/${idUsuario}/${idComissao}`);
 };
 
-export const getDancasTradicionais = async (): Promise<Quesito[]> => {
-  const response = await api.get<Quesito[]>("/quesito/dancasTradicionais");
+export const getDancasTradicionais = async (): Promise<Danca[]> => {
+  const response = await api.get<Danca[]>("/danca/dancasTradicionais");
   return response.data;
 };
 
-export const getDancasSalao = async (): Promise<Quesito[]> => {
-  const response = await api.get<Quesito[]>("/quesito/dancasSalao");
+export const getDancasSalao = async (): Promise<Danca[]> => {
+  const response = await api.get<Danca[]>("/danca/dancasSalao");
   return response.data;
 };
 

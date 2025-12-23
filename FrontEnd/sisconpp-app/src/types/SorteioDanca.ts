@@ -1,18 +1,20 @@
 export enum DancaSalaoTradicional {
   DANCA_DE_SALAO = 'DANCA_DE_SALAO',
   DANCA_TRADICIONAL = 'DANCA_TRADICIONAL',
-  NENHUMA = 'NENHUMA',
 }
 
-export interface Quesito {
-  idQuesito: number;
-  nomeQuesito: string;
+export interface Danca{
+  idDanca: number,
+  nomeDanca: string,
+  dancaSalaoTradicional: DancaSalaoTradicional,
+  quesitosId: number[]
 }
+ 
 
 export interface PreferenciaSorteio {
   nomeSorteioDanca: DancaSalaoTradicional;
   candidatoId: number;
-  quesitos: number[];
+  dancas: number[];
 }
 
 export interface SorteioDanca {
@@ -22,7 +24,7 @@ export interface SorteioDanca {
   tipoDanca: DancaSalaoTradicional;
   candidatoId: number;
   usuarioId: number;
-  quesitoSorteado?: Quesito;
+  dancaSorteado?: Danca;
 }
 
 export interface CriarSorteioPayload{

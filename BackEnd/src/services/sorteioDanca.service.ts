@@ -10,16 +10,16 @@ class SorteioDanca {
         tipoDanca: DancaSalaoTradicional
     ) {
         try {
-            if(await preferenciaSorteioDanca.verificarSorteioDancaId(candidatoId, tipoDanca) === true){
-               return { message: "Sorteio já realizado para este candidato." };
+            if (await preferenciaSorteioDanca.verificarSorteioDancaId(candidatoId, tipoDanca)) {
+                return { message: "Sorteio já realizado para este candidato." };
             }
-            
+
             const preferencias = await prisma.preferenciaSorteioDanca.findMany({
                 where: {
                     candidatoId,
                     nomeSorteioDanca: tipoDanca,
                 },
-                include: { quesitos: true },
+                include: { dancas: true }, 
             });
 
             if (!preferencias || preferencias.length === 0) {
@@ -28,41 +28,38 @@ class SorteioDanca {
                 );
             }
 
-            const todosQuesitos = preferencias.flatMap(preferencia =>
-                preferencia.quesitos.map(quesito => ({
-                    idQuesito: quesito.idQuesito,
-                    nomeQuesito: quesito.nomeQuesito,
+            const todasDancas = preferencias.flatMap(preferencia =>
+                preferencia.dancas.map(danca => ({
+                    idDanca: danca.idDanca,
+                    nomeDanca: danca.nomeDanca,
                 }))
             );
 
-            if (todosQuesitos.length === 0) {
-                throw new Error("Nenhum quesito encontrado nas preferências do candidato.");
+            if (todasDancas.length === 0) {
+                throw new Error("Nenhuma dança encontrada nas preferências do candidato.");
             }
 
-
-            const sorteioIndex = Math.floor(Math.random() * todosQuesitos.length);
-            const quesitoSorteado = todosQuesitos[sorteioIndex];
-
+            const sorteioIndex = Math.floor(Math.random() * todasDancas.length);
+            const dancaSorteada = todasDancas[sorteioIndex];
             const sorteio = await prisma.sorteioDanca.create({
                 data: {
-                    resultadoSorteio: quesitoSorteado.idQuesito,
-                    dataSorteio: new Date(),
+                    resultadoSorteio: dancaSorteada.idDanca, 
                     candidatoId,
                     usuarioId,
-                    tipoDanca
+                    tipoDanca,
                 },
             });
 
-            preferenciaSorteioDanca.atualizarSorteioDancaId(
+            await preferenciaSorteioDanca.atualizarSorteioDancaId(
                 candidatoId,
                 sorteio.idSorteio,
                 tipoDanca
             );
-                        
+
             return {
                 message: "Sorteio realizado com sucesso.",
                 sorteio,
-                quesitoSorteado
+                dancaSorteada,
             };
 
         } catch (error: any) {

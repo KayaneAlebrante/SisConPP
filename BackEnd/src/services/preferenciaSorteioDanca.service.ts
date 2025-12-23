@@ -7,13 +7,13 @@ class PreferenciaSorteioDancaService {
     async selecionarPreferenciaSorteioDanca(
         nomeSorteioDanca: DancaSalaoTradicional, 
         candidatoId: number,
-        quesitosIds: number[]
+        dancaIds: number[]
     ) {
         try {
             const preferenciaExistente = await prisma.preferenciaSorteioDanca.findFirst({
                 where: {
-                    candidatoId: candidatoId,
-                    nomeSorteioDanca: nomeSorteioDanca
+                    candidatoId,
+                    nomeSorteioDanca
                 }
             });
 
@@ -25,12 +25,12 @@ class PreferenciaSorteioDancaService {
                 data: {
                     nomeSorteioDanca, 
                     candidatoId,
-                    quesitos: {
-                        connect: quesitosIds.map(id => ({ idQuesito: id })),
+                    dancas: {
+                        connect: dancaIds.map(id => ({ idDanca: id })),
                     },
                 },
                 include: {
-                    quesitos: true
+                    dancas: true, 
                 }
             });
 
@@ -47,7 +47,7 @@ class PreferenciaSorteioDancaService {
     async visualizarPreferencias(candidatoId: number) {
         const preferencias = await prisma.preferenciaSorteioDanca.findMany({
             where: { candidatoId },
-            include: { quesitos: true },
+            include: { dancas: true },
         });
         return preferencias;
     }

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import SideNavBar from "../components/SideNavBar/SideNavBar";
-import { listarCandidatos, listarCategorias, getDancasTradicionais, getDancasSalao, criarPreferencia, } from "../services/api";
-import { DancaSalaoTradicional, Quesito } from "../types/SorteioDanca";
+import { listarCandidatos, listarCategorias, getDancasTradicionais, getDancasSalao, criarPreferencia } from "../services/api";
+import { DancaSalaoTradicional, Danca } from "../types/SorteioDanca"; // 🔑 agora usando Danca
 import { Candidato } from "../types/Candidato";
 import { Categoria } from "../types/Categoria";
 import DancaForm from "../components/Forms/DancaForm";
@@ -13,14 +13,14 @@ import RoletaSorteio from "../components/Roleta/RoletaSorteio";
 export default function SorteioDancas() {
     const [candidatos, setCandidatos] = useState<Candidato[]>([]);
     const [categorias, setCategorias] = useState<Categoria[]>([]);
-    const [dancas, setDancas] = useState<Quesito[]>([]);
+    const [dancas, setDancas] = useState<Danca[]>([]); // 🔑 agora Danca[]
     const [tipoDanca, setTipoDanca] = useState<DancaSalaoTradicional | null>(null);
     const [selecionados, setSelecionados] = useState<number[]>([]);
     const [categoriaSelecionada, setCategoriaSelecionada] = useState<number | null>(null);
     const [candidatoSelecionado, setCandidatoSelecionado] = useState<number | null>(null);
     const [preferenciasSalvas, setPreferenciasSalvas] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [resultadoFinal, setResultadoFinal] = useState<Quesito | null>(null); 
+    const [resultadoFinal, setResultadoFinal] = useState<Danca | null>(null); // 🔑 agora Danca
 
     const candidatosFiltrados = categoriaSelecionada
         ? candidatos.filter((c) => c.categoriaId === categoriaSelecionada)
@@ -36,11 +36,11 @@ export default function SorteioDancas() {
 
     const buscarDancas = async (tipo: DancaSalaoTradicional) => {
         setTipoDanca(tipo);
-        const dancasTradicionais =
+        const dancasEncontradas =
             tipo === DancaSalaoTradicional.DANCA_TRADICIONAL
                 ? await getDancasTradicionais()
                 : await getDancasSalao();
-        setDancas(dancasTradicionais);
+        setDancas(dancasEncontradas);
     };
 
     const toggleSelecionado = (id: number) => {
@@ -58,9 +58,9 @@ export default function SorteioDancas() {
         const preferencias = {
             nomeSorteioDanca: tipoDanca,
             candidatoId: candidatoSelecionado,
-            quesitos: selecionados,
+            dancas: selecionados, 
         };
-
+console.log(preferencias);
         try {
             await criarPreferencia(preferencias);
             toast.success("Preferências salvas com sucesso!");
@@ -85,6 +85,7 @@ export default function SorteioDancas() {
                         candidatoSelecionado={candidatoSelecionado}
                         setCandidatoSelecionado={setCandidatoSelecionado}
                         tipoDanca={tipoDanca}
+                        setTipoDanca={setTipoDanca} // 🔑 adiciona para atualizar estado
                         buscarDancas={buscarDancas}
                     />
                 </div>
@@ -102,13 +103,12 @@ export default function SorteioDancas() {
                         tipoDanca && (
                             <RoletaSorteio
                                 candidatoId={candidatoSelecionado}
-                                usuarioId={1} 
+                                usuarioId={1}
                                 tipoDanca={tipoDanca}
-                                quesitos={dancas.filter((d) => selecionados.includes(d.idQuesito))}
-                                onFinish={(resultado) =>{
+                                dancas={dancas.filter((d) => selecionados.includes(d.idDanca))} 
+                                onFinish={(resultado) => {
                                     setResultadoFinal(resultado);
-                                }
-                                }
+                                }}
                             />
                         )
                     )}
@@ -131,9 +131,9 @@ export default function SorteioDancas() {
                     <h2 className="text-lg font-semibold mb-4">Confirme as danças selecionadas</h2>
                     <ul className="list-disc pl-6 text-left">
                         {dancas
-                            .filter((d) => selecionados.includes(d.idQuesito))
+                            .filter((d) => selecionados.includes(d.idDanca)) 
                             .map((d) => (
-                                <li key={d.idQuesito}>{d.nomeQuesito}</li>
+                                <li key={d.idDanca}>{d.nomeDanca}</li>
                             ))}
                     </ul>
 
@@ -162,7 +162,7 @@ export default function SorteioDancas() {
                     <h2 className="text-2xl font-bold text-gray-950 mb-4">Resultado do Sorteio</h2>
                     {resultadoFinal && (
                         <p className="text-4xl font-extrabold text-primary">
-                            {resultadoFinal.nomeQuesito}
+                            {resultadoFinal.nomeDanca} {/* 🔑 agora nomeDanca */}
                         </p>
                     )}
                 </div>

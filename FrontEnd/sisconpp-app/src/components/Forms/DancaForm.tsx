@@ -10,6 +10,7 @@ interface DancaFormProps {
   candidatoSelecionado: number | null;
   setCandidatoSelecionado: (id: number | null) => void;
   tipoDanca: DancaSalaoTradicional | null;
+  setTipoDanca: (tipo: DancaSalaoTradicional | null) => void;
   buscarDancas: (tipo: DancaSalaoTradicional) => void;
 }
 
@@ -21,14 +22,18 @@ export default function DancaForm({
   candidatoSelecionado,
   setCandidatoSelecionado,
   tipoDanca,
+  setTipoDanca,
   buscarDancas,
 }: DancaFormProps) {
   return (
     <div className="w-full">
       <div className="grid grid-cols-2 gap-4">
-         <div>
-          <label className="font-semibold text-secondary-on">Categoria</label>
+        <div>
+          <label htmlFor="categoria" className="font-semibold text-secondary-on">
+            Categoria
+          </label>
           <select
+            id="categoria"
             className="w-full p-2 border rounded-md mt-1"
             value={categoriaSelecionada ?? ""}
             onChange={(e) =>
@@ -45,8 +50,11 @@ export default function DancaForm({
         </div>
 
         <div>
-          <label className="font-semibold text-secondary-on">Candidato</label>
+          <label htmlFor="candidato" className="font-semibold text-secondary-on">
+            Candidato
+          </label>
           <select
+            id="candidato"
             className="w-full p-2 border rounded-md mt-1"
             value={candidatoSelecionado ?? ""}
             onChange={(e) =>
@@ -66,22 +74,30 @@ export default function DancaForm({
       <div className="w-full flex items-center gap-6 mt-6">
         <span className="font-semibold text-secondary-on">Danças</span>
 
-        <label className="flex items-center gap-2 text-secondary-on">
+        <label htmlFor="tradicional" className="flex items-center gap-2 text-secondary-on">
           <input
+            id="tradicional"
             type="radio"
             name="tipoDanca"
             checked={tipoDanca === DancaSalaoTradicional.DANCA_TRADICIONAL}
-            onChange={() => buscarDancas(DancaSalaoTradicional.DANCA_TRADICIONAL)}
+            onChange={() => {
+              setTipoDanca(DancaSalaoTradicional.DANCA_TRADICIONAL);
+              buscarDancas(DancaSalaoTradicional.DANCA_TRADICIONAL);
+            }}
           />
           Tradicionais
         </label>
 
-        <label className="flex items-center gap-2 text-secondary-on">
+        <label htmlFor="salao" className="flex items-center gap-2 text-secondary-on">
           <input
+            id="salao"
             type="radio"
             name="tipoDanca"
             checked={tipoDanca === DancaSalaoTradicional.DANCA_DE_SALAO}
-            onChange={() => buscarDancas(DancaSalaoTradicional.DANCA_DE_SALAO)}
+            onChange={() => {
+              setTipoDanca(DancaSalaoTradicional.DANCA_DE_SALAO);
+              buscarDancas(DancaSalaoTradicional.DANCA_DE_SALAO);
+            }}
           />
           Salão
         </label>

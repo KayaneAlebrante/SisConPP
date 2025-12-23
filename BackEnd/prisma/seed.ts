@@ -5,58 +5,101 @@ const prisma = new PrismaClient();
 
 async function main() {
     // =========================
-    // QUESITOS
-    // =========================
-    await prisma.quesitos.createMany({
-        data: [
-            // =========================
-            // DANÇAS DE SALÃO
-            // =========================
-            { nomeQuesito: "Valsa", notaMaximaQuesito: 5, danca: true, opcional: true, dancaSalaoTradicional: "DANCA_DE_SALAO" },
-            { nomeQuesito: "Vaneira", notaMaximaQuesito: 5, danca: true, opcional: true, dancaSalaoTradicional: "DANCA_DE_SALAO" },
-            { nomeQuesito: "Chamamé", notaMaximaQuesito: 5, danca: true, opcional: true, dancaSalaoTradicional: "DANCA_DE_SALAO" },
-            { nomeQuesito: "Bugio", notaMaximaQuesito: 5, danca: true, opcional: true, dancaSalaoTradicional: "DANCA_DE_SALAO" },
-            { nomeQuesito: "Milonga", notaMaximaQuesito: 5, danca: true, opcional: true, dancaSalaoTradicional: "DANCA_DE_SALAO" },
-            { nomeQuesito: "Chote", notaMaximaQuesito: 5, danca: true, opcional: true, dancaSalaoTradicional: "DANCA_DE_SALAO" },
-            { nomeQuesito: "Rancheira", notaMaximaQuesito: 5, danca: true, opcional: true, dancaSalaoTradicional: "DANCA_DE_SALAO" },
-
-            // =========================
-            // DANÇAS TRADICIONAIS
-            // =========================
-            { nomeQuesito: "Chico Sapateado", notaMaximaQuesito: 5, danca: true, opcional: true, dancaSalaoTradicional: "DANCA_TRADICIONAL" },
-            { nomeQuesito: "Chimarrita Balão", notaMaximaQuesito: 5, danca: true, opcional: true, dancaSalaoTradicional: "DANCA_TRADICIONAL" },
-            { nomeQuesito: "Chote Carreirinho", notaMaximaQuesito: 5, danca: true, opcional: true, dancaSalaoTradicional: "DANCA_TRADICIONAL" },
-            { nomeQuesito: "Chote de Duas Damas", notaMaximaQuesito: 5, danca: true, opcional: true, dancaSalaoTradicional: "DANCA_TRADICIONAL" },
-            { nomeQuesito: "Chote das Sete Voltas", notaMaximaQuesito: 5, danca: true, opcional: true, dancaSalaoTradicional: "DANCA_TRADICIONAL" },
-            { nomeQuesito: "Havaneira Marcada", notaMaximaQuesito: 5, danca: true, opcional: true, dancaSalaoTradicional: "DANCA_TRADICIONAL" },
-            { nomeQuesito: "Pezinho", notaMaximaQuesito: 5, danca: true, opcional: true, dancaSalaoTradicional: "DANCA_TRADICIONAL" },
-            { nomeQuesito: "Rancheira de Carreirinha", notaMaximaQuesito: 5, danca: true, opcional: true, dancaSalaoTradicional: "DANCA_TRADICIONAL" },
-            { nomeQuesito: "Tatu (Tatu de Castanholas)", notaMaximaQuesito: 5, danca: true, opcional: true, dancaSalaoTradicional: "DANCA_TRADICIONAL" },
-            { nomeQuesito: "Tatu com Volta no Meio", notaMaximaQuesito: 5, danca: true, opcional: true, dancaSalaoTradicional: "DANCA_TRADICIONAL" },
-            { nomeQuesito: "Tirana do Lenço", notaMaximaQuesito: 5, danca: true, opcional: true, dancaSalaoTradicional: "DANCA_TRADICIONAL" },
-        ]
-    });
-    console.log("✅ Quesitos de dança criados com sucesso!");
-
-    // =========================
     // CATEGORIAS
     // =========================
     await prisma.categoria.createMany({
         data: [
-            { nomeCategoria: "Prenda Mirim", escolaridade: "Ter concluído ou cursando o 2 ano do Ensino Fundamental", sorteioDanca: 1, idadeInicial: 7, idadeLimite: 12 },
-            { nomeCategoria: "Peão Mirim", escolaridade: "Ter concluído ou cursando o 2 ano do Ensino Fundamental", sorteioDanca: 3, idadeInicial: 7, idadeLimite: 12 },
-            { nomeCategoria: "Prenda Juvenil", escolaridade: "Ter concluído ou cursando o 6 ano do Ensino Fundamental", sorteioDanca: 1, idadeInicial: 12, idadeLimite: 17 },
-            { nomeCategoria: "Peão Juvenil", escolaridade: "Ter concluído ou cursando o 6 ano do Ensino Fundamental", sorteioDanca: 3, idadeInicial: 12, idadeLimite: 17 },
-            { nomeCategoria: "Prenda Adulta", escolaridade: "Ter concluído ou cursando o Ensino Médio", sorteioDanca: 5, idadeInicial: 18, idadeLimite: 0 },
-            { nomeCategoria: "Peão Adulto", escolaridade: "Ter concluído ou cursando o Ensino Médio", sorteioDanca: 5, idadeInicial: 18, idadeLimite: 0 },
-            { nomeCategoria: "Prenda Veterana", escolaridade: "Ter concluído ou cursando o Ensino Fundamental", sorteioDanca: 1, idadeInicial: 30, idadeLimite: 0 },
-            { nomeCategoria: "Peão Veterano", escolaridade: "Ter concluído ou cursando o Ensino Fundamental", sorteioDanca: 1, idadeInicial: 30, idadeLimite: 0 },
-            { nomeCategoria: "Prenda Xirua", escolaridade: "Ter concluído ou cursando o Ensino Fundamental", sorteioDanca: 1, idadeInicial: 50, idadeLimite: 0 },
-            { nomeCategoria: "Peão Xirú", escolaridade: "Ter concluído ou cursando o Ensino Fundamental", sorteioDanca: 1, idadeInicial: 50, idadeLimite: 0 },
+            { idCategoria: 1, nomeCategoria: "Prenda Mirim", escolaridade: "Ter concluído ou cursando o 2 ano do Ensino Fundamental", sorteioDanca: 1, idadeInicial: 7, idadeLimite: 12 },
+            { idCategoria: 2,nomeCategoria: "Peão Mirim", escolaridade: "Ter concluído ou cursando o 2 ano do Ensino Fundamental", sorteioDanca: 3, idadeInicial: 7, idadeLimite: 12 },
+            { idCategoria: 3,nomeCategoria: "Prenda Juvenil", escolaridade: "Ter concluído ou cursando o 6 ano do Ensino Fundamental", sorteioDanca: 1, idadeInicial: 12, idadeLimite: 17 },
+            { idCategoria: 4,nomeCategoria: "Peão Juvenil", escolaridade: "Ter concluído ou cursando o 6 ano do Ensino Fundamental", sorteioDanca: 3, idadeInicial: 12, idadeLimite: 17 },
+            { idCategoria: 5,nomeCategoria: "Prenda Adulta", escolaridade: "Ter concluído ou cursando o Ensino Médio", sorteioDanca: 5, idadeInicial: 18, idadeLimite: 0 },
+            { idCategoria: 6,nomeCategoria: "Peão Adulto", escolaridade: "Ter concluído ou cursando o Ensino Médio", sorteioDanca: 5, idadeInicial: 18, idadeLimite: 0 },
+            { idCategoria: 7,nomeCategoria: "Prenda Veterana", escolaridade: "Ter concluído ou cursando o Ensino Fundamental", sorteioDanca: 1, idadeInicial: 30, idadeLimite: 0 },
+            { idCategoria: 8,nomeCategoria: "Peão Veterano", escolaridade: "Ter concluído ou cursando o Ensino Fundamental", sorteioDanca: 1, idadeInicial: 30, idadeLimite: 0 },
+            { idCategoria: 9,nomeCategoria: "Prenda Xirua", escolaridade: "Ter concluído ou cursando o Ensino Fundamental", sorteioDanca: 1, idadeInicial: 50, idadeLimite: 0 },
+            { idCategoria: 10,nomeCategoria: "Peão Xirú", escolaridade: "Ter concluído ou cursando o Ensino Fundamental", sorteioDanca: 1, idadeInicial: 50, idadeLimite: 0 },
         ],
         skipDuplicates: true,
     });
     console.log("✅ Categorias criadas com sucesso!");
+    
+    // =========================
+    // PROVAS PRÁTICAS
+    // =========================
+    await prisma.provaPratica.createMany({
+        data:[
+            {idProvaPratica: 1, nomeProva: "Prova Pratica Peão Mirim e Peão Xiru", notaMaxima: 100},
+        ]
+    });
+    console.log("✅ Provas Práticas criados com sucesso!");
+
+    // =========================
+    // BLOCO PROVA 
+    // =========================
+    await prisma.blocoProva.createMany({
+        data:[
+            {idBloco: 1, nomeBloco: "Prova Artística", notaMaximaBloco: 18, provaPraticaId: 1}
+        ]
+    });
+    console.log("✅ Bloco Prova criados com sucesso!");
+
+     // =========================
+    // QUESITOS
+    // =========================
+
+    await prisma.quesitos.createMany({
+        data: [
+           { idQuesito: 1, nomeQuesito: "Dança Gaúcha de Salão", notaMaximaQuesito: 5, opcional: false },
+           { idQuesito: 2, nomeQuesito: "Dança Folclórica Tradicional", notaMaximaQuesito: 5, opcional: false }    
+        ]
+    });
+    // =========================
+    // DANÇAS
+    // =========================
+    await prisma.danca.createMany({
+        data: [
+            // =========================
+            // DANÇAS DE SALÃO
+            // =========================
+            { idDanca: 1, nomeDanca: "Valsa", dancaSalaoTradicional: "DANCA_DE_SALAO", quesitoId: 1},
+            { idDanca: 2, nomeDanca: "Vaneira", dancaSalaoTradicional: "DANCA_DE_SALAO", quesitoId: 1},
+            { idDanca: 3, nomeDanca: "Chamamé", dancaSalaoTradicional: "DANCA_DE_SALAO", quesitoId: 1},
+            { idDanca: 4, nomeDanca: "Bugio", dancaSalaoTradicional: "DANCA_DE_SALAO", quesitoId: 1},
+            { idDanca: 5, nomeDanca: "Milonga", dancaSalaoTradicional: "DANCA_DE_SALAO", quesitoId: 1},
+            { idDanca: 6, nomeDanca: "Chote", dancaSalaoTradicional: "DANCA_DE_SALAO", quesitoId: 1},
+            { idDanca: 7, nomeDanca: "Rancheira", dancaSalaoTradicional: "DANCA_DE_SALAO", quesitoId: 1},
+
+            // =========================
+            // DANÇAS TRADICIONAIS
+            // =========================
+            { idDanca: 8, nomeDanca: "Chico Sapateado", dancaSalaoTradicional: "DANCA_TRADICIONAL", quesitoId: 2 },
+            { idDanca: 9, nomeDanca: "Chimarrita Balão", dancaSalaoTradicional: "DANCA_TRADICIONAL", quesitoId: 2 },
+            { idDanca: 10, nomeDanca: "Chote Carreirinho", dancaSalaoTradicional: "DANCA_TRADICIONAL", quesitoId: 2 },
+            { idDanca: 11, nomeDanca: "Chote de Duas Damas", dancaSalaoTradicional: "DANCA_TRADICIONAL", quesitoId: 2 },
+            { idDanca: 12, nomeDanca: "Chote das Sete Voltas", dancaSalaoTradicional: "DANCA_TRADICIONAL", quesitoId: 2 },
+            { idDanca: 13, nomeDanca: "Havaneira Marcada", dancaSalaoTradicional: "DANCA_TRADICIONAL", quesitoId: 2 },
+            { idDanca: 14, nomeDanca: "Pezinho", dancaSalaoTradicional: "DANCA_TRADICIONAL", quesitoId: 2 },
+            { idDanca: 15, nomeDanca: "Rancheira de Carreirinha", dancaSalaoTradicional: "DANCA_TRADICIONAL", quesitoId: 2 },
+            { idDanca: 16, nomeDanca: "Tatu (Tatu de Castanholas)", dancaSalaoTradicional: "DANCA_TRADICIONAL", quesitoId: 2 },
+            { idDanca: 17, nomeDanca: "Tatu com Volta no Meio", dancaSalaoTradicional: "DANCA_TRADICIONAL", quesitoId: 2 },
+            { idDanca: 18, nomeDanca: "Tirana do Lenço", dancaSalaoTradicional: "DANCA_TRADICIONAL", quesitoId: 2},
+        ]
+    });
+    console.log("✅ Quesitos de dança criados com sucesso!");
+
+     // =========================
+    // SUBQUESITOS
+    // =========================
+    await prisma.subQuesitos.createMany({
+        data:[
+            {idSubequestios: 1, nomeSubquesito: "Harmonia do par", notaSubequesito: 1, quesitoId: 1},
+            {idSubequestios: 2, nomeSubquesito: "Correção coreográfica", notaSubequesito: 2, quesitoId: 1},
+            {idSubequestios: 3, nomeSubquesito: "Interpretação artística", notaSubequesito: 2, quesitoId: 1},
+            {idSubequestios: 4, nomeSubquesito: "Disposição do par na sala", notaSubequesito: 1, quesitoId: 1}
+        ]
+    });
+    console.log("✅ SubQuesitos criados com sucesso!");
 
     // =========================
     // REGIÕES TRADICIONALISTAS

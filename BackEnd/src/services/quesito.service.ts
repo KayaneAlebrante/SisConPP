@@ -3,14 +3,12 @@ import { DancaSalaoTradicional, PrismaClient, Recurso, SubQuesitos } from "@pris
 const prisma = new PrismaClient();
 
 class QuesitoService {
-    constructor(private prisma: PrismaClient) { }
+    constructor(private prisma: PrismaClient) {}
 
     async criarQuesitos(
         nomeQuesito: string,
         notaMaximaQuesito: number,
-        danca: boolean,
         opcional: boolean,
-        dancaSalaoTradicional: DancaSalaoTradicional,
         blocoProvaIdBloco?: number,
         provaTeoricaIdProvaTeorica?: number
     ) {
@@ -29,9 +27,7 @@ class QuesitoService {
                 data: {
                     nomeQuesito: nomeQuesito,
                     notaMaximaQuesito: notaMaximaQuesito,
-                    danca: danca,
                     opcional: opcional,
-                    dancaSalaoTradicional: dancaSalaoTradicional,
                     blocoProvaIdBloco: blocoProvaIdBloco ?? null,
                     provaTeoricaIdprovaTeorica: provaTeoricaIdProvaTeorica ?? null
                 },
@@ -49,9 +45,7 @@ class QuesitoService {
         data: {
             nomeQuesito?: string;
             notaMaximaQuesito?: number;
-            danca?: boolean;
             opcional?: boolean,
-            dancaSalaoTradicional?: DancaSalaoTradicional;
             blocoProvaIdBloco?: number;
         }
     ) {
@@ -87,36 +81,6 @@ class QuesitoService {
         } catch (error) {
             console.error("Erro detalhado:", error);
             throw new Error("Erro ao buscar Quesitos.");
-        }
-    }
-
-    async buscarDancasTradicionais() {
-        try {
-            const dancas = await this.prisma.quesitos.findMany({
-                where: {
-                    dancaSalaoTradicional: DancaSalaoTradicional.DANCA_TRADICIONAL
-                }
-            });
-
-            return dancas;
-        } catch (error) {
-            console.error("Erro ao buscar danças tradicionais:", error);
-            throw new Error("Erro ao buscar danças tradicionais");
-        }
-    }
-
-    async buscarDancasSalao() {
-        try {
-            const dancas = await this.prisma.quesitos.findMany({
-                where: {
-                    dancaSalaoTradicional: DancaSalaoTradicional.DANCA_DE_SALAO
-                }
-            });
-
-            return dancas;
-        } catch (error) {
-            console.error("Erro ao buscar danças tradicionais:", error);
-            throw new Error("Erro ao buscar danças tradicionais");
         }
     }
 
