@@ -9,6 +9,7 @@ class QuesitoService {
         nomeQuesito: string,
         notaMaximaQuesito: number,
         danca: boolean,
+        opcional: boolean,
         dancaSalaoTradicional: DancaSalaoTradicional,
         blocoProvaIdBloco?: number,
         provaTeoricaIdProvaTeorica?: number
@@ -29,6 +30,7 @@ class QuesitoService {
                     nomeQuesito: nomeQuesito,
                     notaMaximaQuesito: notaMaximaQuesito,
                     danca: danca,
+                    opcional: opcional,
                     dancaSalaoTradicional: dancaSalaoTradicional,
                     blocoProvaIdBloco: blocoProvaIdBloco ?? null,
                     provaTeoricaIdprovaTeorica: provaTeoricaIdProvaTeorica ?? null
@@ -48,6 +50,7 @@ class QuesitoService {
             nomeQuesito?: string;
             notaMaximaQuesito?: number;
             danca?: boolean;
+            opcional?: boolean,
             dancaSalaoTradicional?: DancaSalaoTradicional;
             blocoProvaIdBloco?: number;
         }

@@ -4,7 +4,7 @@ import { authMiddleware } from "../middlewares/authMiddleware";
 
 const router = express.Router();
 
-router.post("/", async (req: Request, res: Response) => {
+router.post("/", authMiddleware, async (req: Request, res: Response) => {
     await ProvaPraticaController.criarProvaPratica(req, res);
 });
 
@@ -16,7 +16,7 @@ router.get("/", authMiddleware, async (req: Request, res: Response) => {
     await ProvaPraticaController.buscarProvasPraticas(req, res);
 });
 
-router.get("/categoria/:idCategoria", async (req: Request, res: Response) => {
+router.get("/categoria/:idCategoria", authMiddleware, async (req: Request, res: Response) => {
     await ProvaPraticaController.buscarPorCategoria(req, res);
 });
 
