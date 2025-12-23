@@ -8,7 +8,7 @@ class BlocoProvaService {
     async criarBlocoProva(
         nomeBloco: string,
         notaMaximaBloco: number,
-        provaPraticaId?: number
+        provaPraticaId: number
     ) {
         try {
             const blocoProva = await this.prisma.blocoProva.create({

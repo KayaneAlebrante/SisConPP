@@ -199,7 +199,6 @@ export const deletarUsuarioComissao = async (idUsuario: number, idComissao: numb
   return await api.delete(`/comissao/usuario/${idUsuario}/${idComissao}`);
 };
 
-
 export const getDancasTradicionais = async (): Promise<Quesito[]> => {
   const response = await api.get<Quesito[]>("/quesito/dancasTradicionais");
   return response.data;
@@ -233,6 +232,10 @@ export const buscarPorCategoria = async (idCategoria: number) =>{
   const response = await api.get<ProvaPratica[]>(`/provaPratica?categoriaId=${idCategoria}`);
   return response.data;
 };
+
+export const atualizarProvaPratica = async (provaPratica: ProvaPratica) =>{
+  return api.put(`/provaPratica?categoriaId/${provaPratica.idProvaPratica}, provaPratica`);
+}; 
 
 export const criarBlocoProva = async (criarBlocoProva: BlocoProva) => {
   return await api.post("/blocoProva", criarBlocoProva);

@@ -14,7 +14,7 @@ class QuesitoService {
         provaTeoricaIdProvaTeorica?: number
     ) {
         try {
-            if (blocoProvaIdBloco) {
+            if (blocoProvaIdBloco !== undefined && blocoProvaIdBloco !== null){
                 const blocoProvaExiste = await this.prisma.blocoProva.findUnique({
                     where: { idBloco: blocoProvaIdBloco }
                 });
@@ -34,7 +34,7 @@ class QuesitoService {
                     provaTeoricaIdprovaTeorica: provaTeoricaIdProvaTeorica ?? null
                 },
             });
-
+            console.log(quesito);
             return quesito;
         } catch (error) {
             console.error("Erro detalhado:", error);

@@ -25,7 +25,7 @@ export interface Quesitos {
     notaMaximaQuesito: number;
     danca: boolean;
     dancaSalaoTradicional: DancaSalaoTradicional;
-    blocoProvaId?: number;
+    blocoProvaIdBloco?: number;
     subQuesitos?: SubQuesitos[]; 
 }
 

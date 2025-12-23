@@ -1,270 +1,213 @@
 import { useEffect, useState } from "react";
 import SideNavBar from "../components/SideNavBar/SideNavBar";
 import Modal from "../components/Modal/Modal";
+import ProvaAccordion from "../components/ProvaPratica/ProvaAccordion";
 import ProvaPraticaForm from "../components/Forms/AvaliaçãoForms/provaPraticaForm";
-import { buscarPorCategoria, buscarProvasPraticas, listarCategorias } from "../services/api";
+import BlocoProvaForm from "../components/Forms/AvaliaçãoForms/blocoProvaForm";
+import QuesitoForm from "../components/Forms/AvaliaçãoForms/quesitosForm";
+import SubQuesitosForm from "../components/Forms/AvaliaçãoForms/subQuesitosForm";
+import { buscarPorCategoria, buscarProvasPraticas, listarCategorias, } from "../services/api";
 import { Categoria } from "../types/Categoria";
-import { ProvaPratica } from "../types/ProvaPratica";
-
-import {
-    ChevronDown,
-    ChevronRight,
-    Plus,
-    ListChecks
-} from "lucide-react";
+import { ProvaPratica, BlocoProva, Quesitos, SubQuesitos, } from "../types/ProvaPratica";
+import { Plus } from "lucide-react";
 import { toast } from "react-toastify";
 
-interface ProvaAccordion extends ProvaPratica {
-    isOpen?: boolean;
+type ModalType = "PROVA" | "BLOCO" | "QUESITO" | "SUB" | null;
+
+interface ProvaAccordionState extends ProvaPratica {
+  isOpen?: boolean;
 }
 
 export default function ProvaPraticaCriacao() {
-    const [categorias, setCategorias] = useState<Categoria[]>([]);
-    const [categoriaSelecionada, setCategoriaSelecionada] = useState<number | null>(null);
+  const [categorias, setCategorias] = useState<Categoria[]>([]);
+  const [categoriaSelecionada, setCategoriaSelecionada] = useState<number | null>(
+    null
+  );
+  const [provas, setProvas] = useState<ProvaAccordionState[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [modalType, setModalType] = useState<ModalType>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedProva, setSelectedProva] = useState<ProvaPratica>();
+  const [selectedBloco, setSelectedBloco] = useState<BlocoProva>();
+  const [selectedQuesito, setSelectedQuesito] = useState<Quesitos>();
+  const [selectedSub, setSelectedSub] = useState<SubQuesitos>();
+  const [parentProvaId, setParentProvaId] = useState<number>();
+  const [parentBlocoId, setParentBlocoId] = useState<number>();
+  const [parentQuesitoId, setParentQuesitoId] = useState<number>();
 
-    const [provas, setProvas] = useState<ProvaAccordion[]>([]);
-    const [loading, setLoading] = useState(false);
+  const [refresh, setRefresh] = useState(false);
 
-    const [isModalOpen, setIsModalOpen] = useState(false);
-
-    useEffect(() => {
-        const fetchProvas = async () => {
-            setLoading(true);
-            try {
-                let response;
-                if (categoriaSelecionada) {
-                    response = await buscarPorCategoria(categoriaSelecionada);
-                } else {
-                    response = await buscarProvasPraticas();
-                }
-
-                const provasComEstado = (response as ProvaPratica[]).map(p => ({
-                    ...p,
-                    isOpen: false
-                }));
-                setProvas(provasComEstado);
-            } catch {
-                toast.error("Erro ao carregar provas práticas");
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchProvas();
-    }, [categoriaSelecionada]);
-
-    useEffect(() => {
-        const fetchCategorias = async () => {
-            try {
-                const response = await listarCategorias();
-                setCategorias(response as Categoria[]);
-            } catch {
-                toast.error("Erro ao carregar categorias");
-            }
-        };
-        fetchCategorias();
-    }, []);
-
-    useEffect(() => {
-        if (!categoriaSelecionada) {
-            setProvas([]);
-            return;
-        }
-
-        const fetchProvas = async () => {
-            setLoading(true);
-            try {
-                const response = await buscarPorCategoria(categoriaSelecionada);
-                const provasComEstado = (response as ProvaPratica[]).map(p => ({
-                    ...p,
-                    isOpen: false
-                }));
-                setProvas(provasComEstado);
-            } catch {
-                toast.error("Erro ao carregar provas práticas");
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchProvas();
-    }, [categoriaSelecionada]);
-
-    /** 🔹 Toggle da prova */
-    const toggleProva = (id: number) => {
-        setProvas(prev =>
-            prev.map(p =>
-                p.idProvaPratica === id ? { ...p, isOpen: !p.isOpen } : p
-            )
-        );
+  useEffect(() => {
+    const fetchCategorias = async () => {
+      try {
+        const response = await listarCategorias();
+        setCategorias(response as Categoria[]);
+      } catch {
+        toast.error("Erro ao carregar categorias");
+      }
     };
+    fetchCategorias();
+  }, []);
 
-    return (
-        <div className="flex flex-row min-h-screen w-full bg-neutral-background">
-            <SideNavBar />
+  useEffect(() => {
+    const fetchProvas = async () => {
+      setLoading(true);
+      try {
+        const response = categoriaSelecionada
+          ? await buscarPorCategoria(categoriaSelecionada)
+          : await buscarProvasPraticas();
 
-            <div className="flex-1 p-6 bg-neutral-background flex flex-col items-center overflow-y-auto">
+        const provasComEstado = (response as ProvaPratica[]).map((p) => ({
+          ...p,
+          isOpen: false,
+        }));
 
-                <div className="w-full max-w-6xl bg-secondary-light p-8 rounded-2xl shadow-lg mb-8">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-end">
+        setProvas(provasComEstado);
+      } catch {
+        toast.error("Erro ao carregar provas práticas");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProvas();
+  }, [categoriaSelecionada, refresh]);
 
-                        <div className="flex flex-col">
-                            <label className="font-semibold text-white mb-2 ml-1">
-                                Categoria
-                            </label>
+  const toggleProva = (provaId: number) => {
+    setProvas((prev) =>
+      prev.map((p) =>
+        p.idProvaPratica === provaId ? { ...p, isOpen: !p.isOpen } : p
+      )
+    );
+  };
 
-                            <select
-                                className="w-full p-3 rounded-lg border-none focus:ring-2 focus:ring-primary text-gray-700 shadow-sm"
-                                value={categoriaSelecionada ?? ""}
-                                onChange={(e) =>
-                                    setCategoriaSelecionada(
-                                        e.target.value ? Number(e.target.value) : null
-                                    )
-                                }
-                            >
-                                <option value="">Selecione</option>
-                                {categorias.map(cat => (
-                                    <option key={cat.idCategoria} value={cat.idCategoria}>
-                                        {cat.nomeCategoria}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
+  const closeModalAndRefresh = () => {
+    setIsModalOpen(false);
+    setRefresh((prev) => !prev);
+  };
 
-                        <div >
-                            <label className="font-semibold text-white mb-2 ml-1">
-                                Adicionar Prova Prática
-                            </label>
+  const openProvaModal = (prova?: ProvaPratica) => {
+    setSelectedProva(prova);
+    setModalType("PROVA");
+    setIsModalOpen(true);
+  };
 
-                            <button
-                                onClick={() => setIsModalOpen(true)}
-                                className="w-full bg-secondary-container text-white font-bold py-3 px-4 rounded-lg hover:bg-secondary-dark transition flex items-center justify-center gap-2 shadow-md"
-                            >
-                                <Plus size={20} />
-                                Adicionar Prova Prática
-                            </button>
-                        </div>
-                    </div>
-                </div>
+  const openBlocoModal = (bloco?: BlocoProva, provaId?: number) => {
+    setSelectedBloco(bloco);
+    setParentProvaId(provaId);
+    setModalType("BLOCO");
+    setIsModalOpen(true);
+  };
 
-                {/* 🔹 Lista de Provas */}
-                <div className="w-full max-w-6xl bg-secondary-light p-6 md:p-8 rounded-2xl shadow-lg mb-4 space-y-4 min-h-[500px]">
+  const openQuesitoModal = (quesito?: Quesitos, blocoId?: number) => {
+    setSelectedQuesito(quesito);
+    setParentBlocoId(blocoId);
+    setModalType("QUESITO");
+    setIsModalOpen(true);
+  };
 
-                    {loading && (
-                        <p className="text-center text-gray-500">Carregando provas...</p>
-                    )}
+  const openSubModal = (sub?: SubQuesitos, quesitoId?: number) => {
+    setSelectedSub(sub);
+    setParentQuesitoId(quesitoId);
+    setModalType("SUB");
+    setIsModalOpen(true);
+  };
 
-                    {!loading && provas.length === 0 && categoriaSelecionada && (
-                        <div className="text-center py-10 text-gray-500">
-                            Nenhuma prova prática cadastrada para esta categoria.
-                        </div>
-                    )}
+  return (
+    <div className="flex min-h-screen w-full bg-neutral-background">
+      <SideNavBar />
 
-                    {provas.map((prova) => (
-                        <div
-                            key={prova.idProvaPratica}
-                            className={`bg-white rounded-xl border transition-all duration-200 overflow-hidden shadow-sm
-            ${prova.isOpen ? 'border-primary ring-1 ring-primary/30' : 'border-neutral-outline'}`}
-                        >
-                            {/* 🔹 HEADER DA PROVA */}
-                            <div
-                                onClick={() => toggleProva(prova.idProvaPratica)}
-                                className={`flex items-center justify-between p-4 cursor-pointer transition-colors
-                ${prova.isOpen ? 'bg-surface-containerHigh' : 'hover:bg-gray-50'}`}
-                            >
-                                <div className="flex items-center gap-4 flex-1">
-                                    <div
-                                        className={`p-2 rounded-lg transition-colors
-                        ${prova.isOpen ? 'bg-primary text-white' : 'bg-gray-200 text-gray-600'}`}
-                                    >
-                                        {prova.isOpen ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
-                                    </div>
-
-                                    <div>
-                                        <h3 className="text-lg font-bold text-neutral-onBackground">
-                                            {prova.nomeProva}
-                                        </h3>
-                                        <span className="text-sm text-gray-500 font-medium">
-                                            Nota Máx: {prova.notaMaxima}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* 🔹 CONTEÚDO DA PROVA */}
-                            {prova.isOpen && (
-                                <div className="p-4 md:p-6 bg-gray-50 border-t border-gray-200 space-y-4 animate-fadeIn">
-
-                                    {prova.blocosProvas.length === 0 && (
-                                        <p className="text-sm text-gray-400 italic">
-                                            Nenhum bloco cadastrado nesta prova.
-                                        </p>
-                                    )}
-
-                                    {prova.blocosProvas.map((bloco) => (
-                                        <div
-                                            key={bloco.idBloco}
-                                            className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm"
-                                        >
-                                            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 border-b border-gray-100 pb-3 mb-3">
-                                                <h4 className="font-bold text-gray-800 text-md">
-                                                    {bloco.nomeBloco}
-                                                </h4>
-                                                <span className="text-sm text-gray-500 font-medium">
-                                                    Nota Máx: {bloco.notaMaximaBloco}
-                                                </span>
-                                            </div>
-
-                                            <div className="space-y-3">
-                                                {bloco.quesitos?.map((quesito) => (
-                                                    <div
-                                                        key={quesito.idQuesito}
-                                                        className="bg-gray-50 rounded-lg border border-gray-200 p-4"
-                                                    >
-                                                        <div className="flex items-center gap-2 mb-2">
-                                                            <div className="bg-secondary/10 p-1.5 rounded text-secondary">
-                                                                <ListChecks size={16} />
-                                                            </div>
-                                                            <strong className="text-gray-800">
-                                                                {quesito.nomeQuesito}
-                                                            </strong>
-                                                            <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded border">
-                                                                Max: {quesito.notaMaximaQuesito}
-                                                            </span>
-                                                        </div>
-
-                                                        <div className="ml-6 space-y-2">
-                                                            {quesito.subQuesitos?.map((sub) => (
-                                                                <div
-                                                                    key={sub.idSubequestios}
-                                                                    className="flex items-center justify-between bg-white p-2 rounded border border-gray-200"
-                                                                >
-                                                                    <span className="text-sm text-gray-700">
-                                                                        {sub.nomeSubquesito}
-                                                                    </span>
-                                                                    <span className="text-xs font-bold text-gray-500 bg-gray-100 px-2 rounded">
-                                                                        {sub.notaSubequesito} pts
-                                                                    </span>
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                    ))}
-                </div>
+      <div className="flex-1 p-6 flex flex-col items-center overflow-y-auto">
+        <div className="w-full max-w-6xl bg-secondary-light p-8 rounded-2xl shadow-lg mb-8">
+          <div className="grid md:grid-cols-2 gap-6 items-end">
+            <div>
+              <label className="font-semibold text-white mb-2 block">
+                Categoria
+              </label>
+              <select
+                className="w-full p-3 rounded-lg"
+                value={categoriaSelecionada ?? ""}
+                onChange={(e) =>
+                  setCategoriaSelecionada(
+                    e.target.value ? Number(e.target.value) : null
+                  )
+                }
+              >
+                <option value="">Selecione</option>
+                {categorias.map((cat) => (
+                  <option key={cat.idCategoria} value={cat.idCategoria}>
+                    {cat.nomeCategoria}
+                  </option>
+                ))}
+              </select>
             </div>
 
-
-            {/* 🔹 Modal */}
-            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-                <ProvaPraticaForm onClose={() => setIsModalOpen(false)} />
-            </Modal>
+            <button
+              onClick={() => openProvaModal()}
+              className="w-full bg-secondary-container text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2"
+            >
+              <Plus size={20} />
+              Adicionar Prova Prática
+            </button>
+          </div>
         </div>
-    );
+
+        <div className="w-full max-w-6xl bg-secondary-light p-6 md:p-8 rounded-2xl shadow-lg mb-4 space-y-4 min-h-[500px]">
+          {loading && (
+            <p className="text-center text-gray-500">Carregando provas...</p>
+          )}
+
+          {!loading &&
+            provas.map((prova) => (
+              <ProvaAccordion
+                key={prova.idProvaPratica}
+                prova={prova}
+                onToggle={toggleProva}
+                onAddBloco={(provaId) => openBlocoModal(undefined, provaId)}
+                onEditBloco={(bloco, provaId) =>
+                  openBlocoModal(bloco, provaId)
+                }
+                onAddQuesito={(blocoId) =>
+                  openQuesitoModal(undefined, blocoId)
+                }
+                onAddSub={(quesitoId) =>
+                  openSubModal(undefined, quesitoId)
+                }
+              />
+            ))}
+        </div>
+      </div>
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        {modalType === "PROVA" && (
+          <ProvaPraticaForm
+            onClose={closeModalAndRefresh}
+            provaToEdit={selectedProva}
+          />
+        )}
+
+        {modalType === "BLOCO" && (
+          <BlocoProvaForm
+            onClose={closeModalAndRefresh}
+            blocoToEdit={selectedBloco}
+            provaPraticaId={parentProvaId}
+          />
+        )}
+
+        {modalType === "QUESITO" && (
+          <QuesitoForm
+            onClose={closeModalAndRefresh}
+            quesitoToEdit={selectedQuesito}
+            blocoId={parentBlocoId}
+          />
+        )}
+
+        {modalType === "SUB" && (
+          <SubQuesitosForm
+            onClose={closeModalAndRefresh}
+            subQuesitoToEdit={selectedSub}
+            quesitoId={parentQuesitoId}
+          />
+        )}
+      </Modal>
+    </div >
+  );
 }
