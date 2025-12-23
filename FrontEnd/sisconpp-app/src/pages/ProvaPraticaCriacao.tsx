@@ -158,11 +158,11 @@ export default function ProvaPraticaCriacao() {
               <select
                 className="w-full p-3 rounded-lg"
                 value={categoriaSelecionada ?? ""}
-                onChange={(e) =>
-                  setCategoriaSelecionada(
-                    e.target.value ? Number(e.target.value) : null
-                  )
-                }
+                onChange={(e) => {
+                  const valor = e.target.value ? Number(e.target.value) : null;
+                  console.log("Categoria selecionada:", valor);
+                  setCategoriaSelecionada(valor);
+                }}
               >
                 <option value="">Selecione</option>
                 {categorias.map((cat) => (
@@ -185,7 +185,13 @@ export default function ProvaPraticaCriacao() {
 
         <div className="w-full max-w-6xl bg-secondary-light p-6 md:p-8 rounded-2xl shadow-lg mb-4 space-y-4 min-h-[500px]">
           {loading && (
-            <p className="text-center text-gray-500">Carregando provas...</p>
+            <p className="text-center text-secondary-onFixed">Carregando provas...</p>
+          )}
+
+          {!loading && provas.length === 0 && (
+            <p className="text-center text-secondary-onFixed">
+              Nenhuma prova encontrada para esta categoria.
+            </p>
           )}
 
           {!loading &&

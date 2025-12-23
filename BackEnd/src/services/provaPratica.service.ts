@@ -69,7 +69,7 @@ class ProvaPraticaService {
     }
 
     async buscarProvaPraticaPorCategoria(categoriaId: number) {
-        return prisma.provaPratica.findMany({
+        const provaPraticaPorCategoria = await prisma.provaPratica.findMany({
             where: {
                 categorias: {
                     some: {
@@ -89,6 +89,7 @@ class ProvaPraticaService {
                 }
             }
         });
+        return provaPraticaPorCategoria
     }
 
     async atualizarProvaPratica(

@@ -228,10 +228,10 @@ export const buscarProvasPraticas = async () => {
   return response.data;
 };
 
-export const buscarPorCategoria = async (idCategoria: number) =>{
-  const response = await api.get<ProvaPratica[]>(`/provaPratica?categoriaId=${idCategoria}`);
+export async function buscarPorCategoria(idCategoria: number) {
+  const response = await api.get(`/provaPratica/categoria/${idCategoria}`);
   return response.data;
-};
+}
 
 export const atualizarProvaPratica = async (provaPratica: ProvaPratica) =>{
   return api.put(`/provaPratica?categoriaId/${provaPratica.idProvaPratica}, provaPratica`);
