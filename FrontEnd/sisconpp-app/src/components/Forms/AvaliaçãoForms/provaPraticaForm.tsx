@@ -23,7 +23,6 @@ export default function ProvaPraticaForm({
 
   const isEditMode = !!provaToEdit;
 
-  /* 🔹 Carregar categorias */
   useEffect(() => {
     const fetchCategorias = async () => {
       try {
@@ -37,7 +36,6 @@ export default function ProvaPraticaForm({
     fetchCategorias();
   }, []);
 
-  /* 🔹 Preencher dados quando for edição */
   useEffect(() => {
     if (provaToEdit) {
       setNomeProva(provaToEdit.nomeProva);
@@ -102,7 +100,7 @@ export default function ProvaPraticaForm({
   };
 
   return (
-    <div className="w-full max-w-xl">
+    <div className="w-full">
       <h1 className="text-xl font-semibold mb-4">
         {isEditMode ? "Editar Prova Prática" : "Nova Prova Prática"}
       </h1>
