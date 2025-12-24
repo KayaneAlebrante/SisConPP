@@ -29,7 +29,7 @@ async function main() {
     // =========================
     await prisma.provaPratica.createMany({
         data:[
-            {idProvaPratica: 1, nomeProva: "Prova Pratica Peão Mirim e Peão Xiru", notaMaxima: 100},
+            {nomeProva: "Prova Pratica Peão Mirim e Peão Xiru", notaMaxima: 100},
         ]
     });
     console.log("✅ Provas Práticas criados com sucesso!");
@@ -39,7 +39,7 @@ async function main() {
     // =========================
     await prisma.blocoProva.createMany({
         data:[
-            {idBloco: 1, nomeBloco: "Prova Artística", notaMaximaBloco: 18, provaPraticaId: 1}
+            {nomeBloco: "Prova Artística", notaMaximaBloco: 18, provaPraticaId: 1}
         ]
     });
     console.log("✅ Bloco Prova criados com sucesso!");
@@ -50,8 +50,8 @@ async function main() {
 
     await prisma.quesitos.createMany({
         data: [
-           { idQuesito: 1, nomeQuesito: "Dança Gaúcha de Salão", notaMaximaQuesito: 5, opcional: false },
-           { idQuesito: 2, nomeQuesito: "Dança Folclórica Tradicional", notaMaximaQuesito: 5, opcional: false }    
+           {nomeQuesito: "Dança Gaúcha de Salão", notaMaximaQuesito: 5, opcional: false, blocoProvaIdBloco:1 },
+           {nomeQuesito: "Dança Folclórica Tradicional", notaMaximaQuesito: 5, opcional: false, blocoProvaIdBloco:1 }    
         ]
     });
     // =========================
@@ -93,10 +93,10 @@ async function main() {
     // =========================
     await prisma.subQuesitos.createMany({
         data:[
-            {idSubequestios: 1, nomeSubquesito: "Harmonia do par", notaSubequesito: 1, quesitoId: 1},
-            {idSubequestios: 2, nomeSubquesito: "Correção coreográfica", notaSubequesito: 2, quesitoId: 1},
-            {idSubequestios: 3, nomeSubquesito: "Interpretação artística", notaSubequesito: 2, quesitoId: 1},
-            {idSubequestios: 4, nomeSubquesito: "Disposição do par na sala", notaSubequesito: 1, quesitoId: 1}
+            { nomeSubquesito: "Harmonia do par", notaSubequesito: 1, quesitoId: 1},
+            {nomeSubquesito: "Correção coreográfica", notaSubequesito: 2, quesitoId: 1},
+            {nomeSubquesito: "Interpretação artística", notaSubequesito: 2, quesitoId: 1},
+            {nomeSubquesito: "Disposição do par na sala", notaSubequesito: 1, quesitoId: 1}
         ]
     });
     console.log("✅ SubQuesitos criados com sucesso!");
