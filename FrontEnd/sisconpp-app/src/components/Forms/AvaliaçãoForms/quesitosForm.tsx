@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import {
     Quesitos,
-    DancaSalaoTradicional,
     BlocoProva,
 } from "../../../types/ProvaPratica";
 import { criarQuesito, listarBlocosProva } from "../../../services/api";
@@ -17,9 +16,7 @@ interface QuesitoFormState {
     idQuesito?: number;
     nomeQuesito: string;
     notaMaximaQuesito: number;
-    danca: boolean;
     opcional: boolean;
-    dancaSalaoTradicional: DancaSalaoTradicional;
     blocoProvaIdBloco?: number;
 }
 
@@ -33,9 +30,7 @@ export default function QuesitoForm({
     const [formData, setFormData] = useState<QuesitoFormState>({
         nomeQuesito: "",
         notaMaximaQuesito: 0,
-        danca: false,
         opcional: false,
-        dancaSalaoTradicional: DancaSalaoTradicional.NENHUMA,
         blocoProvaIdBloco: blocoId,
     });
 
@@ -58,9 +53,7 @@ export default function QuesitoForm({
                 idQuesito: quesitoToEdit.idQuesito,
                 nomeQuesito: quesitoToEdit.nomeQuesito,
                 notaMaximaQuesito: quesitoToEdit.notaMaximaQuesito,
-                danca: quesitoToEdit.danca,
                 opcional: quesitoToEdit.opcional,
-                dancaSalaoTradicional: quesitoToEdit.dancaSalaoTradicional,
                 blocoProvaIdBloco: quesitoToEdit.blocoProvaIdBloco,
             });
         } else if (blocoId) {
@@ -89,14 +82,6 @@ export default function QuesitoForm({
             return;
         }
 
-        if (name === "dancaSalaoTradicional") {
-            setFormData((prev) => ({
-                ...prev,
-                dancaSalaoTradicional: value as DancaSalaoTradicional,
-            }));
-            return;
-        }
-
         setFormData((prev) => ({
             ...prev,
             [name]: value,
@@ -121,11 +106,7 @@ export default function QuesitoForm({
             nomeQuesito: formData.nomeQuesito,
             notaMaximaQuesito: formData.notaMaximaQuesito,
             blocoProvaIdBloco: formData.blocoProvaIdBloco,
-            danca: formData.danca,
             opcional: formData.opcional,
-            dancaSalaoTradicional: formData.danca
-                ? formData.dancaSalaoTradicional
-                : DancaSalaoTradicional.NENHUMA,
             subQuesitos: quesitoToEdit?.subQuesitos || [],
         };
 
@@ -194,24 +175,6 @@ export default function QuesitoForm({
                 <div className="flex items-center gap-2">
                     <input
                         type="checkbox"
-                        checked={formData.danca}
-                        onChange={(e) => {
-                            const checked = e.target.checked;
-                            setFormData((prev) => ({
-                                ...prev,
-                                danca: checked,
-                                dancaSalaoTradicional: checked
-                                    ? prev.dancaSalaoTradicional
-                                    : DancaSalaoTradicional.NENHUMA,
-                            }));
-                        }}
-                    />
-                    <span>Este quesito envolve avaliação de dança?</span>
-                </div>
-
-                <div className="flex items-center gap-2">
-                    <input
-                        type="checkbox"
                         checked={formData.opcional}
                         onChange={(e) => {
                             const checked = e.target.checked;
@@ -223,26 +186,6 @@ export default function QuesitoForm({
                     />
                     <span>Este quesito é opcional?</span>
                 </div>
-
-                {formData.danca && (
-                    <div>
-                        <label className="text-sm font-medium">Tipo de Dança</label>
-                        <select
-                            name="dancaSalaoTradicional"
-                            value={formData.dancaSalaoTradicional}
-                            onChange={handleChange}
-                            className="w-full rounded-lg p-2 border"
-                        >
-                            <option value={DancaSalaoTradicional.NENHUMA}>Nenhuma</option>
-                            <option value={DancaSalaoTradicional.SALAO}>
-                                Dança de Salão
-                            </option>
-                            <option value={DancaSalaoTradicional.TRADICIONAL}>
-                                Dança Tradicional
-                            </option>
-                        </select>
-                    </div>
-                )}
 
                 <div className="flex justify-end gap-2">
                     <button

@@ -3,7 +3,7 @@ import { DancaSalaoTradicional, PrismaClient, Recurso, SubQuesitos } from "@pris
 const prisma = new PrismaClient();
 
 class QuesitoService {
-    constructor(private prisma: PrismaClient) {}
+    constructor(private prisma: PrismaClient) { }
 
     async criarQuesitos(
         nomeQuesito: string,

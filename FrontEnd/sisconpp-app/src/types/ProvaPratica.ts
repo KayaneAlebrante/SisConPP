@@ -6,12 +6,6 @@ export interface ProvaPratica {
     blocosProvas: BlocoProva[];    
 }
 
-export enum DancaSalaoTradicional {
-    SALAO = "SALAO",
-    TRADICIONAL = "TRADICIONAL",
-    NENHUMA = "NENHUMA"
-}
-
 export interface SubQuesitos {
     idSubequestios?: number; 
     nomeSubquesito: string;
@@ -23,9 +17,7 @@ export interface Quesitos {
     idQuesito?: number;
     nomeQuesito: string;
     notaMaximaQuesito: number;
-    danca: boolean;
     opcional: boolean;
-    dancaSalaoTradicional: DancaSalaoTradicional;
     blocoProvaIdBloco?: number;
     subQuesitos?: SubQuesitos[]; 
 }

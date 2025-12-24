@@ -15,7 +15,6 @@ export interface ProvaAccordionProps {
   onAddSub: (quesitoId: number) => void;
 }
 
-
 export default function ProvaAccordion({
   prova,
   isOpen,
