@@ -79,12 +79,10 @@ export default function ProvaTeoricaForm({
     const payload = {
       nomeProva: nomeProva.trim(),
       notaMaxima: Number(notaMaxima),
-      numQuestao: Number(numQuestoes),
-      categorias: categoriasSelecionadas
+      categorias: categoriasSelecionadas,
+      numQuestao: Number(numQuestoes)      
     };
-
-    console.log("Payload enviado:", payload);
-
+    
     try {
       await criarProvaTeorica(payload);
       toast.success("Prova teórica criada com sucesso");

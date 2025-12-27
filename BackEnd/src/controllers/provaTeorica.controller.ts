@@ -3,13 +3,13 @@ import provaTeoricaService from "../services/provaTeorica.service";
 
 class ProvaTeoricaController{
     async criarProvaTeorica(req: Request, res: Response) {
-        const { nome, notaMaxima, categorias, gabaritoOficial, numQuestao } = req.body;
+        const { nomeProva, notaMaxima, categorias, gabaritoOficial, numQuestao } = req.body;
 
-        if (!nome || !notaMaxima || !categorias || !numQuestao) {   
+        if (!nomeProva || !notaMaxima || !categorias || !numQuestao) {   
             return res.status(400).json({ mensagem: "Nome, notaMaxima, Categorias, gabaritoOficial e numQuestao da prova teórica é obrigatório." });
         }
         try {
-            const provaTeorica = await provaTeoricaService.criarProvaTeorica(nome, notaMaxima, categorias, gabaritoOficial, numQuestao);
+            const provaTeorica = await provaTeoricaService.criarProvaTeorica(nomeProva, notaMaxima, categorias, gabaritoOficial, numQuestao);
             return res.status(201).json(provaTeorica);
         } catch (error: unknown) {
             if (error instanceof Error) {
