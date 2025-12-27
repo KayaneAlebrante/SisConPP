@@ -5,7 +5,7 @@ class ProvaTeoricaController{
     async criarProvaTeorica(req: Request, res: Response) {
         const { nome, notaMaxima, categorias, gabaritoOficial, numQuestao } = req.body;
 
-        if (!nome || !notaMaxima || !categorias || !gabaritoOficial || !numQuestao) {   
+        if (!nome || !notaMaxima || !categorias || !numQuestao) {   
             return res.status(400).json({ mensagem: "Nome, notaMaxima, Categorias, gabaritoOficial e numQuestao da prova teórica é obrigatório." });
         }
         try {

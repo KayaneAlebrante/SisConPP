@@ -2,19 +2,17 @@ export interface ProvaTeorica {
     idprovaTeorica?: number;
     nomeProva: string;
     notaMaxima: number;
-    gabaritoOficial?: File;
+    gabaritoOficial?: Buffer;
     numQuestoes: number;
     quesitos: Quesitos[];
     categorias?: number[];
 }
 
 export interface ProvaTeoricaF {
-    idprovaTeorica?: number;
     nomeProva: string;
     notaMaxima: number;
-    gabaritoOficial?: string;
-    numQuestao: number;
     categorias?: number[];
+    numQuestao: number;
 }
 
 export interface Quesitos {

@@ -45,10 +45,13 @@ export default function ProvaTeoricaForm({
   }, [provaToEdit]);
 
   const toggleCategoria = (id: number) => {
-    setCategoriasSelecionadas((prev) =>
-      prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id]
-    );
-  };
+  setCategoriasSelecionadas((prev) =>
+    prev.includes(id)
+      ? prev.filter((c) => c !== id)
+      : [...prev, id]
+  );
+};
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,7 +62,7 @@ export default function ProvaTeoricaForm({
     }
 
     if (!notaMaxima || notaMaxima <= 0) {
-      toast.warning("Informe uma nota máxima válida");
+      toast.warning("Informe a nota máxima");
       return;
     }
 
@@ -73,30 +76,25 @@ export default function ProvaTeoricaForm({
       return;
     }
 
-    const payload: ProvaTeoricaF = {
+    const payload = {
       nomeProva: nomeProva.trim(),
       notaMaxima: Number(notaMaxima),
-      categorias: categoriasSelecionadas,
-      gabaritoOficial: "U29tZSBnYWJhcmnDp28gaGVyZQ==",
       numQuestao: Number(numQuestoes),
+      categorias: categoriasSelecionadas
     };
 
-    console.log(payload);
+    console.log("Payload enviado:", payload);
+
     try {
-      setLoading(true);
       await criarProvaTeorica(payload);
       toast.success("Prova teórica criada com sucesso");
       onClose();
-    } catch {
-      toast.error(
-        isEditMode
-          ? "Erro ao atualizar prova teórica"
-          : "Erro ao criar prova teórica"
-      );
-    } finally {
-      setLoading(false);
+    } catch (error) {
+      console.error(error);
+      toast.error("Erro ao criar prova teórica");
     }
   };
+
 
   return (
     <div className="w-full">
@@ -172,7 +170,7 @@ export default function ProvaTeoricaForm({
             </table>
           </div>
         </div>
-        
+
         {/* Ações */}
         <div className="flex justify-end gap-2 pt-2">
           <button
