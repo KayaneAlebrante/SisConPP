@@ -30,7 +30,7 @@ export default function ComissaoPage() {
     <div className="flex flex-row min-h-screen w-full bg-neutral-background">
       <SideNavBar />
 
-      <div className="flex-1 p-4 bg-neutral-background flex flex-col items-center overflow-y-auto">
+      <div className="flex-1 p-6 bg-neutral-background flex flex-col items-center overflow-y-auto">
         <div className="w-full max-w-5xl mt-10 mb-6 px-2 flex justify-end">
           <button
             onClick={openModal}
@@ -40,7 +40,7 @@ export default function ComissaoPage() {
           </button>
         </div>
 
-        <div className="w-full max-w-6xl h-full bg-secondary-light p-8 rounded-2xl shadow-lg">
+        <div className="w-full max-w-full h-full bg-secondary-light p-8 rounded-2xl shadow-lg">
           <ComissaoList 
             key={refreshList.toString()} 
             onEdit={handleEdit}
