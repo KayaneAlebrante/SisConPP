@@ -4,7 +4,7 @@ import { CTG } from '../types/CTG';
 import { Usuario } from '../types/Usuario';
 import { Candidato } from '../types/Candidato';
 import { Concurso } from '../types/Concurso';
-import { Comissao } from '../types/Comissao';
+import { Comissao, ComissaoProvaPraticaForm } from '../types/Comissao';
 import { PreferenciaSorteio, Danca, CriarSorteioPayload } from '../types/SorteioDanca';
 import { BlocoProva, ProvaPratica, Quesitos, SubQuesitos } from '../types/ProvaPratica';
 import { ProvaTeorica, ProvaTeoricaF } from '../types/ProvaTeorica';
@@ -199,6 +199,12 @@ export const listarUsuariosComissao = async () => {
 export const deletarUsuarioComissao = async (idUsuario: number, idComissao: number) => {
   return await api.delete(`/comissao/usuario/${idUsuario}/${idComissao}`);
 };
+
+export const atribuirAvaliacaoComissao = async(atribuirAvaliacao: ComissaoProvaPraticaForm) => {
+  return await api.post("/comissao/atribuir", atribuirAvaliacao);
+}
+
+//---- Sorteio Danca ----
 
 export const getDancasTradicionais = async (): Promise<Danca[]> => {
   const response = await api.get<Danca[]>("/danca/dancasTradicionais");

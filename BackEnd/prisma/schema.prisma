@@ -135,10 +135,32 @@ model Comissao {
   idComissao   Int    @id @default(autoincrement())
   nomeComissao String @db.VarChar(100)
 
-  concurso   Concurso          @relation(fields: [concursoId], references: [idConcurso])
+  concurso   Concurso @relation(fields: [concursoId], references: [idConcurso])
   concursoId Int
-  avalicao   Avaliacao[]
-  usuarios   ComissaoUsuario[]
+
+  avalicao    Avaliacao[]
+  usuarios    ComissaoUsuario[]
+  atribuicoes ComissaoProvaPratica[]
+}
+
+model ComissaoProvaPratica {
+  idComissaoProvaPratica Int @id @default(autoincrement())
+
+  comissaoId Int
+  Comissao   Comissao @relation(fields: [comissaoId], references: [idComissao])
+
+  categoriaId Int?
+  Categoria   Categoria? @relation(fields: [categoriaId], references: [idCategoria])
+
+  provaPraticaId Int?
+  ProvaPratica   ProvaPratica? @relation(fields: [provaPraticaId], references: [idProvaPratica])
+
+  blocoProvaId Int?
+  BlocoProva   BlocoProva? @relation(fields: [blocoProvaId], references: [idBloco])
+
+  dataAtribuicao DateTime @default(now())
+
+  @@unique([comissaoId, categoriaId, provaPraticaId, blocoProvaId])
 }
 
 model ComissaoUsuario {
@@ -164,8 +186,9 @@ model Categoria {
   provaTeoricaId Int?
   ProvaTeorica   ProvaTeorica? @relation(fields: [provaTeoricaId], references: [idprovaTeorica], onDelete: SetNull)
 
-  provaPraticaId Int?
-  ProvaPratica   ProvaPratica? @relation(fields: [provaPraticaId], references: [idProvaPratica], onDelete: SetNull)
+  provaPraticaId        Int?
+  ProvaPratica          ProvaPratica?          @relation(fields: [provaPraticaId], references: [idProvaPratica], onDelete: SetNull)
+  comissaoProvaPraticas ComissaoProvaPratica[]
 }
 
 model Avaliacao {
@@ -212,23 +235,25 @@ model ProvaTeorica {
 }
 
 model ProvaPratica {
-  idProvaPratica Int          @id @default(autoincrement())
-  nomeProva      String
-  notaMaxima     Float
-  blocosProvas   BlocoProva[]
-  categorias     Categoria[]
-  avaliacoes     Avaliacao[]
-  recursos       Recurso[]
+  idProvaPratica        Int                    @id @default(autoincrement())
+  nomeProva             String
+  notaMaxima            Float
+  blocosProvas          BlocoProva[]
+  categorias            Categoria[]
+  avaliacoes            Avaliacao[]
+  recursos              Recurso[]
+  comissaoProvaPraticas ComissaoProvaPratica[]
 }
 
 model BlocoProva {
-  idBloco         Int           @id @default(autoincrement())
-  nomeBloco       String
-  notaMaximaBloco Float
-  ProvaPratica    ProvaPratica? @relation(fields: [provaPraticaId], references: [idProvaPratica])
-  provaPraticaId  Int?
-  quesitos        Quesitos[]
-  Avaliacao       Avaliacao[]
+  idBloco               Int                    @id @default(autoincrement())
+  nomeBloco             String
+  notaMaximaBloco       Float
+  ProvaPratica          ProvaPratica?          @relation(fields: [provaPraticaId], references: [idProvaPratica])
+  provaPraticaId        Int?
+  quesitos              Quesitos[]
+  Avaliacao             Avaliacao[]
+  comissaoProvaPraticas ComissaoProvaPratica[]
 }
 
 model Quesitos {

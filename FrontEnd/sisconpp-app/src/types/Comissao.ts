@@ -27,3 +27,20 @@ export interface Comissao {
     
     usuarios: ComissaoUsuario[];
 }
+
+export interface ComissaoProvaPratica{
+   idComissaoProvaPratica: number;
+   comissaoId: number;
+   categoriaId?: number;
+   provaPraticaId?: number;
+   blocoProvaId?: number;
+   dataAtribuicao: Date;
+}
+
+
+export interface ComissaoProvaPraticaForm{
+   comissaoId: number;
+   categoriaId?: number;
+   provaPraticaId?: number;
+   blocoProvaId?: number;
+}

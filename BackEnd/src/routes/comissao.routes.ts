@@ -21,6 +21,10 @@ router.delete("/usuario/:usuarioId/:comissaoId", authMiddleware, permitirFuncoes
     await comissaoController.deletarUsuarioComissao(req, res);
 });
 
+router.post("/atribuir", async (req: Request, res: Response) =>{
+    await comissaoController.atribuiacaoAvaliacao(req,res);
+});
+
 router.post("/", authMiddleware, permitirFuncoes(["SECRETARIO"]), async (req: Request, res: Response) => {
     await comissaoController.criarComissao(req, res);
 });
