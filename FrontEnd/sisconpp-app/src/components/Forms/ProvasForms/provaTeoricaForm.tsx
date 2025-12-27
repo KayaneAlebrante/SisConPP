@@ -92,6 +92,8 @@ export default function ProvaTeoricaForm({
     } catch (error) {
       console.error(error);
       toast.error("Erro ao criar prova teórica");
+    }finally{
+      setLoading(false);
     }
   };
 
