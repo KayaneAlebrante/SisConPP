@@ -203,7 +203,7 @@ model ProvaTeorica {
   idprovaTeorica  Int         @id @default(autoincrement())
   nomeProva       String
   notaMaxima      Float
-  gabaritoOficial Bytes
+  gabaritoOficial Bytes?
   numQuestao      Int
   quesitos        Quesitos[]
   categorias      Categoria[]

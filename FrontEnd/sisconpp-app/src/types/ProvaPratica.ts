@@ -20,6 +20,7 @@ export interface Quesitos {
     opcional: boolean;
     blocoProvaIdBloco?: number;
     subQuesitos?: SubQuesitos[]; 
+    provaTeoricaIdprovaTeorica?: number;
 }
 
 export interface BlocoProva {

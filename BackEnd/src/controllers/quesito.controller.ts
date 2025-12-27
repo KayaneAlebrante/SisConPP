@@ -8,7 +8,7 @@ class QuesitoController {
             notaMaximaQuesito,
             opcional,
             blocoProvaIdBloco,
-            provaTeoricaIdProvaTeorica
+            provaTeoricaIdprovaTeorica
         } = req.body;
 
         if (!nomeQuesito || !notaMaximaQuesito ) {
@@ -21,7 +21,7 @@ class QuesitoController {
                 notaMaximaQuesito,
                 opcional,
                 blocoProvaIdBloco,
-                provaTeoricaIdProvaTeorica
+                provaTeoricaIdprovaTeorica
             );
 
             return res.status(201).json(quesito);

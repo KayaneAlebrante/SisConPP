@@ -54,6 +54,20 @@ class ProvaTeoricaController{
         }
     }
 
+    async buscarProvasTeoricasPorCategoria(req: Request, res: Response){
+        const {idCategoria} = req.params;
+
+        if(!idCategoria){
+            return res.status(400).json({error: "Categoria obrigatória"});
+        }
+
+        const provas = await provaTeoricaService.buscarProvaTeoricaPorCategoria(
+            Number(idCategoria)
+        );
+
+        return res.json(provas);
+    }
+
     async atualizarProvaTeorica(req: Request, res: Response) {
         const { id } = req.params;
         const data = req.body;

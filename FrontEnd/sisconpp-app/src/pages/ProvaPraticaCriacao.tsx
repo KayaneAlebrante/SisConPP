@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import SideNavBar from "../components/SideNavBar/SideNavBar";
 import Modal from "../components/Modal/Modal";
-import ProvaAccordion from "../components/ProvaPratica/ProvaAccordion";
-import ProvaPraticaForm from "../components/Forms/AvaliaçãoForms/provaPraticaForm";
-import BlocoProvaForm from "../components/Forms/AvaliaçãoForms/blocoProvaForm";
-import QuesitoForm from "../components/Forms/AvaliaçãoForms/quesitosForm";
-import SubQuesitosForm from "../components/Forms/AvaliaçãoForms/subQuesitosForm";
+import ProvaAccordion from "../components/Provas/ProvaAccordion";
+import ProvaPraticaForm from "../components/Forms/ProvasForms/provaPraticaForm";
+import BlocoProvaForm from "../components/Forms/ProvasForms/blocoProvaForm";
+import QuesitoForm from "../components/Forms/ProvasForms/quesitosForm";
+import SubQuesitosForm from "../components/Forms/ProvasForms/subQuesitosForm";
 import { buscarPorCategoria, buscarProvasPraticas, listarCategorias, } from "../services/api";
 import { Categoria } from "../types/Categoria";
 import { ProvaPratica, BlocoProva, Quesitos, SubQuesitos, } from "../types/ProvaPratica";
@@ -234,6 +234,7 @@ export default function ProvaPraticaCriacao() {
             onClose={closeModalAndRefresh}
             quesitoToEdit={selectedQuesito}
             blocoId={parentBlocoId}
+            provaTeoricaId={0}
           />
         )}
 

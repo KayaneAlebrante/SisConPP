@@ -13,6 +13,7 @@ import Comissao from "./pages/Comissao";
 import SorteioDanca from "./pages/SorteioDanca";
 import PrivateRoute from "./components/PrivateRoute";
 import ProvaPraticaCriacao from "./pages/ProvaPraticaCriacao";
+import ProvaTeoricaCriacao from "./pages/ProvaTeoricaCriacao";
 
 function App() {
 
@@ -33,6 +34,7 @@ function App() {
           <Route path={RoutesPaths.Comissao} element={<Comissao />} />
           <Route path={RoutesPaths.SorteioDanca} element={<SorteioDanca />} />
           <Route path={RoutesPaths.ProvaPraticaCriacao} element={<ProvaPraticaCriacao/>} />
+          <Route path={RoutesPaths.ProvaTeoricaCriacao} element={<ProvaTeoricaCriacao/>}/>
         </Routes>
         <ToastContainer
           position="top-right"

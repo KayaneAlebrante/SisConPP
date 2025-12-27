@@ -7,6 +7,7 @@ import { Concurso } from '../types/Concurso';
 import { Comissao } from '../types/Comissao';
 import { PreferenciaSorteio, Danca, CriarSorteioPayload } from '../types/SorteioDanca';
 import { BlocoProva, ProvaPratica, Quesitos, SubQuesitos } from '../types/ProvaPratica';
+import { ProvaTeorica, ProvaTeoricaF } from '../types/ProvaTeorica';
 
 // ---- CONFIGURAÇÃO DO AXIOS ----
 export const api = axios.create({
@@ -215,9 +216,25 @@ export const criarPreferencia = async (criarPreferencia: PreferenciaSorteio) => 
 
 export const realizarSorteio = async (realizarSorteio: CriarSorteioPayload) => {
   return await api.post("/sorteioDanca", realizarSorteio);
+};
+
+//---- Provas Teorica ----
+
+export const criarProvaTeorica = async(criarProvaTeorica: ProvaTeoricaF) =>{
+  return await api.post("/provaTeorica", criarProvaTeorica);
+};
+
+export const buscarProvasTeoricas = async () =>{
+  const response = await api.get<ProvaTeorica[]>("/provaTeorica");
+  return response.data;
+};
+
+export async function buscarProvasTeoricasPorCategoria(idCategoria: number) {
+  const response = await api.get(`/provaTeorica/categoria/${idCategoria}`);
+  return response.data;
 }
 
-//---- Provas Pratiicas ----
+//---- Provas Praticas ----
 
 export const criarProvaPratica = async (criarProvaPratica: ProvaPratica) => {
   return await api.post("/provaPratica", criarProvaPratica);
@@ -237,6 +254,8 @@ export const atualizarProvaPratica = async (provaPratica: ProvaPratica) =>{
   return api.put(`/provaPratica?categoriaId/${provaPratica.idProvaPratica}, provaPratica`);
 }; 
 
+//---- Blocos Prova ----
+
 export const criarBlocoProva = async (criarBlocoProva: BlocoProva) => {
   return await api.post("/blocoProva", criarBlocoProva);
 };
@@ -246,6 +265,13 @@ export const listarBlocosProva = async () => {
   return response.data;
 };
 
+export const deletarBloco = async (idBloco: number) => {
+  const response = await api.delete(`/blocoProva/${idBloco}`);
+  return response.data ?? true;
+};
+
+//---- Quesito e SubQuesito ----
+
 export const criarQuesito = async (criarQuesito: Quesitos) => {
   return await api.post("/quesito", criarQuesito);
 };
@@ -253,6 +279,11 @@ export const criarQuesito = async (criarQuesito: Quesitos) => {
 export const listarQuesitos = async () => {
   const response = await api.get<Quesitos[]>("/quesito");
   return response.data;
+};
+
+export const deletarQuesito = async (idQuesito: number) => {
+  const response = await api.delete(`/quesito/${idQuesito}`);
+  return response.data ?? true;
 };
 
 export const criarSubQuesito = async (criarSubQuesito: SubQuesitos) => {
@@ -264,18 +295,7 @@ export const listarSubQuesitos = async () => {
   return response.data;
 };
 
-export const deletarBloco = async (idBloco: number) => {
-  const response = await api.delete(`/blocoProva/${idBloco}`);
-  return response.data ?? true;
-};
-
-export const deletarQuesito = async (idQuesito: number) => {
-  const response = await api.delete(`/quesito/${idQuesito}`);
-  return response.data ?? true;
-};
-
 export const deletarSubQuesito = async (idSubQuesito: number) => {
   const response = await api.delete(`/subQuesito/${idSubQuesito}`);
   return response.data ?? true;
 };
-

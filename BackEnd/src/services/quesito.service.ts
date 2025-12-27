@@ -10,7 +10,7 @@ class QuesitoService {
         notaMaximaQuesito: number,
         opcional: boolean,
         blocoProvaIdBloco?: number,
-        provaTeoricaIdProvaTeorica?: number
+        provaTeoricaIdprovaTeorica?: number
     ) {
         try {
             if (blocoProvaIdBloco !== undefined && blocoProvaIdBloco !== null){
@@ -23,13 +23,23 @@ class QuesitoService {
                 }
             }
 
+            if(provaTeoricaIdprovaTeorica !== undefined && provaTeoricaIdprovaTeorica !==null){
+                const provaTeoricaExiste = await this.prisma.provaTeorica.findUnique({
+                    where: {idprovaTeorica: provaTeoricaIdprovaTeorica}
+                });
+
+                if(!provaTeoricaExiste){
+                    throw new Error(`A Prova Teorica ${provaTeoricaIdprovaTeorica} não existe.`);
+                }
+            }
+
             const quesito = await this.prisma.quesitos.create({
                 data: {
                     nomeQuesito: nomeQuesito,
                     notaMaximaQuesito: notaMaximaQuesito,
                     opcional: opcional,
-                    blocoProvaIdBloco: blocoProvaIdBloco ?? null,
-                    provaTeoricaIdprovaTeorica: provaTeoricaIdProvaTeorica ?? null
+                    blocoProvaIdBloco: blocoProvaIdBloco,
+                    provaTeoricaIdprovaTeorica: provaTeoricaIdprovaTeorica
                 },
             });
             console.log(quesito);

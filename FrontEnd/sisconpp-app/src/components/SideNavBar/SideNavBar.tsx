@@ -25,8 +25,9 @@ const Sidebar: FC = () => {
     { label: "Auxiliar", icon: User, href: "/auxiliares" },
     { label: "Comissões Avaliadoras", icon: Users, href: "/comissao" },
     { label: "Sortear Danças", icon: Music, href: "/sorteio-danca"},
+    { label: "Adicionar planilhas Prova Prática", icon: AlertCircle, href: "/prova-pratica-criacao" },
+    { label: "Adicionar Prova Teorica", icon: AlertCircle, href: "/prova-teorica-criacao" },
     { label: "Relatórios", icon: BookText },
-    { label: "Adicionar planilhas Prova Prática", icon: AlertCircle, href: "/prova-pratica-criacao" }
   ];
 
   return (
