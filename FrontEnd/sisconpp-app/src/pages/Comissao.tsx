@@ -31,7 +31,7 @@ export default function ComissaoPage() {
       <SideNavBar />
 
       <div className="flex-1 p-6 bg-neutral-background flex flex-col items-center overflow-y-auto">
-        <div className="w-full max-w-5xl mt-10 mb-6 px-2 flex justify-end">
+        <div className="w-full max-w-full mt-10 mb-6 px-2 flex justify-end">
           <button
             onClick={openModal}
             className="bg-secondary-container text-white font-bold py-2 px-4 rounded-lg hover:bg-secondary-dark transition duration-300 ease-in-out"

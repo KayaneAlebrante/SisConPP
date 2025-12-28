@@ -24,23 +24,37 @@ export interface Comissao {
         local: string;
         anexoEdital: string | null;
     };
-    
+
     usuarios: ComissaoUsuario[];
+    atribuicoes: ComissaoProvaPratica[];
 }
 
-export interface ComissaoProvaPratica{
-   idComissaoProvaPratica: number;
-   comissaoId: number;
-   categoriaId?: number;
-   provaPraticaId?: number;
-   blocoProvaId?: number;
-   dataAtribuicao: Date;
+export interface ComissaoProvaPratica {
+  idComissaoProvaPratica: number;
+
+  categoriaId?: number;
+  provaPraticaId?: number;
+  blocoProvaId?: number;
+
+  Categoria?: {
+    idCategoria: number;
+    nomeCategoria: string;
+  };
+
+  ProvaPratica?: {
+    idProvaPratica: number;
+    nomeProva: string;
+  };
+
+  BlocoProva?: {
+    idBloco: number;
+    nomeBloco: string;
+  };
 }
 
-
-export interface ComissaoProvaPraticaForm{
-   comissaoId: number;
-   categoriaId?: number;
-   provaPraticaId?: number;
-   blocoProvaId?: number;
+export interface ComissaoProvaPraticaForm {
+    comissaoId: number;
+    categoriaId?: number;
+    provaPraticaId?: number;
+    blocoProvaId?: number;
 }

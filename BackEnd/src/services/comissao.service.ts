@@ -74,8 +74,16 @@ class ComissaoService {
                             Usuarios: true,
                         },
                     },
+                    atribuicoes: {
+                        include: {
+                            Categoria: true,
+                            ProvaPratica: true,
+                            BlocoProva: true
+                        }
+                    }
                 },
-            });
+            })
+            console.log(comissoes);
             return comissoes;
         } catch (error) {
             console.error("Erro ao consultar comissões:", error);

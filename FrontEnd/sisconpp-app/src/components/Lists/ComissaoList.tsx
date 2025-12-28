@@ -76,6 +76,7 @@ export default function ComissaoList({ onEdit }: ComissaoListProps) {
                         <th className="text-left px-3 py-2">Nome da Comissão</th>
                         <th className="text-left px-3 py-2">Avaliadores</th>
                         <th className="text-left px-3 py-2">Auxiliar</th>
+                        <th className="text-left px-3 py-2">Avaliações Atribuídas</th>
                         <th className="p-3 last:rounded-tr-xl">Ações</th>
                     </tr>
                 </thead>
@@ -116,6 +117,40 @@ export default function ComissaoList({ onEdit }: ComissaoListProps) {
                                             <span className="text-gray-400">Nenhum auxiliar</span>
                                         )}
                                     </ul>
+                                </td>
+
+                                <td className="px-3 py-2">
+                                    {comissao.atribuicoes && comissao.atribuicoes.length > 0 ? (
+                                        <ul className="text-sm space-y-2">
+                                            {comissao.atribuicoes.map((atrib) => (
+                                                <li key={atrib.idComissaoProvaPratica}
+                                                    className="flex flex-col gap-1"
+                                                >
+                                                    {atrib.Categoria && (
+                                                        <span className="text-secondary-onFixed">
+                                                            Categoria: {atrib.Categoria?.nomeCategoria}
+                                                        </span>
+                                                    )}
+
+                                                    {atrib.ProvaPratica && (
+                                                        <span className="text-secondary-onFixed">
+                                                            Prova: {atrib.ProvaPratica.nomeProva}
+                                                        </span>
+                                                    )}
+
+                                                    {atrib.BlocoProva && (
+                                                        <span className="text-secondary-onFixed">
+                                                            Bloco: {atrib.BlocoProva.nomeBloco}
+                                                        </span>
+                                                    )}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    ) : (
+                                        <span className="text-gray-400 text-sm">
+                                            Nenhuma avaliação atribuída
+                                        </span>
+                                    )}
                                 </td>
 
                                 <td className="p-3 flex gap-2">
