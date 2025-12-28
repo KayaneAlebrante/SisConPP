@@ -4,8 +4,8 @@ import { authMiddleware } from "../middlewares/authMiddleware";
 
 const router = express.Router();
 
-router.post("/", authMiddleware, async (req: Request, res: Response) => {
-    await avaliacaoController.adicionarAvaliacao(req, res);
+router.post("/avaliacaoCompleta", async (req: Request, res: Response) => {
+    await avaliacaoController.criarAvaliacaoCompleta(req, res);
 });
 
 router.get("/avaliacao/:idAvaliacao", authMiddleware, async (req: Request, res: Response) => {

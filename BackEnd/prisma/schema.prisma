@@ -194,6 +194,7 @@ model Categoria {
 model Avaliacao {
   idAvalicao    Int      @id @default(autoincrement())
   dataAvaliacao DateTime @default(now())
+  notaFinal     Float?
 
   comissaoId Int
   Comissao   Comissao @relation(fields: [comissaoId], references: [idComissao])
@@ -201,25 +202,50 @@ model Avaliacao {
   avaliadorId Int
   Usuario     Usuario @relation(fields: [avaliadorId], references: [idUsuario])
 
+  candidatoId Int
+  Candidato   Candidato @relation(fields: [candidatoId], references: [idCandidato])
+
   provaPraticaId Int?
-  ProvaPratica   ProvaPratica? @relation(fields: [provaPraticaIdProvaPratica], references: [idProvaPratica])
+  ProvaPratica   ProvaPratica? @relation(fields: [provaPraticaId], references: [idProvaPratica])
 
   provaTeoricaId Int?
-  ProvaTeorica   ProvaTeorica? @relation(fields: [provaTeoricaIdprovaTeorica], references: [idprovaTeorica])
+  ProvaTeorica   ProvaTeorica? @relation(fields: [provaTeoricaId], references: [idprovaTeorica])
 
   blocoProvaId Int?
   BlocoProva   BlocoProva? @relation(fields: [blocoProvaId], references: [idBloco])
 
-  quesitos Quesitos[]
-  nota     Float
+  fichaCandidatoIdFicha Int?
+  FichaCandidato        FichaCandidato? @relation(fields: [fichaCandidatoIdFicha], references: [idFicha])
 
-  candidatoId Int
-  Candidato   Candidato @relation(fields: [candidatoId], references: [idCandidato])
+  quesitosAvaliados AvaliacaoQuesito[]
+}
 
-  fichaCandidatoIdFicha      Int?
-  FichaCandidato             FichaCandidato? @relation(fields: [fichaCandidatoIdFicha], references: [idFicha])
-  provaPraticaIdProvaPratica Int?
-  provaTeoricaIdprovaTeorica Int?
+model AvaliacaoQuesito {
+  idAvaliacaoQuesito   Int                   @id @default(autoincrement())
+  notaQuesito          Float
+  comentario           String?
+  subQuesitosAvaliados AvaliacaoSubQuesito[]
+
+  avaliacaoId Int
+  Avaliacao   Avaliacao @relation(fields: [avaliacaoId], references: [idAvalicao], onDelete: Cascade)
+
+  quesitoId Int
+  Quesito   Quesitos @relation(fields: [quesitoId], references: [idQuesito])
+
+  @@unique([avaliacaoId, quesitoId])
+}
+
+model AvaliacaoSubQuesito {
+  idAvaliacaoSubQuesito Int   @id @default(autoincrement())
+  notaSubQuesito        Float
+
+  subQuesitoId Int
+  SubQuesito   SubQuesitos @relation(fields: [subQuesitoId], references: [idSubequestios])
+
+  avaliacaoQuesitoId Int?
+  AvaliacaoQuesito   AvaliacaoQuesito? @relation(fields: [avaliacaoQuesitoId], references: [idAvaliacaoQuesito])
+
+  @@unique([avaliacaoQuesitoId, subQuesitoId])
 }
 
 model ProvaTeorica {
@@ -268,11 +294,10 @@ model Quesitos {
   ProvaTeorica               ProvaTeorica? @relation(fields: [provaTeoricaIdprovaTeorica], references: [idprovaTeorica])
   provaTeoricaIdprovaTeorica Int?
 
-  subQuesitos         SubQuesitos[]
-  recursos            Recurso[]
-  Avaliacao           Avaliacao?    @relation(fields: [avaliacaoIdAvalicao], references: [idAvalicao])
-  avaliacaoIdAvalicao Int?
-  dancas              Danca[]
+  subQuesitos       SubQuesitos[]
+  recursos          Recurso[]
+  dancas            Danca[]
+  avaliacaoQuesitos AvaliacaoQuesito[]
 }
 
 model SubQuesitos {
@@ -283,8 +308,9 @@ model SubQuesitos {
   quesitoId Int
   Quesito   Quesitos @relation(fields: [quesitoId], references: [idQuesito])
 
-  subequesitosFilhos SubQuesitos[] @relation("SubQuesitosSub")
-  subequesitosPai    SubQuesitos[] @relation("SubQuesitosSub")
+  subequesitosFilhos   SubQuesitos[]         @relation("SubQuesitosSub")
+  subequesitosPai      SubQuesitos[]         @relation("SubQuesitosSub")
+  avaliacaoSubQuesitos AvaliacaoSubQuesito[]
 }
 
 model Recurso {

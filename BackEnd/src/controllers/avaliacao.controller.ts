@@ -2,30 +2,50 @@ import { Request, Response } from "express";
 import AvaliacaoService from "../services/avaliacao.service";
 import exp from "constants";
 
-class AvaliacaoController{
-    async adicionarAvaliacao(req: Request, res: Response){
-        const { comissaoId, avaliadorId, candidatoId, blocoProvaId } = req.body;
-
-        if (!comissaoId || !avaliadorId || !candidatoId || !blocoProvaId) {
-            return res.status(400).json({ mensagem: "Todos os campos são obrigatórios." });
-        }
-
+class AvaliacaoController {
+    async criarAvaliacaoCompleta(req: Request, res: Response) {
         try {
-            const avaliacao = await AvaliacaoService.adicionarAvaliacao(comissaoId, avaliadorId, candidatoId, blocoProvaId);
-            return res.status(201).json(avaliacao);
-        } catch (error: unknown) {
-            if (error instanceof Error) {
-                console.error("Erro ao adicionar avaliação:", error);
-                return res.status(400).json({ mensagem: error.message });
-            } else {
-                console.error("Erro desconhecido:", error);
-                return res.status(500).json({ mensagem: "Erro desconhecido." });
+            const {
+                comissaoId,
+                avaliadorId,
+                candidatoId,
+                blocoProvaId,
+                quesitos,
+            } = req.body
+
+            if (
+                !comissaoId ||
+                !avaliadorId ||
+                !candidatoId ||
+                !blocoProvaId ||
+                !Array.isArray(quesitos)
+            ) {
+                return res.status(400).json({
+                    message: "Dados obrigatórios não informados",
+                })
             }
+
+            const avaliacao = await AvaliacaoService.criarAvaliacaoCompleta({
+                comissaoId,
+                avaliadorId,
+                candidatoId,
+                blocoProvaId,
+                quesitos,
+            })
+
+            return res.status(201).json(avaliacao)
+
+        } catch (error) {
+            console.error(error)
+            return res.status(500).json({
+                message: "Erro ao criar avaliação",
+                error: error instanceof Error ? error.message : error,
+            })
         }
     }
 
-    async editarAvaliacao(req: Request, res: Response){
-        const { idAvalicao,  candidatoId, avaliadorId } = req.body;
+    async editarAvaliacao(req: Request, res: Response) {
+        const { idAvalicao, candidatoId, avaliadorId } = req.body;
 
         if (!idAvalicao || !avaliadorId || !candidatoId) {
             return res.status(400).json({ mensagem: "Id da Avaliação e Id do Avaliador e Id Candidato são obrigatórios." });
@@ -45,7 +65,7 @@ class AvaliacaoController{
         }
     }
 
-    async visualizarAvaliacoes(req: Request, res: Response){
+    async visualizarAvaliacoes(req: Request, res: Response) {
         const { candidatoId } = req.params;
 
         if (!candidatoId) {
