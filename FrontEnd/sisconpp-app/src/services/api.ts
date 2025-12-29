@@ -200,7 +200,7 @@ export const deletarUsuarioComissao = async (idUsuario: number, idComissao: numb
   return await api.delete(`/comissao/usuario/${idUsuario}/${idComissao}`);
 };
 
-export const atribuirAvaliacaoComissao = async(atribuirAvaliacao: ComissaoProvaPraticaForm) => {
+export const atribuirAvaliacaoComissao = async (atribuirAvaliacao: ComissaoProvaPraticaForm) => {
   return await api.post("/comissao/atribuir", atribuirAvaliacao);
 }
 
@@ -226,11 +226,11 @@ export const realizarSorteio = async (realizarSorteio: CriarSorteioPayload) => {
 
 //---- Provas Teorica ----
 
-export const criarProvaTeorica = async(criarProvaTeorica: ProvaTeoricaF) =>{
+export const criarProvaTeorica = async (criarProvaTeorica: ProvaTeoricaF) => {
   return await api.post("/provaTeorica", criarProvaTeorica);
 };
 
-export const buscarProvasTeoricas = async () =>{
+export const buscarProvasTeoricas = async () => {
   const response = await api.get<ProvaTeorica[]>("/provaTeorica");
   return response.data;
 };
@@ -256,9 +256,9 @@ export async function buscarPorCategoria(idCategoria: number) {
   return response.data;
 }
 
-export const atualizarProvaPratica = async (provaPratica: ProvaPratica) =>{
+export const atualizarProvaPratica = async (provaPratica: ProvaPratica) => {
   return api.put(`/provaPratica?categoriaId/${provaPratica.idProvaPratica}, provaPratica`);
-}; 
+};
 
 //---- Blocos Prova ----
 
@@ -305,3 +305,16 @@ export const deletarSubQuesito = async (idSubQuesito: number) => {
   const response = await api.delete(`/subQuesito/${idSubQuesito}`);
   return response.data ?? true;
 };
+
+//---- Avaliacação ----
+
+export async function criarAvaliacao(data: { avaliadorId: number; candidatoId: number; notas: { subQuesitoId: number; nota: number }[];}) {
+  const response = await api.post("/avaliacao", data);
+  return response.data;
+}
+
+
+export async function buscarEstruturaAvaliacao( avaliadorId: number, candidatoId: number) {
+  const response = await api.get(`/avaliacao/avaliacao/${avaliadorId}/${candidatoId}`);
+  return response.data;
+}

@@ -16,4 +16,8 @@ router.put("/avaliacao/:idAvaliacao", authMiddleware, async (req: Request, res: 
     await avaliacaoController.editarAvaliacao(req, res);
 });
 
+router.get( "/avaliacao/:avaliadorId/:candidatoId", async (req: Request, res: Response) => {
+    await avaliacaoController.buscarEstruturaCompleta(req, res);
+});
+
 export default router;

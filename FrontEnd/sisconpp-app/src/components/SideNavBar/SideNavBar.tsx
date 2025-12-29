@@ -9,7 +9,11 @@ import {
   ChevronLeft,
   ChevronRight,
   Building2,
-  CopyPlus
+  FilePlus,
+  CopyPlus,
+  BookPlus,
+  BookType,
+  SquareMenu
 } from 'lucide-react';
 import imgLogoLight from '../../assets/Logo-Light-SisConPP.png';
 
@@ -25,8 +29,10 @@ const Sidebar: FC = () => {
     { label: "Auxiliar", icon: User, href: "/auxiliares" },
     { label: "Comissões Avaliadoras", icon: Users, href: "/comissao" },
     { label: "Sortear Danças", icon: Music, href: "/sorteio-danca"},
-    { label: "Adicionar planilhas Prova Prática", icon: AlertCircle, href: "/prova-pratica-criacao" },
-    { label: "Adicionar Prova Teorica", icon: AlertCircle, href: "/prova-teorica-criacao" },
+    { label: "Adicionar planilhas Prova Prática", icon: FilePlus, href: "/prova-pratica-criacao" },
+    { label: "Adicionar Prova Teorica", icon: BookPlus, href: "/prova-teorica-criacao" },
+    { label: "Adicionar Avaliação Prática", icon: SquareMenu, href: "/avaliacao" },
+    { label: "Adicionar Avaliação Teorica", icon: BookType, href: "/" },
     { label: "Relatórios", icon: BookText },
   ];
 

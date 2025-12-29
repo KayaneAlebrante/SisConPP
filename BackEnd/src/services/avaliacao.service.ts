@@ -103,6 +103,99 @@ export class AvaliacaoService {
         }
     }
 
+    async buscarEstruturaCompleta(
+        avaliadorId: number,
+        candidatoId: number,
+        provasSelecionadas?: number[]
+    ) {
+        const candidato = await this.prisma.candidato.findUnique({
+            where: { idCandidato: candidatoId },
+            include: { Categoria: true },
+        });
+
+        if (!candidato) throw new Error("Candidato não encontrado");
+        console.log(candidato);
+
+        const provasCategoria = await prisma.provaPratica.findMany({
+            where: {
+                categorias: {
+                    some: { idCategoria: candidato.categoriaId },
+                },
+            },
+        });
+
+        console.log("Provas por categoria:", provasCategoria.length);
+
+        const comissoes = await prisma.comissao.findMany({
+            where: {
+                usuarios: {
+                    some: { usuarioId: avaliadorId },
+                },
+            },
+        });
+
+        console.log("Comissões do avaliador:", comissoes.length);
+
+        const provasPorComissao = await prisma.provaPratica.findMany({
+            where: {
+                comissaoProvaPraticas: {
+                    some: {
+                        Comissao: {
+                            usuarios: {
+                                some: { usuarioId: avaliadorId},
+                            },
+                        },
+                    },
+                },
+            },
+        });
+
+        console.log("Provas por comissão:", provasPorComissao.length);
+
+
+
+        const provaPratica = await this.prisma.provaPratica.findMany({
+            where: {
+                categorias: {
+                    some: {
+                        idCategoria: candidato.categoriaId,
+                    },
+                },
+                comissaoProvaPraticas: {
+                    some: {
+                        Comissao: {
+                            usuarios: {
+                                some: {
+                                    usuarioId: avaliadorId,
+                                },
+                            },
+                        },
+                    },
+                },
+                ...(provasSelecionadas?.length && {
+                    idProvaPratica: {
+                        in: provasSelecionadas,
+                    },
+                }),
+            },
+            include: {
+                blocosProvas: {
+                    include: {
+                        quesitos: {
+                            include: {
+                                subQuesitos: true,
+                            },
+                        },
+                    },
+                },
+            },
+        });
+
+        console.log(provaPratica);
+        console.log(JSON.stringify(provaPratica, null, 2));
+
+        return provaPratica;
+    }
 }
 
 const avaliacao = new AvaliacaoService(prisma);

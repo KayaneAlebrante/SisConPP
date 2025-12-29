@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import AvaliacaoService from "../services/avaliacao.service";
-import exp from "constants";
 
 class AvaliacaoController {
     async criarAvaliacaoCompleta(req: Request, res: Response) {
@@ -85,6 +84,30 @@ class AvaliacaoController {
             }
         }
     }
+
+    async buscarEstruturaCompleta(req: Request, res: Response) {
+        const { avaliadorId, candidatoId } = req.params;
+
+        console.log("avaliadorId:", avaliadorId);
+        console.log("candidatoId:", candidatoId);
+
+        try {
+            const estrutura = await AvaliacaoService.buscarEstruturaCompleta(
+                Number(avaliadorId),
+                Number(candidatoId)
+            );
+
+            return res.status(200).json(estrutura);
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                console.error("Erro ao buscar provas:", error);
+                return res.status(400).json({ mensagem: error.message });
+            }
+            return res.status(500).json({ mensagem: "Erro desconhecido." });
+        }
+    }
+
+
 }
 
 export default new AvaliacaoController();
