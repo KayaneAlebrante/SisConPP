@@ -69,7 +69,6 @@ export default function QuesitoCard({
             />
           ))}
 
-          {/* Campo de comentário */}
           <div className="mt-4">
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Comentário do quesito

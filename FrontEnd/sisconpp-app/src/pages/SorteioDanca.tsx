@@ -85,7 +85,7 @@ console.log(preferencias);
                         candidatoSelecionado={candidatoSelecionado}
                         setCandidatoSelecionado={setCandidatoSelecionado}
                         tipoDanca={tipoDanca}
-                        setTipoDanca={setTipoDanca} // 🔑 adiciona para atualizar estado
+                        setTipoDanca={setTipoDanca} 
                         buscarDancas={buscarDancas}
                     />
                 </div>

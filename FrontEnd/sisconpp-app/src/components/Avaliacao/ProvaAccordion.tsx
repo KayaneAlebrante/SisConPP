@@ -24,7 +24,6 @@ export default function ProvaAccordion({
           : "border-neutral-outline"
       }`}
     >
-      {/* HEADER */}
       <div
         onClick={() => setOpen(!open)}
         className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50"
@@ -47,7 +46,6 @@ export default function ProvaAccordion({
         </div>
       </div>
 
-      {/* CONTEÚDO */}
       {open && (
         <div className="p-4 bg-gray-50 space-y-4">
           {prova.blocosProvas.length === 0 && (

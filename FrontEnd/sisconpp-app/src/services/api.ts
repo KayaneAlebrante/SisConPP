@@ -308,13 +308,28 @@ export const deletarSubQuesito = async (idSubQuesito: number) => {
 
 //---- Avaliacação ----
 
-export async function criarAvaliacao(data: { avaliadorId: number; candidatoId: number; notas: { subQuesitoId: number; nota: number }[];}) {
-  const response = await api.post("/avaliacao", data);
-  return response.data;
+export type CriarAvaliacaoCompletaDTO = {
+  comissaoId: number;
+  avaliadorId: number;
+  candidatoId: number;
+  blocoProvaId: number;
+  quesitos: {
+    quesitoId: number;
+    comentario?: string;
+    subQuesitos: {
+      subQuesitoId: number;
+      notaSubQuesito: number;
+    }[];
+  }[];
+};
+
+export async function criarAvaliacaoCompleta(payload: CriarAvaliacaoCompletaDTO) {
+  const { data } = await axios.post("http://localhost:3000/api/avaliacoes", payload);
+  return data;
 }
 
 
-export async function buscarEstruturaAvaliacao( avaliadorId: number, candidatoId: number) {
+export async function buscarEstruturaAvaliacao(avaliadorId: number, candidatoId: number) {
   const response = await api.get(`/avaliacao/avaliacao/${avaliadorId}/${candidatoId}`);
   return response.data;
 }

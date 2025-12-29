@@ -90,15 +90,22 @@ class UsuarioService {
     async listarUsuariosAvaliadores() {
         try {
             const avaliadores = await this.prisma.usuario.findMany({
-                where: { funcao: Funcao.AVALIADOR }
+                where: { funcao: Funcao.AVALIADOR },
+                include: {
+                    ComissaoUsuario: {
+                        include: {
+                            Comissao: true,
+                        },
+                    },
+                },
             });
+
             return avaliadores;
-        }
-        catch (error) {
+        } catch (error) {
             console.error(error);
             throw new Error("Erro ao listar usuários avaliadores.");
         }
-    };
+    }
 
     async listarUsuariosSecretarios() {
         try {
@@ -171,7 +178,7 @@ class UsuarioService {
             if (error instanceof AppError) {
                 throw error;
             }
-            
+
             throw new AppError("Erro ao deletar usuário.", 500);
         }
     }

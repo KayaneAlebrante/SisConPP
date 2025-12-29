@@ -24,7 +24,6 @@ export default function BlocoAccordion({
           : "border-neutral-outline"
       }`}
     >
-      {/* HEADER DO BLOCO */}
       <div
         onClick={() => setOpen(!open)}
         className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50"
@@ -47,7 +46,6 @@ export default function BlocoAccordion({
         </div>
       </div>
 
-      {/* CONTEÚDO DO BLOCO */}
       {open && (
         <div className="p-4 bg-gray-50 space-y-4">
           {bloco.quesitos.length === 0 && (
