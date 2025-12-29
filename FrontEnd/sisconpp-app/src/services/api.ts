@@ -324,10 +324,9 @@ export type CriarAvaliacaoCompletaDTO = {
 };
 
 export async function criarAvaliacaoCompleta(payload: CriarAvaliacaoCompletaDTO) {
-  const { data } = await axios.post("http://localhost:3000/api/avaliacoes", payload);
+  const { data } = await api.post("/avaliacao/avaliacaoCompleta", payload);
   return data;
 }
-
 
 export async function buscarEstruturaAvaliacao(avaliadorId: number, candidatoId: number) {
   const response = await api.get(`/avaliacao/avaliacao/${avaliadorId}/${candidatoId}`);

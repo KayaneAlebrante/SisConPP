@@ -88,9 +88,6 @@ class AvaliacaoController {
     async buscarEstruturaCompleta(req: Request, res: Response) {
         const { avaliadorId, candidatoId } = req.params;
 
-        console.log("avaliadorId:", avaliadorId);
-        console.log("candidatoId:", candidatoId);
-
         try {
             const estrutura = await AvaliacaoService.buscarEstruturaCompleta(
                 Number(avaliadorId),

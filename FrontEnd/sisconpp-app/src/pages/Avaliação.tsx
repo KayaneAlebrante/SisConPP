@@ -26,7 +26,6 @@ export default function AvaliacaoPage() {
   const [notas, setNotas] = useState<Record<number, number>>({});
   const [comentarios, setComentarios] = useState<Record<number, string>>({});
   const [categorias, setCategorias] = useState<Categoria[]>([]);
-  const [blocos, setBlocos] = useState<{ idBloco: number; nomeBloco: string }[]>([]);
 
   // Carregar candidatos
   useEffect(() => {
@@ -89,23 +88,8 @@ export default function AvaliacaoPage() {
     fetchEstrutura();
   }, [candidatoSelecionado, avaliadorSelecionado]);
 
-  // Filtro de avaliadores por categoria e bloco
-  const avaliadoresFiltrados = avaliadores.filter((a) => {
-    if (!categoriaSelecionada && !blocoSelecionado) return true;
+  const avaliadoresFiltrados = avaliadores;
 
-    const atribuicoes = a.ComissaoUsuario?.Comissao?.atribuicoes ?? [];
-    return atribuicoes.some((atrib) => {
-      const matchCategoria = categoriaSelecionada
-        ? atrib.categoriaId === categoriaSelecionada
-        : true;
-      const matchBloco = blocoSelecionado
-        ? atrib.blocoProvaId === blocoSelecionado
-        : true;
-      return matchCategoria && matchBloco;
-    });
-  });
-
-  // Função para salvar avaliação completa
   const handleSalvarAvaliacao = async () => {
     try {
       if (!avaliadorSelecionado || !candidatoSelecionado) {
@@ -143,9 +127,30 @@ export default function AvaliacaoPage() {
 
       await criarAvaliacaoCompleta(payload);
       toast.success("Avaliação salva com sucesso!");
-    } catch (error) {
-      console.error(error);
-      toast.error("Erro ao salvar avaliação");
+
+      // ✅ Limpar os campos após salvar
+      setNotas({});
+      setComentarios({});
+      setCandidatoSelecionado(null);
+      setAvaliadorSelecionado(null);
+      setCategoriaSelecionada(null);
+      setBlocoSelecionado(null);
+      setProvasSelecionadas([]);
+    } catch (error: unknown) {
+      let msg = "Erro ao salvar avaliação.";
+      if (typeof error === "object" && error !== null && "response" in error) {
+        const axiosError = error as { response?: { data?: { message?: string }, status?: number } };
+        msg = axiosError.response?.data?.message ?? msg;
+        if (axiosError.response?.status === 409) {
+          msg = "Já existe uma avaliação para este candidato e avaliador.";
+        }
+      }
+
+      toast.error(msg);
+      setNotas({});
+      setComentarios({});
+      setProvasSelecionadas([]);
+
     }
   };
 
@@ -154,10 +159,8 @@ export default function AvaliacaoPage() {
       <SideNavBar />
 
       <div className="flex-1 p-6 flex flex-col items-center overflow-y-auto">
-        {/* Filtros */}
         <div className="w-full bg-secondary-light p-8 rounded-2xl shadow-lg mb-8">
-          <div className="grid md:grid-cols-4 gap-6">
-            {/* Categoria */}
+          <div className="grid md:grid-cols-3 gap-6">
             <div>
               <label className="font-semibold text-white mb-2 block">Categoria</label>
               <select
@@ -176,49 +179,35 @@ export default function AvaliacaoPage() {
               </select>
             </div>
 
-            {/* Bloco */}
-            <div>
-              <label className="font-semibold text-white mb-2 block">Bloco de Prova</label>
-              <select
-                className="w-full p-3 rounded-lg"
-                value={blocoSelecionado ?? ""}
-                onChange={(e) =>
-                  setBlocoSelecionado(e.target.value ? Number(e.target.value) : null)
-                }
-              >
-                <option value="">Selecione</option>
-                {blocos.map((b) => (
-                  <option key={b.idBloco} value={b.idBloco}>
-                    {b.nomeBloco}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Candidato */}
             <div>
               <label className="font-semibold text-white mb-2 block">Candidato</label>
               <select
                 className="w-full p-3 rounded-lg"
                 value={candidatoSelecionado ?? ""}
-                onChange={(e) =>
-                  setCandidatoSelecionado(e.target.value ? Number(e.target.value) : null)
-                }
+                onChange={(e) => {
+                  const id = e.target.value ? Number(e.target.value) : null;
+                  setCandidatoSelecionado(id);
+
+                  // ✅ Atualiza automaticamente a categoria ao escolher o candidato
+                  if (id) {
+                    const candidato = candidatos.find(c => c.idCandidato === id);
+                    if (candidato) {
+                      setCategoriaSelecionada(candidato.categoriaId ?? null);
+                    }
+                  } else {
+                    setCategoriaSelecionada(null);
+                  }
+                }}
               >
                 <option value="">Selecione</option>
-                {candidatos
-                  .filter((c) =>
-                    categoriaSelecionada ? c.categoriaId === categoriaSelecionada : true
-                  )
-                  .map((c) => (
-                    <option key={c.idCandidato} value={c.idCandidato}>
-                      {c.nomeCompleto}
-                    </option>
-                  ))}
+                {candidatos.map((c) => (
+                  <option key={c.idCandidato} value={c.idCandidato}>
+                    {c.nomeCompleto}
+                  </option>
+                ))}
               </select>
             </div>
 
-            {/* Avaliador */}
             <div>
               <label className="font-semibold text-white mb-2 block">Avaliador</label>
               <select
