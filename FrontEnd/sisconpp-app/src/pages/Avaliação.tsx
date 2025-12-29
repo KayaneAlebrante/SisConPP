@@ -188,7 +188,7 @@ export default function AvaliacaoPage() {
                   const id = e.target.value ? Number(e.target.value) : null;
                   setCandidatoSelecionado(id);
 
-                  // ✅ Atualiza automaticamente a categoria ao escolher o candidato
+                  // Atualiza automaticamente a categoria ao escolher o candidato
                   if (id) {
                     const candidato = candidatos.find(c => c.idCandidato === id);
                     if (candidato) {
@@ -200,13 +200,18 @@ export default function AvaliacaoPage() {
                 }}
               >
                 <option value="">Selecione</option>
-                {candidatos.map((c) => (
-                  <option key={c.idCandidato} value={c.idCandidato}>
-                    {c.nomeCompleto}
-                  </option>
-                ))}
+                {candidatos
+                  .filter((c) =>
+                    categoriaSelecionada ? c.categoriaId === categoriaSelecionada : true
+                  )
+                  .map((c) => (
+                    <option key={c.idCandidato} value={c.idCandidato}>
+                      {c.nomeCompleto}
+                    </option>
+                  ))}
               </select>
             </div>
+
 
             <div>
               <label className="font-semibold text-white mb-2 block">Avaliador</label>
