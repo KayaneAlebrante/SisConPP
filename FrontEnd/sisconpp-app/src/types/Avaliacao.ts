@@ -38,11 +38,32 @@ export interface CriarAvaliacaoPayload {
   }[]
 }
 
+export interface CriarAvaliacaoTeoricaPayload {
+  avaliadorId: number
+  candidatoId: number
+  provasSelecionadas: number[]
+
+  subQuesitos: {
+    subQuesitoId: number
+    nota: number
+  }[]
+}
+
+
 export interface ProvaAccordionDTO {
   idProvaPratica: number;
   nomeProva: string;
   notaMaxima: number;
   blocosProvas: BlocoProvaDTO[];
+}
+
+export interface ProvaTeoricaAccordionDTO {
+  idprovaTeorica: number;
+  nomeProva: string;
+  notaMaxima: number;
+  numQuestao: number;
+  gabaritoOficial?: Buffer;
+  quesitos: QuesitoDTO[];
 }
 
 export interface BlocoProvaDTO {

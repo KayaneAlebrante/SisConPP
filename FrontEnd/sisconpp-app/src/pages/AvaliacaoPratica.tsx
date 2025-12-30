@@ -12,7 +12,7 @@ import {
   criarAvaliacaoCompleta
 } from "../services/api";
 import { toast } from "react-toastify";
-import AvaliacaoAccordion from "../components/Avaliacao/AvaliacaoAccordion";
+import AvaliacaoAccordion from "../components/AvaliacaoPratica/AvaliacaoAccordion";
 
 export default function AvaliacaoPage() {
   const [candidatoSelecionado, setCandidatoSelecionado] = useState<number | null>(null);
@@ -128,7 +128,6 @@ export default function AvaliacaoPage() {
       await criarAvaliacaoCompleta(payload);
       toast.success("Avaliação salva com sucesso!");
 
-      // ✅ Limpar os campos após salvar
       setNotas({});
       setComentarios({});
       setCandidatoSelecionado(null);
@@ -188,7 +187,6 @@ export default function AvaliacaoPage() {
                   const id = e.target.value ? Number(e.target.value) : null;
                   setCandidatoSelecionado(id);
 
-                  // Atualiza automaticamente a categoria ao escolher o candidato
                   if (id) {
                     const candidato = candidatos.find(c => c.idCandidato === id);
                     if (candidato) {
