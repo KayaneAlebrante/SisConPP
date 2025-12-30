@@ -2,8 +2,8 @@ import { PrismaClient, ProvaCampeiraEsportiva } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-class CandidatoService{
-    constructor(private prisma: PrismaClient){}
+class CandidatoService {
+    constructor(private prisma: PrismaClient) { }
 
     async criarCandidato(
         nomeCompleto: string,
@@ -38,7 +38,7 @@ class CandidatoService{
                 data: {
                     nomeCompleto,
                     cidade,
-                    estado, 
+                    estado,
                     CTGId,
                     numCarteirinha,
                     CPF,
@@ -57,7 +57,7 @@ class CandidatoService{
                     anexoResidencia: anexoResidencia ? new Uint8Array(anexoResidencia) : undefined,
                     anexoAtaConcurso: anexoAtaConcurso ? new Uint8Array(anexoAtaConcurso) : undefined,
                     fichaInscricao: fichaInscricao ? new Uint8Array(fichaInscricao) : undefined,
-                    anexoTermoCandidato: anexoTermoCandidato ? new Uint8Array(anexoTermoCandidato) : undefined  ,
+                    anexoTermoCandidato: anexoTermoCandidato ? new Uint8Array(anexoTermoCandidato) : undefined,
                     anexoRelatorioVivencia: anexoRelatorioVivencia ? new Uint8Array(anexoRelatorioVivencia) : undefined,
                     anexoResponsavel: anexoResponsavel ? new Uint8Array(anexoResponsavel) : undefined,
                     anexoProvaEsportivaCampeira: anexoProvaEsportivaCampeira ? new Uint8Array(anexoProvaEsportivaCampeira) : undefined,
@@ -65,7 +65,7 @@ class CandidatoService{
                 }
             });
 
-            return { candidato};
+            return { candidato };
         } catch (error) {
             console.error("Erro detalhado:", error);
             throw new Error("Erro ao criar candidato. Verifique os dados fornecidos.");
@@ -114,7 +114,7 @@ class CandidatoService{
 
             const candidatoAtualizado = await this.prisma.candidato.update({
                 where: { idCandidato },
-                data:{
+                data: {
                     ...data,
                     anexoFoto: data.anexoFoto ? new Uint8Array(data.anexoFoto) : candidatoExistente.anexoFoto,
                     anexoDocumento: data.anexoDocumento ? new Uint8Array(data.anexoDocumento) : candidatoExistente.anexoDocumento,
@@ -164,19 +164,19 @@ class CandidatoService{
     async deletarCandidato(idCandidato: number) {
         try {
             console.log("IdCandidato:", idCandidato);
-    
+
             const candidato = await this.prisma.candidato.findUnique({
                 where: { idCandidato },
             });
-    
+
             if (!candidato) {
                 throw new Error("Candidato não encontrado.");
             }
-    
+
             await this.prisma.candidato.delete({
                 where: { idCandidato },
             });
-    
+
             return { mensagem: "Candidato deletado com sucesso." };
         } catch (error) {
             console.error(error);
@@ -264,7 +264,7 @@ class CandidatoService{
         try {
             const candidato = await this.prisma.candidato.update({
                 where: { idCandidato: idCandidato },
-                data:{
+                data: {
                     anexoFoto: anexos.anexoFoto ? new Uint8Array(anexos.anexoFoto) : undefined,
                     anexoDocumento: anexos.anexoDocumento ? new Uint8Array(anexos.anexoDocumento) : undefined,
                     anexoCarteirinha: anexos.anexoCarteirinha ? new Uint8Array(anexos.anexoCarteirinha) : undefined,
@@ -281,6 +281,32 @@ class CandidatoService{
             return candidato;
         } catch (error) {
             throw new Error("Erro ao editar anexos.");
+        }
+    }
+
+    async criarFichaCandidato(
+        candidatoId: number,
+        concursoId: number,
+    ) {
+        try {
+            const fichaCandidato = await this.prisma.fichaCandidato.create({
+                data: {
+                    candidatoId,
+                    concursoId,
+                    notaCandidato: 0,
+                    numAcertosProvaTeorica: 0,
+                    notaRedacao: 0,
+                    notaFinalProvasPraticas: 0,
+                    anexoTermodeCiencia: Buffer.from(""),
+                    anexoGabarito: Buffer.from(""),
+                    anexoRedacao: Buffer.from(""),
+                    anexoProvaPratica: Buffer.from("")
+                },
+            });
+            return fichaCandidato;
+        } catch (error) {
+            console.error("Erro ao criar ficha do candidato:", error);
+            throw new Error("Erro ao criar ficha do candidato");
         }
     }
 }

@@ -32,14 +32,14 @@ class CandidatoController {
             anexoProvaEsportivaCampeira,
         } = req.body;
 
-        if(!categoriaId || !CPF || !RG || !endereco || !numEndereco || !bairro || !escolaridade || !filiacaoPai || !filiacaoMae || !ProvaCampeiraEsportiva){
-            return res.status(400).json({mensagem: "CategoriaId, CPF, RG, endereco, numEndereco, bairro, escolaridade, filiacao, ProvaCampeiraEsportica, concursoId são Obrigatórios"});
+        if (!categoriaId || !CPF || !RG || !endereco || !numEndereco || !bairro || !escolaridade || !filiacaoPai || !filiacaoMae || !ProvaCampeiraEsportiva) {
+            return res.status(400).json({ mensagem: "CategoriaId, CPF, RG, endereco, numEndereco, bairro, escolaridade, filiacao, ProvaCampeiraEsportica, concursoId são Obrigatórios" });
         }
 
         try {
             const Candidato = await candidatoService.criarCandidato(
-                nomeCompleto, 
-                cidade, 
+                nomeCompleto,
+                cidade,
                 estado,
                 CTGId,
                 numCarteirinha,
@@ -70,9 +70,9 @@ class CandidatoController {
             if (error instanceof Error) {
                 console.error("Erro ao criar candidato:", error);
                 return res.status(400).json({ mensagem: error.message });
-            } else{
+            } else {
                 console.error("Erro desconhecido:", error);
-                return res.status(400).json({mensagem: "Erro desconhecido."});
+                return res.status(400).json({ mensagem: "Erro desconhecido." });
             }
         }
     }
@@ -81,14 +81,14 @@ class CandidatoController {
         const { id } = req.params;
         const data = req.body;
 
-        if(!data || Object.keys(data).length === 0){
+        if (!data || Object.keys(data).length === 0) {
             return res.status(400).json({ mensagem: "Dados para atualização são obrigatórios." });
         }
 
-        try{
-            const { 
-                nomeCompleto, 
-                cidade, 
+        try {
+            const {
+                nomeCompleto,
+                cidade,
                 estado,
                 CTGId,
                 numCarteirinha,
@@ -102,16 +102,18 @@ class CandidatoController {
                 filiacaoPai,
                 filiacaoMae,
                 ProvaCampeiraEsportiva,
-                concursoId} = data;
+                concursoId } = data;
 
-            const candidatoData = { nomeCompleto, cidade, estado, CTGId, numCarteirinha, categoriaId,CPF,RG,
-                endereco,numEndereco,bairro,escolaridade,filiacaoPai, filiacaoMae, ProvaCampeiraEsportiva,concursoId};
+            const candidatoData = {
+                nomeCompleto, cidade, estado, CTGId, numCarteirinha, categoriaId, CPF, RG,
+                endereco, numEndereco, bairro, escolaridade, filiacaoPai, filiacaoMae, ProvaCampeiraEsportiva, concursoId
+            };
 
-            const Candidato = await candidatoService.atualizarCandidato(Number(id), candidatoData);          
+            const Candidato = await candidatoService.atualizarCandidato(Number(id), candidatoData);
             return res.status(200).json(Candidato);
 
-        } catch(error: unknown){
-            if(error instanceof Error){
+        } catch (error: unknown) {
+            if (error instanceof Error) {
                 return res.status(400).json({ mensagem: error.message });
             } else {
                 console.error("Erro desconhecido:", error);
@@ -149,7 +151,7 @@ class CandidatoController {
     }
 
     async deletarCandidato(req: Request, res: Response) {
-        const { id} = req.params;
+        const { id } = req.params;
 
         try {
             await candidatoService.deletarCandidato(Number(id));
@@ -258,6 +260,29 @@ class CandidatoController {
             }
             return res.status(400).json({ mensagem: "Erro desconhecido." });
         }
+    }
+
+    async criarFichaCandidato(req: Request, res: Response) {
+        try {
+            const { candidatoId, concursoId } = req.body;
+
+            if (!candidatoId || !concursoId) {
+                return res.status(400).json({ mensagem: "Candidato Id e ConcursoId são Obrigatórios" });
+            }
+
+            const fichaCandidato = await candidatoService.criarFichaCandidato(candidatoId, concursoId);
+            return res.status(201).json(fichaCandidato);
+            
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                console.error("Erro ao criar candidato:", error);
+                return res.status(400).json({ mensagem: error.message });
+            } else {
+                console.error("Erro desconhecido:", error);
+                return res.status(400).json({ mensagem: "Erro desconhecido." });
+            }
+        }
+
     }
 }
 
