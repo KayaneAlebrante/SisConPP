@@ -12,7 +12,8 @@ export enum RoutesPaths{
     SorteioDanca = "/sorteio-danca",
     ProvaPraticaCriacao = "/prova-pratica-criacao",
     ProvaTeoricaCriacao = "/prova-teorica-criacao",
-    Avaliacao = "/avaliacao"
+    avaliacaoPratica = "/avaliacao-pratica",
+    AvaliacaoTeorica = "/avaliacao-teorica"
 
 }
 
