@@ -104,6 +104,26 @@ class AvaliacaoController {
         }
     }
 
+    async criarAvaliacaoTeorica(req: Request, res: Response) {
+        try {
+            const { candidatoId, provaTeoricaId, quesitos, ficha } = req.body;
+
+            if (!candidatoId || !provaTeoricaId || !Array.isArray(quesitos) || !ficha) {
+                return res.status(400).json({ message: "Dados obrigatórios não informados" });
+            }
+            
+            const avaliacaoTeorica = await AvaliacaoService.criarAvaliacaoTeorica({
+                candidatoId,
+                provaTeoricaId,
+                quesitos,
+                ficha,
+            });
+
+            return res.status(201).json(avaliacaoTeorica);
+        } catch (error: any) {
+            return res.status(400).json({ message: error.message });
+        }
+    }
 
 }
 

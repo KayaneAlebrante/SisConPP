@@ -96,8 +96,8 @@ async function main() {
 
     await prisma.quesitos.createMany({
         data: [
-            { nomeQuesito: "Dança Gaúcha de Salão", notaMaximaQuesito: 5, opcional: false, blocoProvaIdBloco: 1 },
-            { nomeQuesito: "Dança Folclórica Tradicional", notaMaximaQuesito: 5, opcional: true, blocoProvaIdBloco: 1 }
+            { nomeQuesito: "Dança Gaúcha de Salão", notaMaximaQuesito: 5, opcional: false, blocoProvaIdBloco: 2 },
+            { nomeQuesito: "Dança Folclórica Tradicional", notaMaximaQuesito: 5, opcional: true, blocoProvaIdBloco: 2 }
         ]
     });
     // =========================

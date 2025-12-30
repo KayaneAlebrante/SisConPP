@@ -196,7 +196,7 @@ model Avaliacao {
   dataAvaliacao DateTime @default(now())
   notaFinal     Float?
 
-  comissaoId Int
+  comissaoId Int?
   Comissao   Comissao @relation(fields: [comissaoId], references: [idComissao])
 
   avaliadorId Int
@@ -371,9 +371,7 @@ model FichaCandidato {
   candidatoId   Int
   notaCandidato Float
   avaliacoes    Avaliacao[]
-  provaId       Int
   concursoId    Int
-  categoriaId   Int
 
   anexoTermodeCiencia Bytes
   dataTermo           DateTime @default(now())
@@ -382,5 +380,10 @@ model FichaCandidato {
   anexoGabarito          Bytes
   notaRedacao            Float
   anexoRedacao           Bytes
-  anexoProvaPratica      Bytes
+
+  notaFinalProvasPraticas Float
+  anexoProvaPratica       Bytes
+
+  @@unique([candidatoId, concursoId])
 }
+
