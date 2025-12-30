@@ -309,6 +309,30 @@ class CandidatoService {
             throw new Error("Erro ao criar ficha do candidato");
         }
     }
+
+    async buscarIdFicha(candidatoId: number,) {
+        try {
+            const fichaCandidatoId = await this.prisma.fichaCandidato.findUnique({
+                where: { candidatoId: candidatoId },
+                select: {
+                    idFicha: true,
+                    concursoId: true,
+                },
+            });
+
+            if (!fichaCandidatoId) {
+                throw new Error("Ficha do candidato não encontrada.");
+            };
+
+            console.log(fichaCandidatoId);
+
+            return fichaCandidatoId;
+        } catch (error) {
+            throw new Error("Erro ao buscar Id da Ficha do Candidato.");
+        }
+    }
+
+
 }
 
 const candidatoService = new CandidatoService(prisma);

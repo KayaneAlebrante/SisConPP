@@ -31,8 +31,8 @@ const Sidebar: FC = () => {
     { label: "Sortear Danças", icon: Music, href: "/sorteio-danca"},
     { label: "Adicionar planilhas Prova Prática", icon: FilePlus, href: "/prova-pratica-criacao" },
     { label: "Adicionar Prova Teorica", icon: BookPlus, href: "/prova-teorica-criacao" },
-    { label: "Adicionar Avaliação Prática", icon: SquareMenu, href: "/avaliacao" },
-    { label: "Adicionar Avaliação Teorica", icon: BookType, href: "/" },
+    { label: "Adicionar Avaliação Prática", icon: SquareMenu, href: "/avaliacao-pratica" },
+    { label: "Adicionar Avaliação Teorica", icon: BookType, href: "/avaliacao-teorica" },
     { label: "Relatórios", icon: BookText },
   ];
 

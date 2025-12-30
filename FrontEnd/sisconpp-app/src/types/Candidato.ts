@@ -34,3 +34,9 @@ export interface Candidato {
     anexoProvaEsportivaCampeira?: Blob;
     categoriaId: number;
 }
+
+export interface FichaCandidato{
+    idFicha: number;
+    candidatoId: number;
+    concursoId: number;
+}

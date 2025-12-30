@@ -2,12 +2,13 @@ import axios from 'axios';
 import { RT } from '../types/RT';
 import { CTG } from '../types/CTG';
 import { Usuario } from '../types/Usuario';
-import { Candidato } from '../types/Candidato';
+import { Candidato, FichaCandidato } from '../types/Candidato';
 import { Concurso } from '../types/Concurso';
 import { Comissao, ComissaoProvaPraticaForm } from '../types/Comissao';
 import { PreferenciaSorteio, Danca, CriarSorteioPayload } from '../types/SorteioDanca';
 import { BlocoProva, ProvaPratica, Quesitos, SubQuesitos } from '../types/ProvaPratica';
 import { ProvaTeorica, ProvaTeoricaF } from '../types/ProvaTeorica';
+import { CriarAvaliacaoTeoricaPayload } from '../types/Avaliacao';
 
 // ---- CONFIGURAÇÃO DO AXIOS ----
 export const api = axios.create({
@@ -144,6 +145,17 @@ export const buscarCandidatoPorId = async (idConcurso: number) => {
 
 export const deletarCandidato = async (id: number) => {
   return await api.delete(`/candidato/${id}`);
+};
+
+//---- Ficha Candidato ----
+
+export const cricarFichaCandidato = async(fichaCandidato: FichaCandidato) =>{
+  return await api.post("/candidato/fichaCandidato", fichaCandidato);
+}
+
+export const buscarFichaCandidatoPorId = async (idCandidato: number) => {
+  const response = await api.get(`/candidato/fichaCandidato/${idCandidato}`);
+  return response.data;
 };
 
 //---- Concursos ----
@@ -330,5 +342,15 @@ export async function criarAvaliacaoCompleta(payload: CriarAvaliacaoCompletaDTO)
 
 export async function buscarEstruturaAvaliacao(avaliadorId: number, candidatoId: number) {
   const response = await api.get(`/avaliacao/avaliacao/${avaliadorId}/${candidatoId}`);
+  return response.data;
+}
+
+export async function criarAvaliacaoTeorica(payload: CriarAvaliacaoTeoricaPayload) {
+  const { data } = await api.post("/avaliacao/avaliacaoTeorica", payload);
+  return data;
+}
+
+export async function buscarEstruturaTeorica(candidatoId: number) {
+  const response = await api.get(`/avaliacao/avaliacaoTeorica/${candidatoId}`);
   return response.data;
 }

@@ -240,7 +240,7 @@ export class AvaliacaoService {
             });
 
             await prisma.fichaCandidato.update({
-                where: { candidatoId_concursoId: { candidatoId: data.candidatoId, concursoId: data.ficha.concursoId } },
+                where: { candidatoId: data.candidatoId },
                 data: {
                     numAcertosProvaTeorica: data.ficha.numAcertosProvaTeorica,
                     notaRedacao: data.ficha.notaRedacao,
@@ -253,6 +253,36 @@ export class AvaliacaoService {
             return { message: "Avaliação teórica criada com sucesso", notaFinal };
         });
     }
+
+    async buscarEstruturaTeorica(candidatoId: number) {
+        const candidato = await this.prisma.candidato.findUnique({
+            where: { idCandidato: candidatoId },
+            include: { Categoria: true },
+        });
+
+        if (!candidato) throw new Error("Candidato não encontrado");
+
+        const provasTeoricas = await this.prisma.provaTeorica.findMany({
+            where: {
+                categorias: {
+                    some: { 
+                        idCategoria: candidato.categoriaId
+                    }, 
+                },
+            },
+            include: {
+                quesitos: {
+                    include: {
+                        subQuesitos: true,
+                    },
+                },
+            },
+        });
+
+        console.log(provasTeoricas);
+        return provasTeoricas;
+    }
+
 }
 
 type CriarAvaliacaoCompletaDTO = {

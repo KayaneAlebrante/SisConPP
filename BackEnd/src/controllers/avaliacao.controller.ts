@@ -125,6 +125,24 @@ class AvaliacaoController {
         }
     }
 
+    async buscarEstruturaTeorica(req: Request, res: Response) {
+        const { candidatoId } = req.params;
+
+        try {
+            const estrutura = await AvaliacaoService.buscarEstruturaTeorica(
+                Number(candidatoId)
+            );
+
+            return res.status(200).json(estrutura);
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                console.error("Erro ao buscar provas:", error);
+                return res.status(400).json({ mensagem: error.message });
+            }
+            return res.status(500).json({ mensagem: "Erro desconhecido." });
+        }
+    }
+
 }
 
 export default new AvaliacaoController();

@@ -12,6 +12,10 @@ router.post("/fichaCandidato", async (req: Request, res: Response) => {
     await CandidatoController.criarFichaCandidato(req, res);
 });
 
+router.get("/fichaCandidato/:id", authMiddleware, async (req: Request, res: Response) => {
+    await CandidatoController.buscarCandidatoPorId(req, res);
+});
+
 router.put("/:id",authMiddleware, async (req: Request, res: Response) => {
     await CandidatoController.atualizarCandidato(req, res);
 });

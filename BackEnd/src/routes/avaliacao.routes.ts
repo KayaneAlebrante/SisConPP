@@ -24,4 +24,8 @@ router.get( "/avaliacao/:avaliadorId/:candidatoId", async (req: Request, res: Re
     await avaliacaoController.buscarEstruturaCompleta(req, res);
 });
 
+router.get( "/avaliacaoTeorica/:candidatoId", async (req: Request, res: Response) => {
+    await avaliacaoController.buscarEstruturaTeorica(req, res);
+});
+
 export default router;

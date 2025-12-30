@@ -197,7 +197,7 @@ model Avaliacao {
   notaFinal     Float?
 
   comissaoId Int?
-  Comissao   Comissao @relation(fields: [comissaoId], references: [idComissao])
+  Comissao   Comissao? @relation(fields: [comissaoId], references: [idComissao])
 
   avaliadorId Int
   Usuario     Usuario @relation(fields: [avaliadorId], references: [idUsuario])
@@ -384,6 +384,6 @@ model FichaCandidato {
   notaFinalProvasPraticas Float
   anexoProvaPratica       Bytes
 
-  @@unique([candidatoId, concursoId])
+  @@unique([candidatoId])
 }
 
