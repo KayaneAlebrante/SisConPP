@@ -196,8 +196,7 @@ export class AvaliacaoService {
                     notaFinal: 0,
                 },
             });
-
-            // 🔹 CRIA QUESITOS E SUBQUESITOS
+            
             for (const quesito of data.quesitos) {
 
                 let notaQuesitoFinal = quesito.notaQuesito ?? 0;
@@ -233,7 +232,6 @@ export class AvaliacaoService {
                 }
             }
 
-            // 🔹 BUSCA A SOMA REAL DOS QUESITOS DA AVALIAÇÃO
             const somaQuesitos = await prisma.avaliacaoQuesito.aggregate({
                 where: {
                     avaliacaoId: avaliacao.idAvalicao,
@@ -245,13 +243,11 @@ export class AvaliacaoService {
 
             const notaFinalProvaTeorica = somaQuesitos._sum.notaQuesito ?? 0;
 
-            // 🔹 ATUALIZA AVALIAÇÃO
             await prisma.avaliacao.update({
                 where: { idAvalicao: avaliacao.idAvalicao },
                 data: { notaFinal: notaFinalProvaTeorica },
             });
 
-            // 🔹 ATUALIZA FICHA DO CANDIDATO (APÓS BUSCAR)
             await prisma.fichaCandidato.update({
                 where: { idFicha: data.ficha.idFicha },
                 data: {
