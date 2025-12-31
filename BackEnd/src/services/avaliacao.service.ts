@@ -255,9 +255,14 @@ export class AvaliacaoService {
             await prisma.fichaCandidato.update({
                 where: { idFicha: data.ficha.idFicha },
                 data: {
-                    notaFinalProvaTeorica,
-                    anexoGabarito: data.ficha.anexoGabarito ? new Uint8Array(data.ficha.anexoGabarito) : undefined,
-                    anexoRedacao: data.ficha.anexoRedacao ? new Uint8Array(data.ficha.anexoRedacao) : undefined
+                    notaFinalProvaTeorica: notaFinalProvaTeorica,
+                    anexoGabarito: data.ficha.anexoGabarito
+                        ? new Uint8Array(data.ficha.anexoGabarito)
+                        : undefined,
+                    anexoRedacao: data.ficha.anexoRedacao
+                        ? new Uint8Array(data.ficha.anexoRedacao)
+                        : undefined,
+                    notaCandidato: data.ficha.notaCandidato + notaFinalProvaTeorica,   
                 },
             });
 
@@ -332,6 +337,7 @@ type CriarAvaliacaoTeoricaDTO = {
     ficha: {
         idFicha: number;
         concursoId: number;
+        notaCandidato: number;
         notaFinalProvaTeorica: number;
         anexoGabarito?: Buffer;
         anexoRedacao?: Buffer;
