@@ -313,11 +313,7 @@ class CandidatoService {
     async buscarIdFicha(candidatoId: number,) {
         try {
             const fichaCandidatoId = await this.prisma.fichaCandidato.findUnique({
-                where: { candidatoId: candidatoId },
-                select: {
-                    idFicha: true,
-                    concursoId: true,
-                },
+                where: { candidatoId: candidatoId }
             });
 
             if (!fichaCandidatoId) {

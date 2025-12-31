@@ -118,6 +118,7 @@ class AvaliacaoController {
                 quesitos,
                 ficha,
             });
+            console.log(avaliacaoTeorica);
 
             return res.status(201).json(avaliacaoTeorica);
         } catch (error: any) {

@@ -5,8 +5,13 @@ interface Props {
   provas: ProvaTeoricaAccordionDTO[];
   notas: Record<number, number>;
   comentarios: Record<number, string>;
+
   onChangeNota: (id: number, nota: number) => void;
   onChangeComentario: (quesitoId: number, comentario: string) => void;
+
+  onChangeAnexoGabarito: (file: File | null) => void;
+  onChangeAnexoRedacao: (file: File | null) => void;
+
   onSalvar: () => void;
 }
 
@@ -14,6 +19,8 @@ export default function AvaliacaoTeoricaAccordion({
   provas,
   notas,
   onChangeNota,
+  onChangeAnexoGabarito,
+  onChangeAnexoRedacao,
   onSalvar,
 }: Props) {
   return (
@@ -24,6 +31,8 @@ export default function AvaliacaoTeoricaAccordion({
           prova={prova}
           notas={notas}
           onChangeNota={onChangeNota}
+          onChangeAnexoGabarito={onChangeAnexoGabarito}
+          onChangeAnexoRedacao={onChangeAnexoRedacao}
         />
       ))}
 

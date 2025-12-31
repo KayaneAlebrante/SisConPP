@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import SideNavBar from "../components/SideNavBar/SideNavBar";
-import { Candidato } from "../types/Candidato";
+import { Candidato, FichaCandidato } from "../types/Candidato";
 import { Categoria } from "../types/Categoria";
 import { ProvaTeoricaAccordionDTO } from "../types/Avaliacao";
 import {
@@ -8,6 +8,7 @@ import {
     listarCategorias,
     buscarEstruturaTeorica,
     criarAvaliacaoTeorica,
+    buscarFichaCandidatoPorId,
 } from "../services/api";
 import { toast } from "react-toastify";
 import AvaliacaoAccordion from "../components/AvalicaoTeorica/AvaliacaoTeorica";
@@ -15,15 +16,13 @@ import AvaliacaoAccordion from "../components/AvalicaoTeorica/AvaliacaoTeorica";
 export default function AvaliacaoTeoricaPage() {
     const [candidatoSelecionado, setCandidatoSelecionado] = useState<number | null>(null);
     const [categoriaSelecionada, setCategoriaSelecionada] = useState<number | null>(null);
-
     const [candidatos, setCandidatos] = useState<Candidato[]>([]);
     const [categorias, setCategorias] = useState<Categoria[]>([]);
     const [provasSelecionadas, setProvasSelecionadas] = useState<ProvaTeoricaAccordionDTO[]>([]);
-
     const [notas, setNotas] = useState<Record<number, number>>({});
     const [comentarios, setComentarios] = useState<Record<number, string>>({});
+    const [ficha, setFicha] = useState<FichaCandidato | null>(null);
 
-    // Carregar candidatos
     useEffect(() => {
         const fetchCandidatos = async () => {
             try {
@@ -36,7 +35,6 @@ export default function AvaliacaoTeoricaPage() {
         fetchCandidatos();
     }, []);
 
-    // Carregar categorias
     useEffect(() => {
         const fetchCategorias = async () => {
             try {
@@ -49,7 +47,6 @@ export default function AvaliacaoTeoricaPage() {
         fetchCategorias();
     }, []);
 
-    // Buscar estrutura da prova teórica
     useEffect(() => {
         const fetchEstrutura = async () => {
             if (!candidatoSelecionado) {
@@ -68,44 +65,66 @@ export default function AvaliacaoTeoricaPage() {
         fetchEstrutura();
     }, [candidatoSelecionado]);
 
-    const handleSalvarAvaliacao = async () => {
-        try {
+
+    useEffect(() => {
+        const fetchFicha = async () => {
             if (!candidatoSelecionado) {
-                toast.error("Selecione candidato");
+                setFicha(null);
                 return;
             }
+            try {
+                const response = await buscarFichaCandidatoPorId(Number(candidatoSelecionado));
+                setFicha(response as FichaCandidato);
+            } catch {
+                toast.error("Erro ao carregar ficha do candidato");
+            }
+        };
+        fetchFicha();
+    }, [candidatoSelecionado]);
 
-            const payload = {
-                candidatoId: candidatoSelecionado,
-                notas,
-                comentarios,
-                provas: provasSelecionadas.map((prova) => ({
-                    idprovaTeorica: prova.idprovaTeorica,
+    const handleSalvarAvaliacao = async () => {
+        try {
+            if (!candidatoSelecionado || !ficha) {
+                toast.error("Candidato ou ficha não carregados");
+                return;
+            }
+            console.log("FICHA NO SALVAR:", ficha);
+
+
+            for (const prova of provasSelecionadas) {
+                const payload = {
+                    candidatoId: Number(candidatoSelecionado),
+                    provaTeoricaId: prova.idprovaTeorica,
                     quesitos: prova.quesitos.map((quesito) => ({
                         quesitoId: quesito.idQuesito,
                         notaQuesito: notas[quesito.idQuesito] ?? 0,
-                        comentario: comentarios[quesito.idQuesito] ?? "",
+                        comentario: comentarios[quesito.idQuesito] ?? undefined,
                         subQuesitos: quesito.subQuesitos?.map((sub) => ({
                             subQuesitoId: sub.idSubequestios,
                             notaSubQuesito: notas[sub.idSubequestios] ?? 0,
                         })),
                     })),
-                })),
-            };
+                    ficha: {
+                        idFicha: ficha.idFicha,
+                        concursoId: ficha.concursoId,
+                        numAcertosProvaTeorica: ficha.numAcertosProvaTeorica ?? 0,
+                        notaRedacao: ficha.notaRedacao ?? 0,
+                        anexoGabarito: ficha.anexoGabarito ?? "",
+                        anexoRedacao: ficha.anexoRedacao ?? "",
+                    },
+                };
 
-            console.log(payload);
-            await criarAvaliacaoTeorica(payload);
+                console.log(payload);
+                await criarAvaliacaoTeorica(payload);
+            }
+
             toast.success("Avaliação teórica salva com sucesso!");
-
-            setNotas({});
-            setComentarios({});
-            setCandidatoSelecionado(null);
-            setCategoriaSelecionada(null);
-            setProvasSelecionadas([]);
-        } catch {
-            toast.error("Erro ao salvar avaliação teórica.");
+        } catch (error) {
+            console.error(error);
+            toast.error("Erro ao salvar avaliação teórica");
         }
     };
+
 
     return (
         <div className="flex min-h-screen w-full bg-neutral-background">
@@ -140,7 +159,6 @@ export default function AvaliacaoTeoricaPage() {
                                 onChange={(e) => {
                                     const id = e.target.value ? Number(e.target.value) : null;
                                     setCandidatoSelecionado(id);
-                                    console.log(id);
                                     if (id) {
                                         const candidato = candidatos.find((c) => c.idCandidato === id);
                                         if (candidato) {

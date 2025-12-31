@@ -35,8 +35,13 @@ export interface Candidato {
     categoriaId: number;
 }
 
-export interface FichaCandidato{
+export interface FichaCandidato {
     idFicha: number;
     candidatoId: number;
     concursoId: number;
+    numAcertosProvaTeorica: number;
+    notaRedacao: number;
+    anexoGabarito: string;
+    anexoRedacao: string;
+    notaCandidato: number;
 }
