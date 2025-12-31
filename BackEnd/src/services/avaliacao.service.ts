@@ -8,6 +8,7 @@ export class AvaliacaoService {
     async criarAvaliacaoCompleta(data: CriarAvaliacaoCompletaDTO) {
         try {
             return await this.prisma.$transaction(async (avaliacaoProva) => {
+
                 const avaliacaoExistente = await avaliacaoProva.avaliacao.findFirst({
                     where: {
                         avaliadorId: data.avaliadorId,
@@ -32,8 +33,6 @@ export class AvaliacaoService {
                     },
                 });
 
-                let notaFinal = 0;
-
                 for (const quesito of data.quesitos) {
                     let notaQuesito = 0;
 
@@ -41,14 +40,15 @@ export class AvaliacaoService {
                         notaQuesito += sub.notaSubQuesito;
                     }
 
-                    const avaliacaoQuesito = await avaliacaoProva.avaliacaoQuesito.create({
-                        data: {
-                            avaliacaoId: avaliacao.idAvalicao,
-                            quesitoId: quesito.quesitoId,
-                            comentario: quesito.comentario,
-                            notaQuesito,
-                        },
-                    });
+                    const avaliacaoQuesito =
+                        await avaliacaoProva.avaliacaoQuesito.create({
+                            data: {
+                                avaliacaoId: avaliacao.idAvalicao,
+                                quesitoId: quesito.quesitoId,
+                                comentario: quesito.comentario,
+                                notaQuesito,
+                            },
+                        });
 
                     for (const sub of quesito.subQuesitos) {
                         await avaliacaoProva.avaliacaoSubQuesito.create({
@@ -59,34 +59,41 @@ export class AvaliacaoService {
                             },
                         });
                     }
-
-                    notaFinal += notaQuesito;
                 }
+
+                const somaQuesitos =
+                    await avaliacaoProva.avaliacaoQuesito.aggregate({
+                        where: {
+                            avaliacaoId: avaliacao.idAvalicao,
+                        },
+                        _sum: {
+                            notaQuesito: true,
+                        },
+                    });
+
+                const notaFinalProvaPratica =
+                    somaQuesitos._sum.notaQuesito ?? 0;
 
                 await avaliacaoProva.avaliacao.update({
                     where: { idAvalicao: avaliacao.idAvalicao },
-                    data: { notaFinal },
+                    data: { notaFinal: notaFinalProvaPratica },
                 });
 
-
-                // await avaliacaoProva.fichaCandidato.update({
-                //    where: {candidatoId: data.candidatoId },
-
-                //     data: {
-                //         notaFinalProvasPraticas: notaFinal,
-                //         anexoProvaPratica: data.ficha.anexoProvaPratica
-                //             ? new Uint8Array(data.ficha.anexoProvaPratica)
-                //             : undefined,
-                //         notaCandidato:
-                //             (data.ficha.notaFinalProvasPraticas ?? 0) + notaFinal,
-                //     },
-                // });
+                await avaliacaoProva.fichaCandidato.update({
+                    where: { idFicha: data.ficha.idFicha },
+                    data: {
+                        notaFinalProvasPraticas: notaFinalProvaPratica,
+                        notaCandidato:
+                            (data.ficha.notaCandidato ?? 0) + notaFinalProvaPratica,
+                    },
+                });
 
                 return {
-                    ...avaliacao,
-                    notaFinal,
+                    message: "Avaliação Prática criada com sucesso",
+                    notaFinalProvaPratica,
                 };
             });
+
         } catch (error) {
             console.error("Erro ao criar avaliação:", error);
             throw error;
@@ -177,17 +184,7 @@ export class AvaliacaoService {
     async criarAvaliacaoTeorica(data: CriarAvaliacaoTeoricaDTO) {
         return this.prisma.$transaction(async (prisma) => {
 
-            const existente = await prisma.avaliacao.findFirst({
-                where: {
-                    candidatoId: data.candidatoId,
-                    provaTeoricaId: data.provaTeoricaId,
-                },
-            });
-
-            if (existente) {
-                throw new Error("Já existe uma avaliação teórica cadastrada para este candidato.");
-            }
-
+            console.log("Chamou a função");
             const avaliacao = await prisma.avaliacao.create({
                 data: {
                     avaliadorId: 1,
@@ -196,8 +193,9 @@ export class AvaliacaoService {
                     notaFinal: 0,
                 },
             });
-            
+
             for (const quesito of data.quesitos) {
+                console.log("Entrou no for")
 
                 let notaQuesitoFinal = quesito.notaQuesito ?? 0;
 
@@ -209,7 +207,7 @@ export class AvaliacaoService {
                         comentario: quesito.comentario ?? null,
                     },
                 });
-
+                console.log(avaliacaoQuesito);
                 if (quesito.subQuesitos?.length) {
                     notaQuesitoFinal = 0;
 
@@ -240,6 +238,7 @@ export class AvaliacaoService {
                     notaQuesito: true,
                 },
             });
+            console.log(somaQuesitos);
 
             const notaFinalProvaTeorica = somaQuesitos._sum.notaQuesito ?? 0;
 
@@ -247,21 +246,29 @@ export class AvaliacaoService {
                 where: { idAvalicao: avaliacao.idAvalicao },
                 data: { notaFinal: notaFinalProvaTeorica },
             });
+            console.log("Update");
 
             await prisma.fichaCandidato.update({
                 where: { idFicha: data.ficha.idFicha },
                 data: {
                     notaFinalProvaTeorica: notaFinalProvaTeorica,
+
+                    // 🔥 SOMA COM O VALOR REAL DO BANCO
+                    notaCandidato: {
+                        increment: notaFinalProvaTeorica,
+                    },
+
                     anexoGabarito: data.ficha.anexoGabarito
                         ? new Uint8Array(data.ficha.anexoGabarito)
                         : undefined,
+
                     anexoRedacao: data.ficha.anexoRedacao
                         ? new Uint8Array(data.ficha.anexoRedacao)
                         : undefined,
-                    notaCandidato: data.ficha.notaCandidato + notaFinalProvaTeorica,   
                 },
             });
 
+            console.log(notaFinalProvaTeorica)
             return {
                 message: "Avaliação teórica criada com sucesso",
                 notaFinalProvaTeorica,
@@ -314,6 +321,13 @@ type CriarAvaliacaoCompletaDTO = {
             notaSubQuesito: number
         }[]
     }[];
+
+    ficha: {
+        idFicha: number;
+        concursoId: number;
+        notaCandidato: number;
+        notaFinalProvasPraticas: number;
+    };
 }
 
 type CriarAvaliacaoTeoricaDTO = {

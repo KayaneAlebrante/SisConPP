@@ -44,3 +44,10 @@ export interface FichaCandidato {
     anexoRedacao: string;
     notaCandidato: number;
 }
+
+export interface FichaCandidatoProvaPratica {
+    idFicha: number;
+    candidatoId: number;
+    concursoId: number;
+    notaFinalProvaPratica: number;
+}

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import SideNavBar from "../components/SideNavBar/SideNavBar";
-import { Candidato } from "../types/Candidato";
+import { Candidato, FichaCandidatoProvaPratica } from "../types/Candidato";
 import { UsuarioAvaliador } from "../types/Usuario";
 import { ProvaAccordionDTO } from "../types/Avaliacao";
 import { Categoria } from "../types/Categoria";
@@ -9,7 +9,8 @@ import {
   listarUsuriosAvaliadores,
   buscarEstruturaAvaliacao,
   listarCategorias,
-  criarAvaliacaoCompleta
+  criarAvaliacaoCompleta,
+  buscarFichaCandidatoPorId
 } from "../services/api";
 import { toast } from "react-toastify";
 import AvaliacaoAccordion from "../components/AvaliacaoPratica/AvaliacaoAccordion";
@@ -26,6 +27,7 @@ export default function AvaliacaoPage() {
   const [notas, setNotas] = useState<Record<number, number>>({});
   const [comentarios, setComentarios] = useState<Record<number, string>>({});
   const [categorias, setCategorias] = useState<Categoria[]>([]);
+  const [ficha, setFicha] = useState<FichaCandidatoProvaPratica | null>(null);
 
   // Carregar candidatos
   useEffect(() => {
@@ -90,6 +92,22 @@ export default function AvaliacaoPage() {
 
   const avaliadoresFiltrados = avaliadores;
 
+  useEffect(() => {
+    const fetchFicha = async () => {
+      if (!candidatoSelecionado) {
+        setFicha(null);
+        return;
+      }
+      try {
+        const response = await buscarFichaCandidatoPorId(Number(candidatoSelecionado));
+        setFicha(response as FichaCandidatoProvaPratica);
+      } catch {
+        toast.error("Erro ao carregar ficha do candidato");
+      }
+    };
+    fetchFicha();
+  }, [candidatoSelecionado]);
+
   const handleSalvarAvaliacao = async () => {
     try {
       if (!avaliadorSelecionado || !candidatoSelecionado) {
@@ -120,9 +138,15 @@ export default function AvaliacaoPage() {
                 subQuesitoId: sub.idSubequestios,
                 notaSubQuesito: notas[sub.idSubequestios] ?? 0,
               })),
-            }))
+            })),
           )
         ),
+
+        ficha:{
+          idFicha: ficha?.idFicha,
+          concrusoId: ficha?.concursoId,
+          notaFinalProvaPratica: ficha?.notaFinalProvaPratica
+        }
       };
 
       await criarAvaliacaoCompleta(payload);
