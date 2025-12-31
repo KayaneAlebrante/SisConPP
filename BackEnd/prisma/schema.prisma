@@ -376,14 +376,12 @@ model FichaCandidato {
   anexoTermodeCiencia Bytes
   dataTermo           DateTime @default(now())
 
-  numAcertosProvaTeorica Int
-  anexoGabarito          Bytes
-  notaRedacao            Float
-  anexoRedacao           Bytes
+  notaFinalProvaTeorica Float
+  anexoGabarito         Bytes
+  anexoRedacao          Bytes
 
   notaFinalProvasPraticas Float
   anexoProvaPratica       Bytes
 
   @@unique([candidatoId])
 }
-

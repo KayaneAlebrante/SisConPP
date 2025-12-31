@@ -107,8 +107,7 @@ export default function AvaliacaoTeoricaPage() {
                     ficha: {
                         idFicha: ficha.idFicha,
                         concursoId: ficha.concursoId,
-                        numAcertosProvaTeorica: ficha.numAcertosProvaTeorica ?? 0,
-                        notaRedacao: ficha.notaRedacao ?? 0,
+                        notaFinalProvaTeorica: ficha.notaFinalProvaTeorica ?? 0,
                         anexoGabarito: ficha.anexoGabarito ?? "",
                         anexoRedacao: ficha.anexoRedacao ?? "",
                     },
