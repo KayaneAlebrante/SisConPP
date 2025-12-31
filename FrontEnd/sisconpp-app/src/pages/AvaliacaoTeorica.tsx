@@ -82,6 +82,16 @@ export default function AvaliacaoTeoricaPage() {
         fetchFicha();
     }, [candidatoSelecionado]);
 
+    const resetPagina = () => {
+        setCandidatoSelecionado(null);
+        setCategoriaSelecionada(null);
+        setProvasSelecionadas([]);
+        setNotas({});
+        setComentarios({});
+        setFicha(null);
+    };
+
+
     const handleSalvarAvaliacao = async () => {
         try {
             if (!candidatoSelecionado || !ficha) {
@@ -115,6 +125,7 @@ export default function AvaliacaoTeoricaPage() {
 
                 console.log(payload);
                 await criarAvaliacaoTeorica(payload);
+                resetPagina();
             }
 
             toast.success("Avaliação teórica salva com sucesso!");
