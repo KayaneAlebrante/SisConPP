@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import relatoriosService  from "../services/relatorios.service";
+import relatoriosService from "../services/relatorios.service";
 
 class RelatoriosController {
 
@@ -54,6 +54,34 @@ class RelatoriosController {
         } catch (error: unknown) {
             if (error instanceof Error) {
                 console.error("Erro ao gerar ranking por categoria:", error);
+                return res.status(400).json({ mensagem: error.message });
+            } else {
+                console.error("Erro desconhecido:", error);
+                return res.status(400).json({
+                    mensagem: "Erro desconhecido."
+                });
+            }
+        }
+    }
+
+    async relatorioIndividualDetalhado(req: Request, res: Response) {
+        const { candidatoId } = req.params;
+
+        if (!candidatoId || isNaN(Number(candidatoId))) {
+            return res.status(400).json({
+                mensagem: "Id do candidato é obrigatório e deve ser numérico"
+            });
+        }
+
+        try {
+            const relatorioIndividual =
+                await relatoriosService.gerarRelatorioIndividualDetalhado(Number(candidatoId));
+
+            return res.status(200).json(relatorioIndividual);
+
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                console.error("Erro ao gerar relatorio individual:", error);
                 return res.status(400).json({ mensagem: error.message });
             } else {
                 console.error("Erro desconhecido:", error);
