@@ -45,6 +45,11 @@ export interface FichaCandidato {
     notaCandidato: number;
 }
 
+export interface FichaCandidatoPayload {
+    candidatoId: number;
+    concursoId: number;
+}
+
 export interface FichaCandidatoProvaPratica {
     idFicha: number;
     candidatoId: number;

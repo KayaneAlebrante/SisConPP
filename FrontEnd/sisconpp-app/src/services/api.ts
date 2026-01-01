@@ -149,7 +149,7 @@ export const deletarCandidato = async (id: number) => {
 
 //---- Ficha Candidato ----
 
-export const cricarFichaCandidato = async(fichaCandidato: FichaCandidato) =>{
+export const criarFichaCandidato = async(fichaCandidato: FichaCandidato) =>{
   return await api.post("/candidato/fichaCandidato", fichaCandidato);
 }
 
