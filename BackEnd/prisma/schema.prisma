@@ -43,8 +43,9 @@ model Candidato {
   avalicoes          Avaliacao[]
   sorteioDanca       SorteioDanca[]
   Recurso            Recurso[]
-  Concurso           Concurso?      @relation(fields: [concursoIdConcurso], references: [idConcurso])
+  Concurso           Concurso?       @relation(fields: [concursoIdConcurso], references: [idConcurso])
   concursoIdConcurso Int?
+  fichaCandidato     FichaCandidato?
 }
 
 enum ProvaCampeiraEsportiva {
@@ -127,8 +128,9 @@ model Concurso {
   local              String   @db.VarChar(255)
   anexoEdital        Bytes?
 
-  candidatos Candidato[]
-  comissoes  Comissao[]
+  candidatos       Candidato[]
+  comissoes        Comissao[]
+  fichaCandidatoes FichaCandidato[]
 }
 
 model Comissao {
@@ -367,11 +369,16 @@ model SorteioDanca {
 }
 
 model FichaCandidato {
-  idFicha       Int         @id @default(autoincrement())
-  candidatoId   Int
+  idFicha Int @id @default(autoincrement())
+
+  candidatoId Int
+  Candidato   Candidato @relation(fields: [candidatoId], references: [idCandidato])
+
   notaCandidato Float
   avaliacoes    Avaliacao[]
-  concursoId    Int
+
+  concursoId Int
+  Concurso   Concurso @relation(fields: [concursoId], references: [idConcurso])
 
   anexoTermodeCiencia Bytes
   dataTermo           DateTime @default(now())

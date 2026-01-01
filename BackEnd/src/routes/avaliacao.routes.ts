@@ -8,7 +8,7 @@ router.post("/avaliacaoCompleta", authMiddleware, async (req: Request, res: Resp
     await avaliacaoController.criarAvaliacaoCompleta(req, res);
 });
 
-router.post("/avaliacaoTeorica", async (req: Request, res: Response) => {
+router.post("/avaliacaoTeorica", authMiddleware, async (req: Request, res: Response) => {
     await avaliacaoController.criarAvaliacaoTeorica(req, res);
 });
 
