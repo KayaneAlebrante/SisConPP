@@ -5,11 +5,11 @@ import relatoriosController from "../controllers/relatorios.controller";
 
 const router = express.Router();
 
-router.get( "/relatorio-geral/:concursoId", async (req:Request, res: Response) => {
+router.get( "/relatorio-geral/:concursoId", authMiddleware, async (req:Request, res: Response) => {
  await relatoriosController.relatorioGeralPorConcurso(req, res);
 });
 
-router.get( "/ranking/:concursoId/:categoriaId", async (req: Request, res: Response) => {
+router.get( "/ranking/:concursoId/:categoriaId", authMiddleware, async (req: Request, res: Response) => {
         await relatoriosController.rankingPorCategoria(req, res);
 });
 

@@ -15,9 +15,18 @@ export default function Relatorios() {
   const [concursoGeralId, setConcursoGeralId] = useState<number | null>(null);
   const [concursoRankingId, setConcursoRankingId] = useState<number | null>(null);
   const [categoriaId, setCategoriaId] = useState<number | null>(null);
-  const usuarioLogado = "Administrador do Sistema"; 
   const componentRefGeral = useRef(null);
   const componentRefRanking = useRef(null);
+
+  const usuarioLogado = (() => {
+  try {
+    const usuario = JSON.parse(localStorage.getItem("usuario") || "{}");
+    return usuario.nome || "Usuário";
+  } catch {
+    return "Usuário";
+  }
+})();
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -55,7 +64,7 @@ export default function Relatorios() {
         <div className="w-full mb-6 print:hidden">
             <h1 className="text-2xl font-bold text-neutral-onBackground flex items-center gap-2">
                 <FileText className="text-primary" />
-                Relatórios e Rankings
+                Relatórios
             </h1>
         </div>
 
@@ -122,11 +131,6 @@ export default function Relatorios() {
               </div>
             </div>
 
-            {/* =======================================================
-                CARD 2: Ranking por Categoria 
-                (Adicione 'hidden print:hidden' se quiser imprimir só um por vez, 
-                 ou lógica para mostrar apenas o que está sendo impresso)
-               ======================================================= */}
             <div className="bg-secondary-light rounded-2xl shadow-lg p-6 flex flex-col h-full min-h-[600px] print:bg-white print:p-0 print:shadow-none print:min-h-0 print:mt-10">
               
               <div className="print:hidden">
@@ -135,7 +139,7 @@ export default function Relatorios() {
                         <div className="bg-white/20 p-2 rounded-lg">
                             <Trophy className="text-white" size={24} />
                         </div>
-                        <h2 className="text-xl font-bold text-white">Ranking por Categoria</h2>
+                        <h2 className="text-xl font-bold text-white">Relatorio por Categoria</h2>
                     </div>
                     {concursoRankingId && categoriaId && (
                         <button 
@@ -184,7 +188,6 @@ export default function Relatorios() {
 
               <div ref={componentRefRanking} className="bg-white rounded-xl p-4 flex-1 shadow-inner flex flex-col overflow-hidden print:shadow-none print:p-0 print:overflow-visible">
                 
-                {/* CABEÇALHO TIMBRADO DO RANKING */}
                 {concursoRankingId && categoriaId && (
                     <ReportHeader 
                         title="Ranking Oficial"
