@@ -13,7 +13,9 @@ export enum RoutesPaths{
     ProvaPraticaCriacao = "/prova-pratica-criacao",
     ProvaTeoricaCriacao = "/prova-teorica-criacao",
     avaliacaoPratica = "/avaliacao-pratica",
-    AvaliacaoTeorica = "/avaliacao-teorica"
+    AvaliacaoTeorica = "/avaliacao-teorica",
+    Relatoriois = "/relatorios"
+
 
 }
 

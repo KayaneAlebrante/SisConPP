@@ -183,8 +183,6 @@ export class AvaliacaoService {
 
     async criarAvaliacaoTeorica(data: CriarAvaliacaoTeoricaDTO) {
         return this.prisma.$transaction(async (prisma) => {
-
-            console.log("Chamou a função");
             const avaliacao = await prisma.avaliacao.create({
                 data: {
                     avaliadorId: 1,
@@ -195,7 +193,6 @@ export class AvaliacaoService {
             });
 
             for (const quesito of data.quesitos) {
-                console.log("Entrou no for")
 
                 let notaQuesitoFinal = quesito.notaQuesito ?? 0;
 
@@ -207,7 +204,6 @@ export class AvaliacaoService {
                         comentario: quesito.comentario ?? null,
                     },
                 });
-                console.log(avaliacaoQuesito);
                 if (quesito.subQuesitos?.length) {
                     notaQuesitoFinal = 0;
 
@@ -238,7 +234,6 @@ export class AvaliacaoService {
                     notaQuesito: true,
                 },
             });
-            console.log(somaQuesitos);
 
             const notaFinalProvaTeorica = somaQuesitos._sum.notaQuesito ?? 0;
 
@@ -246,14 +241,11 @@ export class AvaliacaoService {
                 where: { idAvalicao: avaliacao.idAvalicao },
                 data: { notaFinal: notaFinalProvaTeorica },
             });
-            console.log("Update");
 
             await prisma.fichaCandidato.update({
                 where: { idFicha: data.ficha.idFicha },
                 data: {
                     notaFinalProvaTeorica: notaFinalProvaTeorica,
-
-                    // 🔥 SOMA COM O VALOR REAL DO BANCO
                     notaCandidato: {
                         increment: notaFinalProvaTeorica,
                     },
@@ -268,7 +260,6 @@ export class AvaliacaoService {
                 },
             });
 
-            console.log(notaFinalProvaTeorica)
             return {
                 message: "Avaliação teórica criada com sucesso",
                 notaFinalProvaTeorica,
@@ -301,8 +292,6 @@ export class AvaliacaoService {
                 },
             },
         });
-
-        console.log(provasTeoricas);
         return provasTeoricas;
     }
 

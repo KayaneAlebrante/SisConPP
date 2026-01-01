@@ -33,7 +33,7 @@ const Sidebar: FC = () => {
     { label: "Adicionar Prova Teorica", icon: BookPlus, href: "/prova-teorica-criacao" },
     { label: "Adicionar Avaliação Prática", icon: SquareMenu, href: "/avaliacao-pratica" },
     { label: "Adicionar Avaliação Teorica", icon: BookType, href: "/avaliacao-teorica" },
-    { label: "Relatórios", icon: BookText },
+    { label: "Relatórios", icon: BookText,  href:"/relatorios" },
   ];
 
   return (

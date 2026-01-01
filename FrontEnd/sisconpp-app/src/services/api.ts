@@ -9,6 +9,7 @@ import { PreferenciaSorteio, Danca, CriarSorteioPayload } from '../types/Sorteio
 import { BlocoProva, ProvaPratica, Quesitos, SubQuesitos } from '../types/ProvaPratica';
 import { ProvaTeorica, ProvaTeoricaF } from '../types/ProvaTeorica';
 import { CriarAvaliacaoTeoricaPayload } from '../types/Avaliacao';
+import { RelatorioGeralCandidatoDTO, RelatorioRankingDTO } from '../types/Relatorios';
 
 // ---- CONFIGURAÇÃO DO AXIOS ----
 export const api = axios.create({
@@ -149,7 +150,7 @@ export const deletarCandidato = async (id: number) => {
 
 //---- Ficha Candidato ----
 
-export const criarFichaCandidato = async(fichaCandidato: FichaCandidato) =>{
+export const criarFichaCandidato = async (fichaCandidato: FichaCandidato) => {
   return await api.post("/candidato/fichaCandidato", fichaCandidato);
 }
 
@@ -354,3 +355,18 @@ export async function buscarEstruturaTeorica(candidatoId: number) {
   const response = await api.get(`/avaliacao/avaliacaoTeorica/${candidatoId}`);
   return response.data;
 }
+
+//---- Relatoriois ----
+export async function relatorioGeral(concursoId: number) {
+  const response = await api.get<RelatorioGeralCandidatoDTO[]>(
+    `/relatorios/relatorio-geral/${concursoId}`
+  );
+  return response.data;
+};
+
+export async function rankingPorCategoria(concursoId: number, categoriaId: number) {
+  const response = await api.get<RelatorioRankingDTO[]>(
+    `/relatorios/ranking/${concursoId}/${categoriaId}`
+  );
+  return response.data;
+};
