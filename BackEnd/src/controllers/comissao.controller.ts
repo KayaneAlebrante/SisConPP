@@ -130,6 +130,21 @@ class ComissaoController {
             return res.status(500).json({ error: error.message });
         }
     }
+
+    async atribuiacaoAvaliacao(req: Request, res: Response){
+        const{comissaoId, categoriaId, provaPraticaId, blocoProvaId} = req.body;
+        try{
+            const attribuicao = await comissaoService.atribuirAvaliacoes(
+                comissaoId,
+                categoriaId, 
+                provaPraticaId, 
+                blocoProvaId
+            );
+            return res.status(201).json(attribuicao);
+        }catch(error: any){
+            return res.status(500).json({ error: error.message });
+        }
+    }
 }
 
 export default new ComissaoController();

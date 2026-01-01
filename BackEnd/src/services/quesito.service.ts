@@ -8,11 +8,9 @@ class QuesitoService {
     async criarQuesitos(
         nomeQuesito: string,
         notaMaximaQuesito: number,
-        danca: boolean,
         opcional: boolean,
-        dancaSalaoTradicional: DancaSalaoTradicional,
         blocoProvaIdBloco?: number,
-        provaTeoricaIdProvaTeorica?: number
+        provaTeoricaIdprovaTeorica?: number
     ) {
         try {
             if (blocoProvaIdBloco !== undefined && blocoProvaIdBloco !== null){
@@ -25,15 +23,23 @@ class QuesitoService {
                 }
             }
 
+            if(provaTeoricaIdprovaTeorica !== undefined && provaTeoricaIdprovaTeorica !==null){
+                const provaTeoricaExiste = await this.prisma.provaTeorica.findUnique({
+                    where: {idprovaTeorica: provaTeoricaIdprovaTeorica}
+                });
+
+                if(!provaTeoricaExiste){
+                    throw new Error(`A Prova Teorica ${provaTeoricaIdprovaTeorica} não existe.`);
+                }
+            }
+
             const quesito = await this.prisma.quesitos.create({
                 data: {
                     nomeQuesito: nomeQuesito,
                     notaMaximaQuesito: notaMaximaQuesito,
-                    danca: danca,
                     opcional: opcional,
-                    dancaSalaoTradicional: dancaSalaoTradicional,
-                    blocoProvaIdBloco: blocoProvaIdBloco ?? null,
-                    provaTeoricaIdprovaTeorica: provaTeoricaIdProvaTeorica ?? null
+                    blocoProvaIdBloco: blocoProvaIdBloco,
+                    provaTeoricaIdprovaTeorica: provaTeoricaIdprovaTeorica
                 },
             });
             console.log(quesito);
@@ -49,9 +55,7 @@ class QuesitoService {
         data: {
             nomeQuesito?: string;
             notaMaximaQuesito?: number;
-            danca?: boolean;
             opcional?: boolean,
-            dancaSalaoTradicional?: DancaSalaoTradicional;
             blocoProvaIdBloco?: number;
         }
     ) {
@@ -87,36 +91,6 @@ class QuesitoService {
         } catch (error) {
             console.error("Erro detalhado:", error);
             throw new Error("Erro ao buscar Quesitos.");
-        }
-    }
-
-    async buscarDancasTradicionais() {
-        try {
-            const dancas = await this.prisma.quesitos.findMany({
-                where: {
-                    dancaSalaoTradicional: DancaSalaoTradicional.DANCA_TRADICIONAL
-                }
-            });
-
-            return dancas;
-        } catch (error) {
-            console.error("Erro ao buscar danças tradicionais:", error);
-            throw new Error("Erro ao buscar danças tradicionais");
-        }
-    }
-
-    async buscarDancasSalao() {
-        try {
-            const dancas = await this.prisma.quesitos.findMany({
-                where: {
-                    dancaSalaoTradicional: DancaSalaoTradicional.DANCA_DE_SALAO
-                }
-            });
-
-            return dancas;
-        } catch (error) {
-            console.error("Erro ao buscar danças tradicionais:", error);
-            throw new Error("Erro ao buscar danças tradicionais");
         }
     }
 

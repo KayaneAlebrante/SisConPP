@@ -6,14 +6,12 @@ class QuesitoController {
         const {
             nomeQuesito,
             notaMaximaQuesito,
-            danca,
             opcional,
-            dancaSalaoTradicional,
             blocoProvaIdBloco,
-            provaTeoricaIdProvaTeorica
+            provaTeoricaIdprovaTeorica
         } = req.body;
 
-        if (!nomeQuesito || !notaMaximaQuesito || danca === undefined || dancaSalaoTradicional === undefined) {
+        if (!nomeQuesito || !notaMaximaQuesito ) {
             return res.status(400).json({ mensagem: "Nome do Quesito, Nota Máxima do Quesito, Dança e Dança Salão Tradicional são obrigatórios." });
         }
 
@@ -21,11 +19,9 @@ class QuesitoController {
             const quesito = await quesitoService.criarQuesitos(
                 nomeQuesito,
                 notaMaximaQuesito,
-                danca,
                 opcional,
-                dancaSalaoTradicional,
                 blocoProvaIdBloco,
-                provaTeoricaIdProvaTeorica
+                provaTeoricaIdprovaTeorica
             );
 
             return res.status(201).json(quesito);
@@ -74,26 +70,6 @@ class QuesitoController {
         } catch (error) {
             console.error("Erro ao buscar Quesitos", error);
             return res.status(400).json({ mensagem: "Erro ao buscar os Quesitos." });
-        }
-    }
-
-    async buscarDancasTradicionais(req: Request, res: Response) {
-        try {
-            const dancas = await quesitoService.buscarDancasTradicionais();
-            return res.status(200).json(dancas);
-        } catch (error) {
-            console.error("Erro ao buscar danças", error);
-            return res.status(400).json({ mensagem: "Erro ao buscar Danças." });
-        }
-    }
-
-    async buscarDancasSalao(req: Request, res: Response) {
-        try {
-            const dancas = await quesitoService.buscarDancasSalao();
-            return res.status(200).json(dancas);
-        } catch (error) {
-            console.error("Erro ao buscar danças", error);
-            return res.status(400).json({ mensagem: "Erro ao buscar Danças." });
         }
     }
 

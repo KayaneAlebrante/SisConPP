@@ -75,11 +75,11 @@ export default function CTGList({ onEdit }: CTGListProps) {
   };
 
   return (
-    <div className="flex flex-col h-full">
-      <h2 className="text-xl font-bold mb-4 text-secondary-on">Lista de CTGs</h2>
+    <div className="w-full flex flex-col h-full">
+      <h2 className="text-xl font-bold mb-4 text-secondary-dark">Lista de CTGs</h2>
       <table className="w-full bg-white rounded-xl shadow-md overflow-hidden">
         <thead>
-          <tr className="text-left bg-secondary-dark text-secondary-light">
+          <tr className="text-left bg-secondary-dark text-secondary-on">
             <th className="p-3 first:rounded-tl-xl">Nome CTG</th>
             <th className="p-3">Região Tradicionalista</th>
             <th className="p-3 last:rounded-tr-xl">Ações</th>

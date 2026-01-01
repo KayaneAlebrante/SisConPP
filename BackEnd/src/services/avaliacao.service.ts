@@ -1,31 +1,102 @@
-import { PrismaClient } from "@prisma/client";
+import { AvaliacaoSubQuesito, PrismaClient } from "@prisma/client";
 
-class Avaliacao{
-    protected prisma: PrismaClient;
-    constructor() {
-        this.prisma = new PrismaClient();
-    }
+const prisma = new PrismaClient();
 
-    async adicionarAvaliacao(
-        comissaoId: number,
-        avaliadorId: number,
-        candidatoId: number,
-        blocoProvaId: number,
-    ){
+export class AvaliacaoService {
+    constructor(protected prisma: PrismaClient) { }
+
+    async criarAvaliacaoCompleta(data: CriarAvaliacaoCompletaDTO) {
         try {
-            const avaliacao = await this.prisma.avaliacao.create({
-                data: {
-                    dataAvaliacao: new Date(),
-                    comissaoId,
-                    avaliadorId,
-                    candidatoId,
-                    blocoProvaId,
-                    nota: 0, 
-                },
+            return await this.prisma.$transaction(async (avaliacaoProva) => {
+
+                const avaliacaoExistente = await avaliacaoProva.avaliacao.findFirst({
+                    where: {
+                        avaliadorId: data.avaliadorId,
+                        candidatoId: data.candidatoId,
+                        blocoProvaId: data.blocoProvaId,
+                    },
+                });
+
+                if (avaliacaoExistente) {
+                    throw new Error(
+                        "Já existe uma avaliação cadastrada para este avaliador e candidato."
+                    );
+                }
+
+                const avaliacao = await avaliacaoProva.avaliacao.create({
+                    data: {
+                        comissaoId: data.comissaoId,
+                        avaliadorId: data.avaliadorId,
+                        candidatoId: data.candidatoId,
+                        blocoProvaId: data.blocoProvaId,
+                        notaFinal: 0,
+                    },
+                });
+
+                for (const quesito of data.quesitos) {
+                    let notaQuesito = 0;
+
+                    for (const sub of quesito.subQuesitos) {
+                        notaQuesito += sub.notaSubQuesito;
+                    }
+
+                    const avaliacaoQuesito =
+                        await avaliacaoProva.avaliacaoQuesito.create({
+                            data: {
+                                avaliacaoId: avaliacao.idAvalicao,
+                                quesitoId: quesito.quesitoId,
+                                comentario: quesito.comentario,
+                                notaQuesito,
+                            },
+                        });
+
+                    for (const sub of quesito.subQuesitos) {
+                        await avaliacaoProva.avaliacaoSubQuesito.create({
+                            data: {
+                                avaliacaoQuesitoId: avaliacaoQuesito.idAvaliacaoQuesito,
+                                subQuesitoId: sub.subQuesitoId,
+                                notaSubQuesito: sub.notaSubQuesito,
+                            },
+                        });
+                    }
+                }
+
+                const somaQuesitos =
+                    await avaliacaoProva.avaliacaoQuesito.aggregate({
+                        where: {
+                            avaliacaoId: avaliacao.idAvalicao,
+                        },
+                        _sum: {
+                            notaQuesito: true,
+                        },
+                    });
+
+                const notaFinalProvaPratica =
+                    somaQuesitos._sum.notaQuesito ?? 0;
+
+                await avaliacaoProva.avaliacao.update({
+                    where: { idAvalicao: avaliacao.idAvalicao },
+                    data: { notaFinal: notaFinalProvaPratica },
+                });
+
+                await avaliacaoProva.fichaCandidato.update({
+                    where: { idFicha: data.ficha.idFicha },
+                    data: {
+                        notaFinalProvasPraticas: notaFinalProvaPratica,
+                        notaCandidato:
+                            (data.ficha.notaCandidato ?? 0) + notaFinalProvaPratica,
+                    },
+                });
+
+                return {
+                    message: "Avaliação Prática criada com sucesso",
+                    notaFinalProvaPratica,
+                };
             });
-            return avaliacao;
+
         } catch (error) {
-            throw new Error(`Erro ao adicionar avaliação: ${error}`);
+            console.error("Erro ao criar avaliação:", error);
+            throw error;
         }
     }
 
@@ -33,7 +104,7 @@ class Avaliacao{
         idAvalicao: number,
         avaliadorId: number,
         candidatoId: number,
-    ){
+    ) {
         try {
             const avaliacao = await this.prisma.avaliacao.update({
                 where: { idAvalicao, candidatoId },
@@ -47,7 +118,7 @@ class Avaliacao{
 
     async visualizarAvaliacoes(
         candidatoId: number,
-    ){
+    ) {
         try {
             const avaliacoes = await this.prisma.avaliacao.findMany({
                 where: { candidatoId },
@@ -57,7 +128,220 @@ class Avaliacao{
             throw new Error(`Erro ao visualizar avaliações: ${error}`);
         }
     }
+
+    async buscarEstruturaCompleta(
+        avaliadorId: number,
+        candidatoId: number,
+        provasSelecionadas?: number[]
+    ) {
+        const candidato = await this.prisma.candidato.findUnique({
+            where: { idCandidato: candidatoId },
+            include: { Categoria: true },
+        });
+
+        if (!candidato) throw new Error("Candidato não encontrado");
+
+        const provaPratica = await this.prisma.provaPratica.findMany({
+            where: {
+                categorias: {
+                    some: {
+                        idCategoria: candidato.categoriaId,
+                    },
+                },
+                comissaoProvaPraticas: {
+                    some: {
+                        Comissao: {
+                            usuarios: {
+                                some: {
+                                    usuarioId: avaliadorId,
+                                },
+                            },
+                        },
+                    },
+                },
+                ...(provasSelecionadas?.length && {
+                    idProvaPratica: {
+                        in: provasSelecionadas,
+                    },
+                }),
+            },
+            include: {
+                blocosProvas: {
+                    include: {
+                        quesitos: {
+                            include: {
+                                subQuesitos: true,
+                            },
+                        },
+                    },
+                },
+            },
+        });
+
+        return provaPratica;
+    }
+
+    async criarAvaliacaoTeorica(data: CriarAvaliacaoTeoricaDTO) {
+        return this.prisma.$transaction(async (prisma) => {
+            const avaliacao = await prisma.avaliacao.create({
+                data: {
+                    avaliadorId: 1,
+                    candidatoId: data.candidatoId,
+                    provaTeoricaId: data.provaTeoricaId,
+                    notaFinal: 0,
+                },
+            });
+
+            for (const quesito of data.quesitos) {
+
+                let notaQuesitoFinal = quesito.notaQuesito ?? 0;
+
+                const avaliacaoQuesito = await prisma.avaliacaoQuesito.create({
+                    data: {
+                        avaliacaoId: avaliacao.idAvalicao,
+                        quesitoId: quesito.quesitoId,
+                        notaQuesito: notaQuesitoFinal,
+                        comentario: quesito.comentario ?? null,
+                    },
+                });
+                if (quesito.subQuesitos?.length) {
+                    notaQuesitoFinal = 0;
+
+                    for (const sub of quesito.subQuesitos) {
+                        notaQuesitoFinal += sub.notaSubQuesito;
+
+                        await prisma.avaliacaoSubQuesito.create({
+                            data: {
+                                avaliacaoQuesitoId: avaliacaoQuesito.idAvaliacaoQuesito,
+                                subQuesitoId: sub.subQuesitoId,
+                                notaSubQuesito: sub.notaSubQuesito,
+                            },
+                        });
+                    }
+
+                    await prisma.avaliacaoQuesito.update({
+                        where: { idAvaliacaoQuesito: avaliacaoQuesito.idAvaliacaoQuesito },
+                        data: { notaQuesito: notaQuesitoFinal },
+                    });
+                }
+            }
+
+            const somaQuesitos = await prisma.avaliacaoQuesito.aggregate({
+                where: {
+                    avaliacaoId: avaliacao.idAvalicao,
+                },
+                _sum: {
+                    notaQuesito: true,
+                },
+            });
+
+            const notaFinalProvaTeorica = somaQuesitos._sum.notaQuesito ?? 0;
+
+            await prisma.avaliacao.update({
+                where: { idAvalicao: avaliacao.idAvalicao },
+                data: { notaFinal: notaFinalProvaTeorica },
+            });
+
+            await prisma.fichaCandidato.update({
+                where: { idFicha: data.ficha.idFicha },
+                data: {
+                    notaFinalProvaTeorica: notaFinalProvaTeorica,
+                    notaCandidato: {
+                        increment: notaFinalProvaTeorica,
+                    },
+
+                    anexoGabarito: data.ficha.anexoGabarito
+                        ? new Uint8Array(data.ficha.anexoGabarito)
+                        : undefined,
+
+                    anexoRedacao: data.ficha.anexoRedacao
+                        ? new Uint8Array(data.ficha.anexoRedacao)
+                        : undefined,
+                },
+            });
+
+            return {
+                message: "Avaliação teórica criada com sucesso",
+                notaFinalProvaTeorica,
+            };
+        });
+    }
+
+
+    async buscarEstruturaTeorica(candidatoId: number) {
+        const candidato = await this.prisma.candidato.findUnique({
+            where: { idCandidato: candidatoId },
+            include: { Categoria: true },
+        });
+
+        if (!candidato) throw new Error("Candidato não encontrado");
+
+        const provasTeoricas = await this.prisma.provaTeorica.findMany({
+            where: {
+                categorias: {
+                    some: {
+                        idCategoria: candidato.categoriaId
+                    },
+                },
+            },
+            include: {
+                quesitos: {
+                    include: {
+                        subQuesitos: true,
+                    },
+                },
+            },
+        });
+        return provasTeoricas;
+    }
+
 }
 
-const avaliacao = new Avaliacao();
+type CriarAvaliacaoCompletaDTO = {
+    comissaoId: number
+    avaliadorId: number
+    candidatoId: number
+    blocoProvaId?: number
+    quesitos: {
+        quesitoId: number
+        comentario?: string
+        subQuesitos: {
+            subQuesitoId: number
+            notaSubQuesito: number
+        }[]
+    }[];
+
+    ficha: {
+        idFicha: number;
+        concursoId: number;
+        notaCandidato: number;
+        notaFinalProvasPraticas: number;
+    };
+}
+
+type CriarAvaliacaoTeoricaDTO = {
+    candidatoId: number;
+    provaTeoricaId: number;
+
+    quesitos: {
+        quesitoId: number;
+        notaQuesito: number;
+        comentario?: string;
+        subQuesitos?: {
+            subQuesitoId: number;
+            notaSubQuesito: number;
+        }[];
+    }[];
+
+    ficha: {
+        idFicha: number;
+        concursoId: number;
+        notaCandidato: number;
+        notaFinalProvaTeorica: number;
+        anexoGabarito?: Buffer;
+        anexoRedacao?: Buffer;
+    };
+}
+
+const avaliacao = new AvaliacaoService(prisma);
 export default avaliacao;

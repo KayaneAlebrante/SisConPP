@@ -133,6 +133,7 @@ export default function SubQuesitosForm({ onClose, subQuesitoToEdit, quesitoId }
                         value={formData.quesitoId}
                         onChange={handleChange}
                         required
+                        disabled
                         className="rounded-lg p-2 bg-surface-containerHigh border border-outline focus:outline-none focus:ring-2 focus:ring-primary"
                     >
                         <option value="0" disabled>Selecione um Quesito</option>

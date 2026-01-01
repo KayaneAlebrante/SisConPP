@@ -16,6 +16,10 @@ router.get("/", authMiddleware, async (req: Request, res: Response) => {
     await ProvaTeoricaController.buscarProvasTeoricas(req, res);
 });
 
+router.get("/categoria/:idCategoria", authMiddleware, async (req: Request, res: Response) => {
+    await ProvaTeoricaController.buscarProvasTeoricasPorCategoria(req, res);
+});
+
 router.put("/:id", authMiddleware, async (req: Request, res: Response) => {
     await ProvaTeoricaController.atualizarProvaTeorica(req, res);
 });

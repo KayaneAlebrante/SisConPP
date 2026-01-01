@@ -4,8 +4,12 @@ import { authMiddleware } from "../middlewares/authMiddleware";
 
 const router = express.Router();
 
-router.post("/", authMiddleware, async (req: Request, res: Response) => {
-    await avaliacaoController.adicionarAvaliacao(req, res);
+router.post("/avaliacaoCompleta", authMiddleware, async (req: Request, res: Response) => {
+    await avaliacaoController.criarAvaliacaoCompleta(req, res);
+});
+
+router.post("/avaliacaoTeorica", authMiddleware, async (req: Request, res: Response) => {
+    await avaliacaoController.criarAvaliacaoTeorica(req, res);
 });
 
 router.get("/avaliacao/:idAvaliacao", authMiddleware, async (req: Request, res: Response) => {
@@ -14,6 +18,14 @@ router.get("/avaliacao/:idAvaliacao", authMiddleware, async (req: Request, res: 
 
 router.put("/avaliacao/:idAvaliacao", authMiddleware, async (req: Request, res: Response) => {
     await avaliacaoController.editarAvaliacao(req, res);
+});
+
+router.get( "/avaliacao/:avaliadorId/:candidatoId", async (req: Request, res: Response) => {
+    await avaliacaoController.buscarEstruturaCompleta(req, res);
+});
+
+router.get( "/avaliacaoTeorica/:candidatoId", async (req: Request, res: Response) => {
+    await avaliacaoController.buscarEstruturaTeorica(req, res);
 });
 
 export default router;

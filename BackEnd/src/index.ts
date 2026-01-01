@@ -18,7 +18,9 @@ import provaTeorica from "./routes/provaTeorica.routes";
 import avaliacao from "./routes/avaliacao.routes"; 
 import preferenciaSorteioDanca from "./routes/preferenciaSorteioDanca.routes";
 import sorteioDanca from "./routes/sorteioDanca.routes";
+import danca from "./routes/danca.routes";
 import auth from "./routes/auth.routes";
+import relatorios from "./routes/relatorios.routes";
 import { METHODS } from "http"
 
 
@@ -49,7 +51,9 @@ app.use("/blocoProva", blocoProva);
 app.use("/avaliacao", avaliacao); 
 app.use("/preferenciaSorteioDanca", preferenciaSorteioDanca); 
 app.use("/sorteioDanca", sorteioDanca);
+app.use("/danca", danca);
 app.use("/auth", auth);
+app.use("/relatorios", relatorios);
 
 const PORT = process.env.PORT || 3005;
 

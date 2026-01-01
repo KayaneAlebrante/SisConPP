@@ -13,6 +13,10 @@ import Comissao from "./pages/Comissao";
 import SorteioDanca from "./pages/SorteioDanca";
 import PrivateRoute from "./components/PrivateRoute";
 import ProvaPraticaCriacao from "./pages/ProvaPraticaCriacao";
+import ProvaTeoricaCriacao from "./pages/ProvaTeoricaCriacao";
+import AvaliacaoPage from "./pages/AvaliacaoPratica";
+import AvaliacaoTeoricaPage from "./pages/AvaliacaoTeorica";
+import RelatoriosPage from "./pages/Relatorios";
 
 function App() {
 
@@ -33,6 +37,11 @@ function App() {
           <Route path={RoutesPaths.Comissao} element={<Comissao />} />
           <Route path={RoutesPaths.SorteioDanca} element={<SorteioDanca />} />
           <Route path={RoutesPaths.ProvaPraticaCriacao} element={<ProvaPraticaCriacao/>} />
+          <Route path={RoutesPaths.ProvaTeoricaCriacao} element={<ProvaTeoricaCriacao/>}/>
+          <Route path={RoutesPaths.avaliacaoPratica} element={<AvaliacaoPage/>} />
+          <Route path={RoutesPaths.AvaliacaoTeorica} element={<AvaliacaoTeoricaPage/>}/>
+          <Route path={RoutesPaths.Relatoriois} element={<RelatoriosPage/>} />
+
         </Routes>
         <ToastContainer
           position="top-right"

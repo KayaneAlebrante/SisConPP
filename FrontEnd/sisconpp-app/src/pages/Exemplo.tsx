@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
 import SideNavBar from "../components/SideNavBar/SideNavBar";
 import Modal from "../components/Modal/Modal";
-import ProvaPraticaForm from "../components/Forms/AvaliaçãoForms/provaPraticaForm";
+import ProvaPraticaForm from "../components/Forms/ProvasForms/provaPraticaForm";
 import { buscarPorCategoria, listarCategorias } from "../services/api";
 import { Categoria } from "../types/Categoria";
 import { ProvaPratica, BlocoProva, Quesitos, SubQuesitos } from "../types/ProvaPratica";
 import { ChevronDown, ChevronRight, Plus, ListChecks } from "lucide-react";
 import { toast } from "react-toastify";
-import SubQuesitosForm from "../components/Forms/AvaliaçãoForms/subQuesitosForm";
-import QuesitoForm from "../components/Forms/AvaliaçãoForms/quesitosForm";
-import BlocoProvaForm from "../components/Forms/AvaliaçãoForms/blocoProvaForm";
+import SubQuesitosForm from "../components/Forms/ProvasForms/subQuesitosForm";
+import QuesitoForm from "../components/Forms/ProvasForms/quesitosForm";
+import BlocoProvaForm from "../components/Forms/ProvasForms/blocoProvaForm";
 
 interface ProvaAccordion extends ProvaPratica {
     isOpen?: boolean;

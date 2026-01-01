@@ -3,13 +3,13 @@ import PreferenciaSorteioDanca from "../services/preferenciaSorteioDanca.service
 
 class PreferenciaSorteioDancaController {
   async criarPreferencias(req: Request, res: Response) {
-    const { nomeSorteioDanca, candidatoId, quesitos } = req.body;
+    const { nomeSorteioDanca, candidatoId, dancas } = req.body;
 
     try {
       const preferencias = await PreferenciaSorteioDanca.selecionarPreferenciaSorteioDanca(
         nomeSorteioDanca,
         Number(candidatoId),
-        quesitos
+        dancas
       );
       return res.status(201).json(preferencias);
     } catch (error: any) {

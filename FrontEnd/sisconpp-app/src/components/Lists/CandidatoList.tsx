@@ -3,11 +3,12 @@ import { Candidato } from "../../types/Candidato";
 import { CTG } from "../../types/CTG";
 import { Categoria } from "../../types/Categoria";
 import { toast } from "react-toastify";
-import { Pencil, Trash2, Search } from "lucide-react";
+import { Pencil, Trash2, Search, FilePlus2 } from "lucide-react";
 import Dialog from "../Modal/Dialog";
 import { listarCTGs, listarCategorias, listarCandidatos, deletarCandidato, buscarCandidatoPorId } from "../../services/api";
 import Modal from "../Modal/Modal";
 import CandidatoView from "../View/CandidadoView";
+import FichaCandidatoForm from "../Forms/FichaCandidatoForm";
 
 interface CandidatoListProps {
     onEdit: (candidato: Candidato) => void;
@@ -28,6 +29,8 @@ export default function CandidatoList({ onEdit }: CandidatoListProps) {
     const [isViewModalOpen, setIsViewModalOpen] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [selectedCandidato, setSelectedCandidato] = useState<CandidatoCompleto | null>(null);
+    const [isFichaModalOpen, setIsFichaModalOpen] = useState(false);
+    const [candidatoParaFicha, setCandidatoParaFicha] = useState<Candidato | null>(null);
 
 
     const fetchCandidatos = async () => {
@@ -86,7 +89,7 @@ export default function CandidatoList({ onEdit }: CandidatoListProps) {
         try {
             const candidatoCompleto = await buscarCandidatoPorId(id);
             setSelectedCandidato(candidatoCompleto as CandidatoCompleto);
-            console.log("Candidato selecionado para visualização:", candidatoCompleto); 
+            console.log("Candidato selecionado para visualização:", candidatoCompleto);
         } catch (error) {
             console.error("Erro ao buscar detalhes do candidato:", error);
             toast.error("Erro ao buscar detalhes do candidato.");
@@ -144,18 +147,30 @@ export default function CandidatoList({ onEdit }: CandidatoListProps) {
                                 <button
                                     className="text-green-600 hover:text-green-800"
                                     onClick={() => {
+                                        setCandidatoParaFicha(candidato);
+                                        setIsFichaModalOpen(true);
+                                    }}
+                                >
+                                    <FilePlus2 size={18} />
+                                </button>
+
+                                <button
+                                    className="text-green-600 hover:text-green-800"
+                                    onClick={() => {
                                         handleVisualizarCandidato(candidato.idCandidato);
                                         setIsViewModalOpen(true);
                                     }}
                                 >
                                     <Search size={18} />
                                 </button>
+
                                 <button
                                     className="text-blue-600 hover:text-blue-800"
                                     onClick={() => onEdit(candidato)}
                                 >
                                     <Pencil size={18} />
                                 </button>
+
                                 <button
                                     className="text-red-600 hover:text-red-800"
                                     onClick={() => {
@@ -190,12 +205,34 @@ export default function CandidatoList({ onEdit }: CandidatoListProps) {
                 onClose={() => setIsViewModalOpen(false)}
             >
                 {selectedCandidato && (
-                    <CandidatoView 
-                        candidato={selectedCandidato}                  
+                    <CandidatoView
+                        candidato={selectedCandidato}
                         onVoltar={() => setIsViewModalOpen(false)}
                     />
                 )}
             </Modal>
+
+            <Modal
+                isOpen={isFichaModalOpen}
+                onClose={() => {
+                    setIsFichaModalOpen(false);
+                    setCandidatoParaFicha(null);
+                }}
+            >
+                {candidatoParaFicha && (
+                    <FichaCandidatoForm
+                        candidatoToEdit={{
+                            candidatoId: candidatoParaFicha.idCandidato,
+                            concursoId: 0
+                        }}
+                        onClose={() => {
+                            setIsFichaModalOpen(false);
+                            setCandidatoParaFicha(null);
+                        }}
+                    />
+                )}
+            </Modal>
+
         </div>
     );
 }

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Wheel } from "react-custom-roulette";
-import { Quesito, SorteioDanca, DancaSalaoTradicional } from "../../types/SorteioDanca";
+import { Danca, SorteioDanca, DancaSalaoTradicional } from "../../types/SorteioDanca"; 
 import { realizarSorteio } from "../../services/api";
 import { toast } from "react-toastify";
 import pointerImg from '../../assets/poniter.png';
@@ -9,27 +9,27 @@ interface RoletaProps {
   candidatoId: number;
   usuarioId: number;
   tipoDanca: DancaSalaoTradicional;
-  quesitos: Quesito[];
-  onFinish: (resultado: Quesito) => void;
+  dancas: Danca[]; // 🔑 lista de danças
+  onFinish: (resultado: Danca) => void;
 }
 
 interface SorteioResponse {
   message: string;
   sorteio: SorteioDanca;
-  quesitoSorteado: Quesito;
+  dancaSorteada: Danca; 
 }
 
 export default function RoletaSorteio({
   candidatoId,
   usuarioId,
   tipoDanca,
-  quesitos,
+  dancas,
   onFinish,
 }: RoletaProps) {
   const [mustSpin, setMustSpin] = useState(false);
   const [prizeNumber, setPrizeNumber] = useState(0);
 
-  const data = quesitos.map((q) => ({ option: q.nomeQuesito }));
+  const data = dancas.map((d) => ({ option: d.nomeDanca }));
 
   const sortear = async () => {
     if (!candidatoId || !tipoDanca) {
@@ -42,26 +42,26 @@ export default function RoletaSorteio({
       const response = await realizarSorteio(payload);
 
       const sorteioResponse = response.data as SorteioResponse;
-      const { quesitoSorteado } = sorteioResponse;
+      const { dancaSorteada } = sorteioResponse;
 
-      if (!sorteioResponse.quesitoSorteado) {
+      if (!dancaSorteada) {
         toast.warn(sorteioResponse.message || "Sorteio já realizado para este candidato.");
         return;
       }
 
-      if (quesitoSorteado) {
-        const index = quesitos.findIndex((quesito) => quesito.idQuesito === quesitoSorteado.idQuesito);
+      if (dancaSorteada) {
+        const index = dancas.findIndex((danca) => danca.idDanca === dancaSorteada.idDanca);
 
-        console.log("Quesito Sorteado:", quesitoSorteado);
+        console.log("Dança Sorteada:", dancaSorteada);
 
         if (index >= 0) {
           setPrizeNumber(index);
           setMustSpin(true);
         } else {
-          toast.error("Quesito sorteado não encontrado na lista.");
+          toast.error("Dança sorteada não encontrada na lista.");
         }
       } else {
-        toast.error("Backend não retornou quesito sorteado.");
+        toast.error("Backend não retornou dança sorteada.");
       }
     } catch (error) {
       console.error(error);
@@ -84,13 +84,12 @@ export default function RoletaSorteio({
         radiusLineColor='#2A5000'
         radiusLineWidth={2}
         fontSize={16}
-
         pointerProps={{
           src: pointerImg,
         }}
         onStopSpinning={() => {
           setMustSpin(false);
-          const resultado = quesitos[prizeNumber];
+          const resultado = dancas[prizeNumber];
           onFinish(resultado);
         }}
       />

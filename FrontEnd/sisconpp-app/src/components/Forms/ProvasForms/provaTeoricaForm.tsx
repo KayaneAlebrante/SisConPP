@@ -1,29 +1,27 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { listarCategorias,criarProvaPratica, atualizarProvaPratica} from "../../../services/api";
+import { listarCategorias, criarProvaTeorica } from "../../../services/api";
 import { Categoria } from "../../../types/Categoria";
-import { ProvaPratica } from "../../../types/ProvaPratica";
+import { ProvaTeoricaF } from "../../../types/ProvaTeorica";
 
-interface ProvaPraticaFormProps {
+interface ProvaTeoricaFormProps {
   onClose: () => void;
-  provaToEdit?: ProvaPratica;
+  provaToEdit?: ProvaTeoricaF;
 }
 
-export default function ProvaPraticaForm({
+export default function ProvaTeoricaForm({
   onClose,
   provaToEdit,
-}: ProvaPraticaFormProps) {
+}: ProvaTeoricaFormProps) {
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [nomeProva, setNomeProva] = useState("");
   const [notaMaxima, setNotaMaxima] = useState<number | "">("");
-  const [categoriasSelecionadas, setCategoriasSelecionadas] = useState<number[]>(
-    []
-  );
+  const [numQuestoes, setNumQuestoes] = useState<number | "">("");
+  const [categoriasSelecionadas, setCategoriasSelecionadas] = useState<number[]>([]);
   const [loading, setLoading] = useState(false);
 
   const isEditMode = !!provaToEdit;
 
-  /* 🔹 Carregar categorias */
   useEffect(() => {
     const fetchCategorias = async () => {
       try {
@@ -37,20 +35,23 @@ export default function ProvaPraticaForm({
     fetchCategorias();
   }, []);
 
-  /* 🔹 Preencher dados quando for edição */
   useEffect(() => {
     if (provaToEdit) {
       setNomeProva(provaToEdit.nomeProva);
       setNotaMaxima(provaToEdit.notaMaxima);
+      setNumQuestoes(provaToEdit.numQuestao);
       setCategoriasSelecionadas(provaToEdit.categorias ?? []);
     }
   }, [provaToEdit]);
 
   const toggleCategoria = (id: number) => {
-    setCategoriasSelecionadas((prev) =>
-      prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id]
-    );
-  };
+  setCategoriasSelecionadas((prev) =>
+    prev.includes(id)
+      ? prev.filter((c) => c !== id)
+      : [...prev, id]
+  );
+};
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,7 +62,12 @@ export default function ProvaPraticaForm({
     }
 
     if (!notaMaxima || notaMaxima <= 0) {
-      toast.warning("Informe uma nota máxima válida");
+      toast.warning("Informe a nota máxima");
+      return;
+    }
+
+    if (!numQuestoes || numQuestoes <= 0) {
+      toast.warning("Informe o número de questões");
       return;
     }
 
@@ -71,40 +77,29 @@ export default function ProvaPraticaForm({
     }
 
     const payload = {
-      idProvaPratica: provaToEdit?.idProvaPratica ?? 0,
       nomeProva: nomeProva.trim(),
       notaMaxima: Number(notaMaxima),
       categorias: categoriasSelecionadas,
-      blocosProvas: [],
+      numQuestao: Number(numQuestoes)      
     };
-
+    
     try {
-      setLoading(true);
-
-      if (isEditMode) {
-        await atualizarProvaPratica(payload);
-        toast.success("Prova prática atualizada com sucesso");
-      } else {
-        await criarProvaPratica(payload);
-        toast.success("Prova prática criada com sucesso");
-      }
-
+      await criarProvaTeorica(payload);
+      toast.success("Prova teórica criada com sucesso");
       onClose();
-    } catch {
-      toast.error(
-        isEditMode
-          ? "Erro ao atualizar prova prática"
-          : "Erro ao criar prova prática"
-      );
-    } finally {
+    } catch (error) {
+      console.error(error);
+      toast.error("Erro ao criar prova teórica");
+    }finally{
       setLoading(false);
     }
   };
 
+
   return (
-    <div className="w-full max-w-xl">
+    <div className="w-full">
       <h1 className="text-xl font-semibold mb-4">
-        {isEditMode ? "Editar Prova Prática" : "Nova Prova Prática"}
+        {isEditMode ? "Editar Prova Teórica" : "Nova Prova Teórica"}
       </h1>
 
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -119,7 +114,7 @@ export default function ProvaPraticaForm({
           />
         </div>
 
-        {/* Nota */}
+        {/* Nota Máxima */}
         <div className="flex flex-col">
           <label className="text-sm font-medium mb-1">Nota Máxima</label>
           <input
@@ -133,12 +128,23 @@ export default function ProvaPraticaForm({
           />
         </div>
 
+        {/* Número de Questões */}
+        <div className="flex flex-col">
+          <label className="text-sm font-medium mb-1">Número de Questões</label>
+          <input
+            type="number"
+            min={1}
+            value={numQuestoes}
+            onChange={(e) =>
+              setNumQuestoes(e.target.value ? Number(e.target.value) : "")
+            }
+            className="rounded-lg p-2 border focus:ring-2 focus:ring-primary"
+          />
+        </div>
+
         {/* Categorias */}
         <div>
-          <label className="text-sm font-medium mb-2 block">
-            Categorias
-          </label>
-
+          <label className="text-sm font-medium mb-2 block">Categorias</label>
           <div className="border rounded-lg overflow-hidden">
             <table className="w-full">
               <thead className="bg-gray-200 text-sm">
@@ -154,9 +160,7 @@ export default function ProvaPraticaForm({
                     <td className="p-2 text-center">
                       <input
                         type="checkbox"
-                        checked={categoriasSelecionadas.includes(
-                          cat.idCategoria
-                        )}
+                        checked={categoriasSelecionadas.includes(cat.idCategoria)}
                         onChange={() => toggleCategoria(cat.idCategoria)}
                       />
                     </td>
@@ -186,8 +190,8 @@ export default function ProvaPraticaForm({
             {loading
               ? "Salvando..."
               : isEditMode
-              ? "Atualizar Prova"
-              : "Criar Prova"}
+                ? "Atualizar Prova"
+                : "Criar Prova"}
           </button>
         </div>
       </form>

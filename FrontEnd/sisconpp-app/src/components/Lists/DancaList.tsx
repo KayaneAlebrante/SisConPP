@@ -1,8 +1,8 @@
-import { Quesito } from "../../types/SorteioDanca";
+import { Danca } from "../../types/SorteioDanca";
 import { toast } from "react-toastify";
 
 interface DancaListProps {
-    dancas: Quesito[];
+    dancas: Danca[]; 
     selecionados: number[];
     toggleSelecionado: (id: number) => void;
     maxSelecionados?: number | null;
@@ -38,19 +38,19 @@ export default function DancaList({
                 </thead>
                 <tbody>
                     {dancas.map((d) => {
-                        const checked = selecionados.includes(d.idQuesito);
+                        const checked = selecionados.includes(d.idDanca);
 
                         return (
                             <tr
-                                key={d.idQuesito}
+                                key={d.idDanca}
                                 className="border-t hover:bg-secondary-light/20 transition"
                             >
-                                <td className="p-3 text-secondary-onFixed">{d.nomeQuesito}</td>
+                                <td className="p-3 text-secondary-onFixed">{d.nomeDanca}</td>
                                 <td className="p-3">
                                     <input
                                         type="checkbox"
                                         checked={checked}
-                                        onChange={() => handleToggle(d.idQuesito, checked)}
+                                        onChange={() => handleToggle(d.idDanca, checked)}
                                         className="accent-primary w-4 h-4"
                                     />
                                 </td>

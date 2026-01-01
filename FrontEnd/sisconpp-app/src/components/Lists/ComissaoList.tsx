@@ -1,19 +1,21 @@
 import { useEffect, useState } from "react";
 import { listarComissoes, deletarComissao } from "../../services/api";
 import { toast } from "react-toastify";
-import { Pencil, Trash2, UserPlus, UserMinus } from "lucide-react";
+import { Pencil, Trash2, UserPlus, UserMinus, ClipboardCheck } from "lucide-react";
 import UsuarioComissaoForm from "../Forms/UsuarioComissaoForm";
 import DeleteUsuarioForm from "../Forms/RemoverUsuariocomissãoForm";
 import Modal from "../Modal/Modal";
 import { Comissao } from "../../types/Comissao";
 import Dialog from "../Modal/Dialog";
+import AtribuicaoAvaliacaoForm from "../Forms/AtribuirAvaliacacaoForm";
 
 interface ComissaoListProps {
     onEdit: (comissao: Comissao) => void;
 }
 
 export default function ComissaoList({ onEdit }: ComissaoListProps) {
-    const [selecteidComissao, setSelecteidComissao] = useState<Comissao | null>(null);
+    const [comissaoAtribuicao, setComissaoAtribuicao] = useState<Comissao | null>(null);
+    const [comissaoUsuario, setComissaoUsuario] = useState<Comissao | null>(null);
     const [comissoes, setComissoes] = useState<Comissao[]>([]);
     const [modalDeleteComissao, setModalDeleteComissao] = useState<Comissao | null>(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -64,7 +66,7 @@ export default function ComissaoList({ onEdit }: ComissaoListProps) {
 
     return (
         <div className="flex flex-col h-full">
-            <h2 className="text-xl font-bold mb-4 text-secondary-on">
+            <h2 className="text-xl font-bold mb-4 text-secondary-dark">
                 Lista das Comissões
             </h2>
 
@@ -74,6 +76,7 @@ export default function ComissaoList({ onEdit }: ComissaoListProps) {
                         <th className="text-left px-3 py-2">Nome da Comissão</th>
                         <th className="text-left px-3 py-2">Avaliadores</th>
                         <th className="text-left px-3 py-2">Auxiliar</th>
+                        <th className="text-left px-3 py-2">Avaliações Atribuídas</th>
                         <th className="p-3 last:rounded-tr-xl">Ações</th>
                     </tr>
                 </thead>
@@ -81,11 +84,11 @@ export default function ComissaoList({ onEdit }: ComissaoListProps) {
                 <tbody>
                     {comissoes.map((comissao) => {
                         const avaliadores = comissao.usuarios.filter(
-                            (usuario) => usuario.Usuarios.funcao === "AVALIADOR" 
+                            (usuario) => usuario.Usuarios.funcao === "AVALIADOR"
                         );
 
                         const auxiliares = comissao.usuarios.filter(
-                            (usuario) => usuario.Usuarios.funcao === "AUXILIAR" 
+                            (usuario) => usuario.Usuarios.funcao === "AUXILIAR"
                         );
 
 
@@ -116,22 +119,76 @@ export default function ComissaoList({ onEdit }: ComissaoListProps) {
                                     </ul>
                                 </td>
 
+                                <td className="px-3 py-2">
+                                    {comissao.atribuicoes && comissao.atribuicoes.length > 0 ? (
+                                        <ul className="text-sm space-y-2">
+                                            {comissao.atribuicoes.map((atrib) => (
+                                                <li key={atrib.idComissaoProvaPratica}
+                                                    className="flex flex-col gap-1"
+                                                >
+                                                    {atrib.Categoria && (
+                                                        <span className="text-secondary-onFixed">
+                                                            Categoria: {atrib.Categoria?.nomeCategoria}
+                                                        </span>
+                                                    )}
+
+                                                    {atrib.ProvaPratica && (
+                                                        <span className="text-secondary-onFixed">
+                                                            Prova: {atrib.ProvaPratica.nomeProva}
+                                                        </span>
+                                                    )}
+
+                                                    {atrib.BlocoProva && (
+                                                        <span className="text-secondary-onFixed">
+                                                            Bloco: {atrib.BlocoProva.nomeBloco}
+                                                        </span>
+                                                    )}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    ) : (
+                                        <span className="text-gray-400 text-sm">
+                                            Nenhuma avaliação atribuída
+                                        </span>
+                                    )}
+                                </td>
+
                                 <td className="p-3 flex gap-2">
                                     <button
                                         className="text-green-600 hover:text-green-800"
-                                        onClick={() => setSelecteidComissao(comissao)}
+                                        onClick={() => setComissaoAtribuicao(comissao)}
+                                    >
+                                        <ClipboardCheck size={18} />
+                                    </button>
+                                    {comissaoAtribuicao?.idComissao === comissao.idComissao && (
+                                        <Modal
+                                            isOpen={true}
+                                            onClose={() => setComissaoAtribuicao(null)}
+                                        >
+                                            <AtribuicaoAvaliacaoForm
+                                                comissao={comissaoAtribuicao}
+                                                onClose={() => setComissaoAtribuicao(null)}
+                                                onSaved={fetchComissoes}
+                                            />
+                                        </Modal>
+                                    )
+                                    }
+
+                                    <button
+                                        className="text-green-600 hover:text-green-800"
+                                        onClick={() => setComissaoUsuario(comissao)}
                                     >
                                         <UserPlus size={18} />
                                     </button>
 
-                                    {selecteidComissao?.idComissao === comissao.idComissao && (
+                                    {comissaoUsuario?.idComissao === comissao.idComissao && (
                                         <Modal
                                             isOpen={true}
-                                            onClose={() => setSelecteidComissao(null)}
+                                            onClose={() => setComissaoUsuario(null)}
                                         >
                                             <UsuarioComissaoForm
-                                                comissao={selecteidComissao}
-                                                onClose={() => setSelecteidComissao(null)}
+                                                comissao={comissaoUsuario}
+                                                onClose={() => setComissaoUsuario(null)}
                                                 onSaved={fetchComissoes}
                                             />
                                         </Modal>

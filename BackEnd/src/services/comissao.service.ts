@@ -1,4 +1,4 @@
-import { PrismaClient, Avaliacao, ComissaoUsuario } from "@prisma/client";
+import { PrismaClient, Avaliacao, ComissaoUsuario, ComissaoProvaPratica } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -74,8 +74,16 @@ class ComissaoService {
                             Usuarios: true,
                         },
                     },
+                    atribuicoes: {
+                        include: {
+                            Categoria: true,
+                            ProvaPratica: true,
+                            BlocoProva: true
+                        }
+                    }
                 },
-            });
+            })
+            console.log(comissoes);
             return comissoes;
         } catch (error) {
             console.error("Erro ao consultar comissões:", error);
@@ -165,6 +173,58 @@ class ComissaoService {
             where: {
                 idComissaoUsuario: comissaoUsuario.idComissaoUsuario,
             },
+        });
+    }
+
+    private async validarComissaoComAvaliadorCredenciado(comissaoId: number) {
+        const comissao = await prisma.comissao.findUnique({
+            where: { idComissao: comissaoId },
+            include: {
+                usuarios: {
+                    include: {
+                        Usuarios: {
+                            select: {
+                                funcao: true,
+                                credenciamento: true
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        if (!comissao) {
+            throw new Error("Comissão não encontrada");
+        }
+
+        const possuiAvaliadorCredenciado = comissao.usuarios.some(
+            (avaliador) =>
+                avaliador.Usuarios.funcao === "AVALIADOR" &&
+                avaliador.Usuarios.credenciamento === "CREDENCIADO"
+        );
+
+        if (!possuiAvaliadorCredenciado) {
+            throw new Error(
+                "A comissão precisa ter pelo menos um avaliador credenciado"
+            );
+        }
+    }
+
+    async atribuirAvaliacoes(
+        comissaoId: number,
+        categoriaId?: number,
+        provaPraticaId?: number,
+        blocoProvaId?: number
+    ) {
+        await this.validarComissaoComAvaliadorCredenciado(comissaoId);
+
+        return prisma.comissaoProvaPratica.create({
+            data: {
+                comissaoId,
+                categoriaId: categoriaId ?? null,
+                provaPraticaId: provaPraticaId ?? null,
+                blocoProvaId: blocoProvaId ?? null
+            }
         });
     }
 }

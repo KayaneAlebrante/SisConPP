@@ -4,7 +4,7 @@ export enum Funcao {
     SECRETARIO = 'SECRETARIO',
 }
 
-export enum Credenciamento{
+export enum Credenciamento {
     CREDENCIADO = 'CREDENCIADO',
     NAO_CREDENCIADO = 'NAO_CREDENCIADO'
 }
@@ -22,4 +22,22 @@ export interface Usuario {
     credenciamento: Credenciamento;
     numCredenciamento?: number;
     comissaoUsuarioId?: number;
-}    
+}
+
+export interface UsuarioAvaliador {
+    idUsuario: number;
+    nomeCompleto: string;
+    comissaoUsuarioId?: number;
+    ComissaoUsuario?: {
+        comissaoId: number;
+        Comissao?: {
+            idComissao: number;
+            nomeComissao: string;
+            atribuicoes?: { 
+                categoriaId: number;
+                provaPraticaId?: number | null;
+                blocoProvaId?: number | null;
+            }[];
+        };
+    };
+}

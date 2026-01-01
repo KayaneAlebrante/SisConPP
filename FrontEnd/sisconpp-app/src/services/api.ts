@@ -2,11 +2,14 @@ import axios from 'axios';
 import { RT } from '../types/RT';
 import { CTG } from '../types/CTG';
 import { Usuario } from '../types/Usuario';
-import { Candidato } from '../types/Candidato';
+import { Candidato, FichaCandidato } from '../types/Candidato';
 import { Concurso } from '../types/Concurso';
-import { Comissao } from '../types/Comissao';
-import { PreferenciaSorteio, Quesito, CriarSorteioPayload } from '../types/SorteioDanca';
+import { Comissao, ComissaoProvaPraticaForm } from '../types/Comissao';
+import { PreferenciaSorteio, Danca, CriarSorteioPayload } from '../types/SorteioDanca';
 import { BlocoProva, ProvaPratica, Quesitos, SubQuesitos } from '../types/ProvaPratica';
+import { ProvaTeorica, ProvaTeoricaF } from '../types/ProvaTeorica';
+import { CriarAvaliacaoTeoricaPayload } from '../types/Avaliacao';
+import { RelatorioGeralCandidatoDTO, RelatorioRankingDTO } from '../types/Relatorios';
 
 // ---- CONFIGURAÇÃO DO AXIOS ----
 export const api = axios.create({
@@ -145,6 +148,17 @@ export const deletarCandidato = async (id: number) => {
   return await api.delete(`/candidato/${id}`);
 };
 
+//---- Ficha Candidato ----
+
+export const criarFichaCandidato = async (fichaCandidato: FichaCandidato) => {
+  return await api.post("/candidato/fichaCandidato", fichaCandidato);
+}
+
+export const buscarFichaCandidatoPorId = async (idCandidato: number) => {
+  const response = await api.get(`/candidato/fichaCandidato/${idCandidato}`);
+  return response.data;
+};
+
 //---- Concursos ----
 export const cadastrarConcurso = async (cadastrarConcurso: Concurso) => {
   return await api.post("/concurso", cadastrarConcurso);
@@ -199,13 +213,19 @@ export const deletarUsuarioComissao = async (idUsuario: number, idComissao: numb
   return await api.delete(`/comissao/usuario/${idUsuario}/${idComissao}`);
 };
 
-export const getDancasTradicionais = async (): Promise<Quesito[]> => {
-  const response = await api.get<Quesito[]>("/quesito/dancasTradicionais");
+export const atribuirAvaliacaoComissao = async (atribuirAvaliacao: ComissaoProvaPraticaForm) => {
+  return await api.post("/comissao/atribuir", atribuirAvaliacao);
+}
+
+//---- Sorteio Danca ----
+
+export const getDancasTradicionais = async (): Promise<Danca[]> => {
+  const response = await api.get<Danca[]>("/danca/dancasTradicionais");
   return response.data;
 };
 
-export const getDancasSalao = async (): Promise<Quesito[]> => {
-  const response = await api.get<Quesito[]>("/quesito/dancasSalao");
+export const getDancasSalao = async (): Promise<Danca[]> => {
+  const response = await api.get<Danca[]>("/danca/dancasSalao");
   return response.data;
 };
 
@@ -215,9 +235,25 @@ export const criarPreferencia = async (criarPreferencia: PreferenciaSorteio) => 
 
 export const realizarSorteio = async (realizarSorteio: CriarSorteioPayload) => {
   return await api.post("/sorteioDanca", realizarSorteio);
+};
+
+//---- Provas Teorica ----
+
+export const criarProvaTeorica = async (criarProvaTeorica: ProvaTeoricaF) => {
+  return await api.post("/provaTeorica", criarProvaTeorica);
+};
+
+export const buscarProvasTeoricas = async () => {
+  const response = await api.get<ProvaTeorica[]>("/provaTeorica");
+  return response.data;
+};
+
+export async function buscarProvasTeoricasPorCategoria(idCategoria: number) {
+  const response = await api.get(`/provaTeorica/categoria/${idCategoria}`);
+  return response.data;
 }
 
-//---- Provas Pratiicas ----
+//---- Provas Praticas ----
 
 export const criarProvaPratica = async (criarProvaPratica: ProvaPratica) => {
   return await api.post("/provaPratica", criarProvaPratica);
@@ -233,9 +269,11 @@ export async function buscarPorCategoria(idCategoria: number) {
   return response.data;
 }
 
-export const atualizarProvaPratica = async (provaPratica: ProvaPratica) =>{
+export const atualizarProvaPratica = async (provaPratica: ProvaPratica) => {
   return api.put(`/provaPratica?categoriaId/${provaPratica.idProvaPratica}, provaPratica`);
-}; 
+};
+
+//---- Blocos Prova ----
 
 export const criarBlocoProva = async (criarBlocoProva: BlocoProva) => {
   return await api.post("/blocoProva", criarBlocoProva);
@@ -246,6 +284,13 @@ export const listarBlocosProva = async () => {
   return response.data;
 };
 
+export const deletarBloco = async (idBloco: number) => {
+  const response = await api.delete(`/blocoProva/${idBloco}`);
+  return response.data ?? true;
+};
+
+//---- Quesito e SubQuesito ----
+
 export const criarQuesito = async (criarQuesito: Quesitos) => {
   return await api.post("/quesito", criarQuesito);
 };
@@ -253,6 +298,11 @@ export const criarQuesito = async (criarQuesito: Quesitos) => {
 export const listarQuesitos = async () => {
   const response = await api.get<Quesitos[]>("/quesito");
   return response.data;
+};
+
+export const deletarQuesito = async (idQuesito: number) => {
+  const response = await api.delete(`/quesito/${idQuesito}`);
+  return response.data ?? true;
 };
 
 export const criarSubQuesito = async (criarSubQuesito: SubQuesitos) => {
@@ -264,18 +314,59 @@ export const listarSubQuesitos = async () => {
   return response.data;
 };
 
-export const deletarBloco = async (idBloco: number) => {
-  const response = await api.delete(`/blocoProva/${idBloco}`);
-  return response.data ?? true;
-};
-
-export const deletarQuesito = async (idQuesito: number) => {
-  const response = await api.delete(`/quesito/${idQuesito}`);
-  return response.data ?? true;
-};
-
 export const deletarSubQuesito = async (idSubQuesito: number) => {
   const response = await api.delete(`/subQuesito/${idSubQuesito}`);
   return response.data ?? true;
 };
 
+//---- Avaliacação ----
+
+export type CriarAvaliacaoCompletaDTO = {
+  comissaoId: number;
+  avaliadorId: number;
+  candidatoId: number;
+  blocoProvaId: number;
+  quesitos: {
+    quesitoId: number;
+    comentario?: string;
+    subQuesitos: {
+      subQuesitoId: number;
+      notaSubQuesito: number;
+    }[];
+  }[];
+};
+
+export async function criarAvaliacaoCompleta(payload: CriarAvaliacaoCompletaDTO) {
+  const { data } = await api.post("/avaliacao/avaliacaoCompleta", payload);
+  return data;
+}
+
+export async function buscarEstruturaAvaliacao(avaliadorId: number, candidatoId: number) {
+  const response = await api.get(`/avaliacao/avaliacao/${avaliadorId}/${candidatoId}`);
+  return response.data;
+}
+
+export async function criarAvaliacaoTeorica(payload: CriarAvaliacaoTeoricaPayload) {
+  const { data } = await api.post("/avaliacao/avaliacaoTeorica", payload);
+  return data;
+}
+
+export async function buscarEstruturaTeorica(candidatoId: number) {
+  const response = await api.get(`/avaliacao/avaliacaoTeorica/${candidatoId}`);
+  return response.data;
+}
+
+//---- Relatoriois ----
+export async function relatorioGeral(concursoId: number) {
+  const response = await api.get<RelatorioGeralCandidatoDTO[]>(
+    `/relatorios/relatorio-geral/${concursoId}`
+  );
+  return response.data;
+};
+
+export async function rankingPorCategoria(concursoId: number, categoriaId: number) {
+  const response = await api.get<RelatorioRankingDTO[]>(
+    `/relatorios/ranking/${concursoId}/${categoriaId}`
+  );
+  return response.data;
+};
