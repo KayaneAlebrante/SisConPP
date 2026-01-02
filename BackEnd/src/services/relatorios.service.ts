@@ -1,4 +1,4 @@
-import { PrismaClient, FichaCandidato } from "@prisma/client";
+import { PrismaClient, FichaCandidato, SubQuesitos } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -90,6 +90,151 @@ export class RelatoriosService {
             };
         });
     }
+
+    async gerarRelatorioIndividualDetalhado(candidatoId: number) {
+        const avaliacoes = await this.prisma.avaliacao.findMany({
+            where: { candidatoId },
+            include: {
+                Usuario: {
+                    select: {
+                        idUsuario: true,
+                        nomeCompleto: true,
+                    },
+                },
+                quesitosAvaliados: {
+                    include: {
+                        Quesito: {
+                            include: {
+                                BlocoProva: true,
+                            },
+                        },
+                        subQuesitosAvaliados: {
+                            include: {
+                                SubQuesito: true,
+                            },
+                        },
+                    },
+                },
+            },
+        });
+
+        const avaliadoresMap = new Map<
+            number,
+            {
+                nomeAvaliador: string;
+                blocos: Map<
+                    number,
+                    {
+                        nomeBloco: string;
+                        quesitos: Map<
+                            number,
+                            {
+                                nomeQuesito: string;
+                                notaQuesito: number;
+                                comentario: string | null;
+                                subquesitos: {
+                                    nomeSubQuesito: string;
+                                    nota: number;
+                                }[];
+                            }
+                        >;
+                        totalBloco: number;
+                    }
+                >;
+                totalAvaliador: number;
+            }
+        >();
+
+        let totalFinal = 0;
+
+        for (const avaliacao of avaliacoes) {
+            const idAvaliador = avaliacao.Usuario.idUsuario;
+
+            if (!avaliadoresMap.has(idAvaliador)) {
+                avaliadoresMap.set(idAvaliador, {
+                    nomeAvaliador: avaliacao.Usuario.nomeCompleto,
+                    blocos: new Map(),
+                    totalAvaliador: 0,
+                });
+            }
+
+            const avaliador = avaliadoresMap.get(idAvaliador)!;
+
+            for (const aq of avaliacao.quesitosAvaliados) {
+                const quesito = aq.Quesito;
+                const bloco = quesito?.BlocoProva;
+                if (!quesito || !bloco) continue;
+
+                if (!avaliador.blocos.has(bloco.idBloco)) {
+                    avaliador.blocos.set(bloco.idBloco, {
+                        nomeBloco: bloco.nomeBloco,
+                        quesitos: new Map(),
+                        totalBloco: 0,
+                    });
+                }
+
+                const blocoMap = avaliador.blocos.get(bloco.idBloco)!;
+                const subquesitos =
+                    aq.subQuesitosAvaliados?.map((sq) => ({
+                        nomeSubQuesito: sq.SubQuesito?.nomeSubquesito ?? "",
+                        nota: sq.notaSubQuesito ?? 0,
+                    })) ?? [];
+
+                blocoMap.quesitos.set(quesito.idQuesito, {
+                    nomeQuesito: quesito.nomeQuesito,
+                    notaQuesito: aq.notaQuesito,
+                    comentario: aq.comentario ?? null,
+                    subquesitos,
+                });
+
+                blocoMap.totalBloco += aq.notaQuesito;
+                avaliador.totalAvaliador += aq.notaQuesito;
+                totalFinal += aq.notaQuesito;
+            }
+        }
+
+        const ficha = await this.prisma.fichaCandidato.findUnique({
+            where: { candidatoId },
+            include: {
+                Candidato: {
+                    select: {
+                        idCandidato: true,
+                        nomeCompleto: true,
+                        Categoria: { select: { nomeCategoria: true } },
+                        Concurso: { select: { nomeConcurso: true } },
+                    },
+                },
+                Concurso: {
+                    select: { nomeConcurso: true },
+                },
+            },
+        });
+
+        return {
+            candidatoId,
+            nomeCandidato: ficha?.Candidato.nomeCompleto,
+            categoria: ficha?.Candidato.Categoria.nomeCategoria,
+            concurso: ficha?.Concurso.nomeConcurso,
+            notaCandidato: ficha?.notaCandidato,
+            avaliadores: Array.from(avaliadoresMap.values())
+                .sort((a, b) => a.nomeAvaliador.localeCompare(b.nomeAvaliador))
+                .map((av) => ({
+                    nomeAvaliador: av.nomeAvaliador,
+                    blocos: Array.from(av.blocos.values())
+                        .sort((a, b) => a.nomeBloco.localeCompare(b.nomeBloco))
+                        .map((bl) => ({
+                            nomeBloco: bl.nomeBloco,
+                            quesitos: Array.from(bl.quesitos.values()).sort((a, b) =>
+                                a.nomeQuesito.localeCompare(b.nomeQuesito)
+                            ),
+                            totalBloco: bl.totalBloco,
+                        })),
+                    totalAvaliador: av.totalAvaliador,
+                })),
+            totalFinal,
+        };
+    }
+
 }
 
 const relatorios = new RelatoriosService(prisma);
@@ -102,6 +247,28 @@ interface RelatorioAvaliacaoDTO {
     categoria: string;
     notaFinal: number;
     classificacao: number;
+}
+
+export interface RelatorioIndividualDTO {
+    candidatoId: number;
+    avaliadores: {
+        nomeAvaliador: string;
+        blocos: {
+            nomeBloco: string;
+            quesitos: {
+                nomeQuesito: string;
+                notaQuesito: number;
+                comentario: string | null;
+                subquesitos: {
+                    nomeSubQuesito: string;
+                    nota: number;
+                }[];
+            }[];
+            totalBloco: number;
+        }[];
+        totalAvaliador: number;
+    }[];
+    totalFinal: number;
 }
 
 export interface RelatorioGeralCandidatoDTO {

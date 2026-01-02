@@ -22,8 +22,8 @@ export default function RankingCategoriaList({
       const response = await rankingPorCategoria(concursoId, categoriaId);
       setRanking(response as RelatorioRankingDTO[]);
     } catch (error) {
-      console.error("Erro ao carregar ranking:", error);
-      toast.error("Erro ao carregar ranking da categoria");
+      console.error("Erro ao carregar relatorio:", error);
+      toast.error("Erro ao carregar relatorio da categoria");
     } finally {
       setLoading(false);
     }
