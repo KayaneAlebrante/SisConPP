@@ -108,14 +108,15 @@ class AvaliacaoController {
 
     async criarAvaliacaoTeorica(req: Request, res: Response) {
         try {
-            const { candidatoId, provaTeoricaId, quesitos, ficha } = req.body;
+            const { candidatoId, avaliadorId, provaTeoricaId, quesitos, ficha } = req.body;
 
-            if (!candidatoId || !provaTeoricaId || !Array.isArray(quesitos) || !ficha) {
+            if (!candidatoId || !avaliadorId || !provaTeoricaId || !Array.isArray(quesitos) || !ficha) {
                 return res.status(400).json({ message: "Dados obrigatórios não informados" });
             }
             
             const avaliacaoTeorica = await AvaliacaoService.criarAvaliacaoTeorica({
                 candidatoId,
+                avaliadorId,
                 provaTeoricaId,
                 quesitos,
                 ficha,

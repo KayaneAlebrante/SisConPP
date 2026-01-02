@@ -18,7 +18,9 @@ interface Props {
 export default function AvaliacaoTeoricaAccordion({
   provas,
   notas,
+  comentarios,
   onChangeNota,
+  onChangeComentario,
   onChangeAnexoGabarito,
   onChangeAnexoRedacao,
   onSalvar,
@@ -30,7 +32,9 @@ export default function AvaliacaoTeoricaAccordion({
           key={prova.idprovaTeorica}
           prova={prova}
           notas={notas}
+          comentarios={comentarios}
           onChangeNota={onChangeNota}
+          onChangeComentario={onChangeComentario}
           onChangeAnexoGabarito={onChangeAnexoGabarito}
           onChangeAnexoRedacao={onChangeAnexoRedacao}
         />

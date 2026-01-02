@@ -186,8 +186,8 @@ export class AvaliacaoService {
         return this.prisma.$transaction(async (prisma) => {
             const avaliacao = await prisma.avaliacao.create({
                 data: {
-                    avaliadorId: 1,
                     candidatoId: data.candidatoId,
+                    avaliadorId: data.avaliadorId,
                     provaTeoricaId: data.provaTeoricaId,
                     notaFinal: 0,
                 },
@@ -325,8 +325,9 @@ type CriarAvaliacaoCompletaDTO = {
 
 type CriarAvaliacaoTeoricaDTO = {
     candidatoId: number;
+    avaliadorId: number;
     provaTeoricaId: number;
-
+    
     quesitos: {
         quesitoId: number;
         notaQuesito: number;

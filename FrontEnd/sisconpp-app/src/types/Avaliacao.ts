@@ -38,17 +38,30 @@ export interface CriarAvaliacaoPayload {
   }[]
 }
 
-export interface CriarAvaliacaoTeoricaPayload {
-  avaliadorId: number
-  candidatoId: number
-  provasSelecionadas: number[]
+export interface CCriarAvaliacaoTeoricaPayload{
+    candidatoId: number;
+    avaliadorId: number;
+    provaTeoricaId: number;
+    
+    quesitos: {
+        quesitoId: number;
+        notaQuesito: number;
+        comentario?: string;
+        subQuesitos?: {
+            subQuesitoId: number;
+            notaSubQuesito: number;
+        }[];
+    }[];
 
-  subQuesitos: {
-    subQuesitoId: number
-    nota: number
-  }[]
+    ficha: {
+        idFicha: number;
+        concursoId: number;
+        notaCandidato: number;
+        notaFinalProvaTeorica: number;
+        anexoGabarito?: Buffer;
+        anexoRedacao?: Buffer;
+    };
 }
-
 
 export interface ProvaAccordionDTO {
   idProvaPratica: number;

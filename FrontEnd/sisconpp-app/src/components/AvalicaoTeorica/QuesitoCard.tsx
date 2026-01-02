@@ -6,6 +6,7 @@ import SubQuesitoInput from "../AvaliacaoPratica/SubQuesitoinput";
 interface Props {
     quesito: QuesitoDTO;
     notas: Record<number, number>;
+    comentarios?: Record<number, string>;
     onChangeNota: (id: number, nota: number) => void;
     onChangeComentario?: (quesitoId: number, comentario: string) => void;
 }
@@ -13,19 +14,11 @@ interface Props {
 export default function QuesitoCard({
     quesito,
     notas,
+    comentarios,
     onChangeNota,
     onChangeComentario,
 }: Props) {
     const [open, setOpen] = useState(true);
-    const [comentario, setComentario] = useState("");
-
-    const handleComentarioChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        const value = e.target.value;
-        setComentario(value);
-        if (onChangeComentario) {
-            onChangeComentario(quesito.idQuesito, value);
-        }
-    };
 
     const hasSubQuesitos = quesito.subQuesitos && quesito.subQuesitos.length > 0;
 
@@ -88,8 +81,8 @@ export default function QuesitoCard({
                                     Comentário do quesito
                                 </label>
                                 <textarea
-                                    value={comentario}
-                                    onChange={handleComentarioChange}
+                                    value={comentarios?.[quesito.idQuesito] ?? ""}
+                                    onChange={(e) => onChangeComentario?.(quesito.idQuesito, e.target.value)}
                                     className="w-full p-3 rounded-md bg-white border border-gray-200 text-gray-700 text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
                                     rows={3}
                                     placeholder="Escreva um comentário sobre este quesito..."
