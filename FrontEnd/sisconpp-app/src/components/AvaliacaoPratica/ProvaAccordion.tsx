@@ -6,13 +6,19 @@ import BlocoAccordion from "./BlocoAccordion";
 interface Props {
   prova: ProvaAccordionDTO;
   notas: Record<number, number>;
-  onChangeNota: (subQuesitoId: number, nota: number) => void;
+  comentarios: Record<number, string>;
+  onChangeNota: (subQuesitoId: number, nota: number) => void; 
+  onChangeComentario: (id: number, comentario: string) => void; 
+  categoriaSelecionada: number | null;
 }
 
 export default function ProvaAccordion({
   prova,
   notas,
+  comentarios,
   onChangeNota,
+  onChangeComentario,
+  categoriaSelecionada
 }: Props) {
   const [open, setOpen] = useState(true);
 
@@ -59,7 +65,10 @@ export default function ProvaAccordion({
               key={bloco.idBloco}
               bloco={bloco}
               notas={notas}
+              comentarios={comentarios}
               onChangeNota={onChangeNota}
+              onChangeComentario={onChangeComentario}
+              categoriaSelecionada={categoriaSelecionada}
             />
           ))}
         </div>

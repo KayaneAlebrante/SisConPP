@@ -6,30 +6,25 @@ import QuesitoCard from "./QuesitoCard";
 interface Props {
   bloco: BlocoProvaDTO;
   notas: Record<number, number>;
+  comentarios: Record<number, string>;
   onChangeNota: (subQuesitoId: number, nota: number) => void;
   onChangeComentario?: (quesitoId: number, comentario: string) => void;
-  categoriaSelecionada: string; // ✅ necessário para calcular limite
+  categoriaSelecionada: number | null;
 }
 
-function getLimiteOpcionais(categoria: string | null | undefined, tipoProva: string): number {
-  if (!categoria) return 3;
+function getLimiteOpcionais(categoriaId: number | null | undefined, tipoProva: string): number {
+  if (!categoriaId) return 3;
 
-  if (categoria === "Peão Mirim") {
+  if (categoriaId === 2) {
     return tipoProva === "Artística" ? 2 : 3;
   }
 
-  if (
-    categoria.startsWith("Prenda") ||
-    ["Juvenil", "Adulta", "Veterana", "Xiru"].some((c) => categoria.includes(c))
-  ) {
-    return tipoProva === "Artística" ? 3 : 3;
+  if ([1, 3, 5, 7, 9].includes(categoriaId)) {
+    return 3; 
   }
 
-  if (
-    categoria.startsWith("Peão") &&
-    ["Juvenil", "Adulto", "Veterano", "Xiru"].some((c) => categoria.includes(c))
-  ) {
-    return tipoProva === "Artística" ? 2 : 2;
+  if ([4, 6, 8, 10].includes(categoriaId)) {
+    return 2;
   }
 
   return 0;
@@ -38,6 +33,7 @@ function getLimiteOpcionais(categoria: string | null | undefined, tipoProva: str
 export default function BlocoAccordion({
   bloco,
   notas,
+  comentarios,
   onChangeNota,
   onChangeComentario,
   categoriaSelecionada,
@@ -98,12 +94,12 @@ export default function BlocoAccordion({
                 key={quesito.idQuesito}
                 quesito={quesito}
                 notas={notas}
+                comentarios={comentarios}
                 onChangeNota={onChangeNota}
                 onChangeComentario={onChangeComentario}
               />
             ))}
 
-          {/* Checkboxes para opcionais */}
           {bloco.quesitos.some((q) => q.opcional) && (
             <div className="border rounded-lg bg-gray-50 p-4">
               <p className="text-sm font-semibold text-gray-700 mb-2">
@@ -135,6 +131,7 @@ export default function BlocoAccordion({
                 key={q.idQuesito}
                 quesito={q}
                 notas={notas}
+                comentarios={comentarios}
                 onChangeNota={onChangeNota}
                 onChangeComentario={onChangeComentario}
               />

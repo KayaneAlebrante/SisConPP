@@ -6,8 +6,9 @@ import SubQuesitoInput from "./SubQuesitoinput";
 interface Props {
   quesito: QuesitoDTO;
   notas: Record<number, number>;
+  comentarios: Record<number, string>;
   onChangeNota: (subQuesitoId: number, nota: number) => void;
-  onChangeComentario?: (quesitoId: number, comentario: string) => void; // novo callback opcional
+  onChangeComentario?: (quesitoId: number, comentario: string) => void;
 }
 
 export default function QuesitoCard({

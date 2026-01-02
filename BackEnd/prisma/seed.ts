@@ -4,67 +4,39 @@ import bcrypt from "bcrypt";
 const prisma = new PrismaClient();
 
 async function main() {
+     // =========================
+    // PROVAS PRÁTICAS
+    // =========================
+    await prisma.provaPratica.createMany({
+        data: [
+            { idProvaPratica: 1, nomeProva: "Prova Pratica Prenda Mirim", notaMaxima: 100},
+            { idProvaPratica: 2, nomeProva: "Prova Pratica Peão Mirim", notaMaxima: 100},
+            { idProvaPratica: 3, nomeProva: "Prova Pratica Prenda Juvenil, Adulta, Veterana e Xirua", notaMaxima: 100},
+            { idProvaPratica: 4, nomeProva: "Prova Pratica Peão Juvenil, Adulto, Veterano e Xiru", notaMaxima: 100},
+        ]
+    });
+
+    console.log("✅ Provas Práticas criados com sucesso!");
+
     // =========================
     // CATEGORIAS
     // =========================
     await prisma.categoria.createMany({
         data: [
-            { idCategoria: 1, nomeCategoria: "Prenda Mirim", escolaridade: "Ter concluído ou cursando o 2 ano do Ensino Fundamental", sorteioDanca: 1, idadeInicial: 7, idadeLimite: 12 },
-            { idCategoria: 2, nomeCategoria: "Peão Mirim", escolaridade: "Ter concluído ou cursando o 2 ano do Ensino Fundamental", sorteioDanca: 3, idadeInicial: 7, idadeLimite: 12 },
-            { idCategoria: 3, nomeCategoria: "Prenda Juvenil", escolaridade: "Ter concluído ou cursando o 6 ano do Ensino Fundamental", sorteioDanca: 1, idadeInicial: 12, idadeLimite: 17 },
-            { idCategoria: 4, nomeCategoria: "Peão Juvenil", escolaridade: "Ter concluído ou cursando o 6 ano do Ensino Fundamental", sorteioDanca: 3, idadeInicial: 12, idadeLimite: 17 },
-            { idCategoria: 5, nomeCategoria: "Prenda Adulta", escolaridade: "Ter concluído ou cursando o Ensino Médio", sorteioDanca: 5, idadeInicial: 18, idadeLimite: 0 },
-            { idCategoria: 6, nomeCategoria: "Peão Adulto", escolaridade: "Ter concluído ou cursando o Ensino Médio", sorteioDanca: 5, idadeInicial: 18, idadeLimite: 0 },
-            { idCategoria: 7, nomeCategoria: "Prenda Veterana", escolaridade: "Ter concluído ou cursando o Ensino Fundamental", sorteioDanca: 1, idadeInicial: 30, idadeLimite: 0 },
-            { idCategoria: 8, nomeCategoria: "Peão Veterano", escolaridade: "Ter concluído ou cursando o Ensino Fundamental", sorteioDanca: 1, idadeInicial: 30, idadeLimite: 0 },
-            { idCategoria: 9, nomeCategoria: "Prenda Xirua", escolaridade: "Ter concluído ou cursando o Ensino Fundamental", sorteioDanca: 1, idadeInicial: 50, idadeLimite: 0 },
-            { idCategoria: 10, nomeCategoria: "Peão Xirú", escolaridade: "Ter concluído ou cursando o Ensino Fundamental", sorteioDanca: 1, idadeInicial: 50, idadeLimite: 0 },
+            { idCategoria: 1, nomeCategoria: "Prenda Mirim", escolaridade: "Ter concluído ou cursando o 2 ano do Ensino Fundamental", sorteioDanca: 1, idadeInicial: 7, idadeLimite: 12, provaPraticaId: 1 },
+            { idCategoria: 2, nomeCategoria: "Peão Mirim", escolaridade: "Ter concluído ou cursando o 2 ano do Ensino Fundamental", sorteioDanca: 3, idadeInicial: 7, idadeLimite: 12, provaPraticaId: 2 },
+            { idCategoria: 3, nomeCategoria: "Prenda Juvenil", escolaridade: "Ter concluído ou cursando o 6 ano do Ensino Fundamental", sorteioDanca: 1, idadeInicial: 12, idadeLimite: 17, provaPraticaId: 3},
+            { idCategoria: 4, nomeCategoria: "Peão Juvenil", escolaridade: "Ter concluído ou cursando o 6 ano do Ensino Fundamental", sorteioDanca: 3, idadeInicial: 12, idadeLimite: 17, provaPraticaId: 4 },
+            { idCategoria: 5, nomeCategoria: "Prenda Adulta", escolaridade: "Ter concluído ou cursando o Ensino Médio", sorteioDanca: 5, idadeInicial: 18, idadeLimite: 0, provaPraticaId: 3},
+            { idCategoria: 6, nomeCategoria: "Peão Adulto", escolaridade: "Ter concluído ou cursando o Ensino Médio", sorteioDanca: 5, idadeInicial: 18, idadeLimite: 0, provaPraticaId: 4  },
+            { idCategoria: 7, nomeCategoria: "Prenda Veterana", escolaridade: "Ter concluído ou cursando o Ensino Fundamental", sorteioDanca: 1, idadeInicial: 30, idadeLimite: 0, provaPraticaId: 3 },
+            { idCategoria: 8, nomeCategoria: "Peão Veterano", escolaridade: "Ter concluído ou cursando o Ensino Fundamental", sorteioDanca: 1, idadeInicial: 30, idadeLimite: 0, provaPraticaId: 4  },
+            { idCategoria: 9, nomeCategoria: "Prenda Xirua", escolaridade: "Ter concluído ou cursando o Ensino Fundamental", sorteioDanca: 1, idadeInicial: 50, idadeLimite: 0, provaPraticaId: 3 },
+            { idCategoria: 10, nomeCategoria: "Peão Xirú", escolaridade: "Ter concluído ou cursando o Ensino Fundamental", sorteioDanca: 1, idadeInicial: 50, idadeLimite: 0, provaPraticaId: 4  },
         ],
         skipDuplicates: true,
     });
     console.log("✅ Categorias criadas com sucesso!");
-
-    // =========================
-    // PROVAS PRÁTICAS
-    // =========================
-    await prisma.provaPratica.createMany({
-        data: [
-            { nomeProva: "Prova Pratica Prenda Mirim", notaMaxima: 100 },
-            { nomeProva: "Prova Pratica Peão Mirim", notaMaxima: 100 },
-            { nomeProva: "Prova Pratica Prenda Juvenil, Adulta, Veterana e Xirua", notaMaxima: 100},
-            { nomeProva: "Prova Pratica Peão Juvenil, Adulto, Veterano e Xiru", notaMaxima: 100},
-        ]
-    });
-
-    await prisma.provaPratica.update({
-        where: { idProvaPratica: 1 },
-        data: {
-            categorias: { connect: [{ idCategoria: 1 }] }
-        }
-    });
-
-    await prisma.provaPratica.update({
-        where: { idProvaPratica: 2 },
-        data: {
-            categorias: { connect: [{ idCategoria: 2 }] }
-        }
-    });
-
-    await prisma.provaPratica.update({
-        where: { idProvaPratica: 3 },
-        data: {
-            categorias: { connect: [{ idCategoria: 3 }, { idCategoria: 5 }, { idCategoria: 7 }, { idCategoria: 9 }] }
-        }
-    });
-
-    await prisma.provaPratica.update({
-        where: { idProvaPratica: 4 },
-        data: {
-            categorias: { connect: [{ idCategoria: 4 }, { idCategoria: 6 }, { idCategoria: 8 }, { idCategoria: 10 }] }
-        }
-    });
-
-    console.log("✅ Provas Práticas criados com sucesso!");
 
     // =========================
     // BLOCO PROVA 
