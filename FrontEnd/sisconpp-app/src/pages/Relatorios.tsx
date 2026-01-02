@@ -60,7 +60,6 @@ export default function Relatorios() {
     fetchCandidatos();
   }, []);
 
-  // Carregar categorias
   useEffect(() => {
     const fetchCategorias = async () => {
       try {
@@ -219,7 +218,7 @@ export default function Relatorios() {
 
                 {concursoRankingId && categoriaId && (
                   <ReportHeader
-                    title="Ranking Oficial"
+                    title="Relatorio do Resultado por Categoria Oficial"
                     subtitle={`${getNomeConcurso(concursoRankingId)} - ${getNomeCategoria(categoriaId)}`}
                     user={usuarioLogado}
                   />
@@ -241,10 +240,7 @@ export default function Relatorios() {
               </div>
             </div>
 
-            {/* RELATÓRIO INDIVIDUAL */}
             <div className="bg-secondary-light rounded-2xl shadow-lg p-6 flex flex-col h-full min-h-[600px] print:bg-white print:p-0 print:shadow-none print:min-h-0 print:mt-10">
-
-              {/* Cabeçalho e botão imprimir */}
               <div className="print:hidden flex items-center justify-between gap-2 mb-4">
                 <div className="flex items-center gap-2">
                   <div className="bg-white/20 p-2 rounded-lg">
@@ -263,7 +259,6 @@ export default function Relatorios() {
                 )}
               </div>
 
-              {/* Selects de Categoria e Candidato */}
               <div className="print:hidden flex flex-col md:flex-row gap-4 mb-4">
                 {/* Categoria */}
                 <div className="flex-1">
@@ -274,7 +269,7 @@ export default function Relatorios() {
                     onChange={(e) => {
                       const value = e.target.value ? Number(e.target.value) : null;
                       setCategoriaSelecionada(value);
-                      setCandidatoSelecionado(null); // reset candidato ao trocar categoria
+                      setCandidatoSelecionado(null); 
                     }}
                   >
                     <option value="">Selecione...</option>
@@ -286,7 +281,6 @@ export default function Relatorios() {
                   </select>
                 </div>
 
-                {/* Candidato */}
                 <div className="flex-1">
                   <label className="text-sm font-semibold text-white mb-2 ml-1">Candidato</label>
                   <select
@@ -313,7 +307,6 @@ export default function Relatorios() {
                 </div>
               </div>
 
-              {/* Área do relatório */}
               <div
                 className="bg-white rounded-xl p-4 flex-1 shadow-inner flex flex-col overflow-hidden print:shadow-none print:p-0 print:overflow-visible"
               >
