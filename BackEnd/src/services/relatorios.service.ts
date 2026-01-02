@@ -148,6 +148,56 @@ export class RelatoriosService {
         let totalFinal = 0;
 
         for (const avaliacao of avaliacoes) {
+            // 🔹 Caso seja Prova Teórica
+            if (avaliacao.provaTeoricaId) {
+                const idAvaliador = -1; // identificador especial
+                if (!avaliadoresMap.has(idAvaliador)) {
+                    avaliadoresMap.set(idAvaliador, {
+                        nomeAvaliador: "Prova Teórica",
+                        blocos: new Map(),
+                        totalAvaliador: 0,
+                    });
+                }
+
+                const avaliador = avaliadoresMap.get(idAvaliador)!;
+
+                if (!avaliador.blocos.has(avaliacao.provaTeoricaId)) {
+                    avaliador.blocos.set(avaliacao.provaTeoricaId, {
+                        nomeBloco: "Prova Teórica",
+                        quesitos: new Map(),
+                        totalBloco: 0,
+                    });
+                }
+
+                const blocoMap = avaliador.blocos.get(avaliacao.provaTeoricaId)!;
+
+                for (const aq of avaliacao.quesitosAvaliados) {
+                    const temNota = aq.notaQuesito !== null && aq.notaQuesito > 0;
+                    const temSubquesitos = aq.subQuesitosAvaliados?.length > 0;
+                    if (!temNota && !temSubquesitos) continue;
+
+                    const subquesitos =
+                        aq.subQuesitosAvaliados?.map((sq) => ({
+                            nomeSubQuesito: sq.SubQuesito?.nomeSubquesito ?? "",
+                            nota: sq.notaSubQuesito ?? 0,
+                        })) ?? [];
+
+                    blocoMap.quesitos.set(aq.Quesito.idQuesito, {
+                        nomeQuesito: aq.Quesito.nomeQuesito,
+                        notaQuesito: aq.notaQuesito,
+                        comentario: aq.comentario ?? null,
+                        subquesitos,
+                    });
+
+                    blocoMap.totalBloco += aq.notaQuesito ?? 0;
+                    avaliador.totalAvaliador += aq.notaQuesito ?? 0;
+                    totalFinal += aq.notaQuesito ?? 0;
+                }
+
+                continue;
+            }
+
+            // 🔹 Avaliações normais (avaliadores humanos)
             const idAvaliador = avaliacao.Usuario.idUsuario;
 
             if (!avaliadoresMap.has(idAvaliador)) {
@@ -164,6 +214,11 @@ export class RelatoriosService {
                 const quesito = aq.Quesito;
                 const bloco = quesito?.BlocoProva;
                 if (!quesito || !bloco) continue;
+
+                // 🔹 Filtra quesitos sem nota e sem subquesitos
+                const temNota = aq.notaQuesito !== null && aq.notaQuesito > 0;
+                const temSubquesitos = aq.subQuesitosAvaliados?.length > 0;
+                if (!temNota && !temSubquesitos) continue;
 
                 if (!avaliador.blocos.has(bloco.idBloco)) {
                     avaliador.blocos.set(bloco.idBloco, {
@@ -187,9 +242,9 @@ export class RelatoriosService {
                     subquesitos,
                 });
 
-                blocoMap.totalBloco += aq.notaQuesito;
-                avaliador.totalAvaliador += aq.notaQuesito;
-                totalFinal += aq.notaQuesito;
+                blocoMap.totalBloco += aq.notaQuesito ?? 0;
+                avaliador.totalAvaliador += aq.notaQuesito ?? 0;
+                totalFinal += aq.notaQuesito ?? 0;
             }
         }
 
@@ -234,7 +289,6 @@ export class RelatoriosService {
             totalFinal,
         };
     }
-
 }
 
 const relatorios = new RelatoriosService(prisma);
