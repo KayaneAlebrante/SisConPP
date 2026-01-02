@@ -45,7 +45,7 @@ export class AvaliacaoService {
                             data: {
                                 avaliacaoId: avaliacao.idAvalicao,
                                 quesitoId: quesito.quesitoId,
-                                comentario: quesito.comentario,
+                                comentario: quesito.comentario ?? null,
                                 notaQuesito,
                             },
                         });
@@ -202,7 +202,7 @@ export class AvaliacaoService {
                         avaliacaoId: avaliacao.idAvalicao,
                         quesitoId: quesito.quesitoId,
                         notaQuesito: notaQuesitoFinal,
-                        comentario: quesito.comentario,
+                        comentario: quesito.comentario ?? null
                     },
                 });
                 if (quesito.subQuesitos?.length) {
@@ -222,7 +222,10 @@ export class AvaliacaoService {
 
                     await prisma.avaliacaoQuesito.update({
                         where: { idAvaliacaoQuesito: avaliacaoQuesito.idAvaliacaoQuesito },
-                        data: { notaQuesito: notaQuesitoFinal },
+                        data: { 
+                            notaQuesito: notaQuesitoFinal,
+                            comentario: quesito.comentario ?? null
+                        },
                     });
                 }
             }

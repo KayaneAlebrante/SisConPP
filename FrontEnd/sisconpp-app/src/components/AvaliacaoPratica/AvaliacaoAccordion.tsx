@@ -4,15 +4,21 @@ import ProvaAccordion from "./ProvaAccordion";
 interface Props {
   provas: ProvaAccordionDTO[];
   notas: Record<number, number>;
+  comentarios: Record<number, string>;
   onChangeNota: (subQuesitoId: number, nota: number) => void;
+  onChangeComentario: (id: number, comentario: string) => void;
   onSalvar: () => void; 
+  categoriaSelecionada: number | null;
 }
 
 export default function AvaliacaoAccordion({
   provas,
   notas,
+  comentarios,
   onChangeNota,
-  onSalvar,
+  onChangeComentario,
+  onSalvar, 
+  categoriaSelecionada,
 }: Props) {
   return (
     <div className="space-y-6">
@@ -22,7 +28,10 @@ export default function AvaliacaoAccordion({
             key={prova.idProvaPratica}
             prova={prova}
             notas={notas}
+            comentarios={comentarios}
             onChangeNota={onChangeNota}
+            onChangeComentario={onChangeComentario}
+            categoriaSelecionada={categoriaSelecionada}
           />
         ))}
       </div>

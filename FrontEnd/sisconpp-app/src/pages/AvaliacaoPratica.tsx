@@ -29,7 +29,6 @@ export default function AvaliacaoPage() {
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [ficha, setFicha] = useState<FichaCandidatoProvaPratica | null>(null);
 
-  // Carregar candidatos
   useEffect(() => {
     const fetchCandidatos = async () => {
       try {
@@ -42,7 +41,6 @@ export default function AvaliacaoPage() {
     fetchCandidatos();
   }, []);
 
-  // Carregar categorias
   useEffect(() => {
     const fetchCategorias = async () => {
       try {
@@ -55,7 +53,6 @@ export default function AvaliacaoPage() {
     fetchCategorias();
   }, []);
 
-  // Carregar avaliadores
   useEffect(() => {
     const fetchAvaliadores = async () => {
       try {
@@ -68,7 +65,6 @@ export default function AvaliacaoPage() {
     fetchAvaliadores();
   }, []);
 
-  // Buscar estrutura da avaliação
   useEffect(() => {
     const fetchEstrutura = async () => {
       if (!candidatoSelecionado || !avaliadorSelecionado) {
@@ -136,20 +132,22 @@ export default function AvaliacaoPage() {
               comentario: comentarios[quesito.idQuesito] ?? "",
               subQuesitos: quesito.subQuesitos.map((sub) => ({
                 subQuesitoId: sub.idSubequestios,
-                notaSubQuesito: notas[sub.idSubequestios] ?? 0,
+                notaSubQuesito: Number(notas[sub.idSubequestios] ?? 0),
               })),
             })),
           )
         ),
 
-        ficha:{
+        ficha: {
           idFicha: ficha?.idFicha,
           concrusoId: ficha?.concursoId,
           notaFinalProvaPratica: ficha?.notaFinalProvaPratica
         }
       };
 
+      console.log(payload);
       await criarAvaliacaoCompleta(payload);
+
       toast.success("Avaliação salva com sucesso!");
 
       setNotas({});
@@ -267,10 +265,18 @@ export default function AvaliacaoPage() {
             <AvaliacaoAccordion
               provas={provasSelecionadas}
               notas={notas}
+              comentarios={comentarios}
               onChangeNota={(id, nota) =>
                 setNotas((prev) => ({ ...prev, [id]: nota }))
               }
+              onChangeComentario={(id, comentario) =>
+                setComentarios((prev) => ({
+                  ...prev,
+                  [id]: comentario,
+                }))
+              }
               onSalvar={handleSalvarAvaliacao}
+              categoriaSelecionada={categoriaSelecionada}
             />
           )}
         </div>
