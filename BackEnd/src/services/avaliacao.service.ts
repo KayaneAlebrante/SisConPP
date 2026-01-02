@@ -83,8 +83,9 @@ export class AvaliacaoService {
                     where: { idFicha: data.ficha.idFicha },
                     data: {
                         notaFinalProvasPraticas: notaFinalProvaPratica,
-                        notaCandidato:
-                            (data.ficha.notaCandidato ?? 0) + notaFinalProvaPratica,
+                        notaCandidato: {
+                            increment: notaFinalProvaPratica
+                        }
                     },
                 });
 
@@ -201,7 +202,7 @@ export class AvaliacaoService {
                         avaliacaoId: avaliacao.idAvalicao,
                         quesitoId: quesito.quesitoId,
                         notaQuesito: notaQuesitoFinal,
-                        comentario: quesito.comentario ?? null,
+                        comentario: quesito.comentario,
                     },
                 });
                 if (quesito.subQuesitos?.length) {
