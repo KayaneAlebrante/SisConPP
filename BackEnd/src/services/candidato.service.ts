@@ -302,6 +302,14 @@ class CandidatoService {
                     anexoProvaPratica: Buffer.from("")
                 },
             });
+
+            await this.prisma.candidato.update({
+                where:{ idCandidato: candidatoId},
+                data:{
+                    concursoIdConcurso: concursoId
+                }
+
+            })
             return fichaCandidato;
         } catch (error) {
             console.error("Erro ao criar ficha do candidato:", error);
@@ -318,8 +326,6 @@ class CandidatoService {
             if (!fichaCandidatoId) {
                 throw new Error("Ficha do candidato não encontrada.");
             };
-
-            console.log(fichaCandidatoId);
 
             return fichaCandidatoId;
         } catch (error) {

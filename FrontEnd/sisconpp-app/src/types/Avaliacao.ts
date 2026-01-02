@@ -63,6 +63,21 @@ export interface CCriarAvaliacaoTeoricaPayload{
     };
 }
 
+export interface CriarAvaliacaoCompletaDTO {
+  comissaoId: number;
+  avaliadorId: number;
+  candidatoId: number;
+  blocoProvaId: number;
+  quesitos: {
+    quesitoId: number;
+    comentario?: string;
+    subQuesitos: {
+      subQuesitoId: number;
+      notaSubQuesito: number;
+    }[];
+  }[];
+};
+
 export interface ProvaAccordionDTO {
   idProvaPratica: number;
   nomeProva: string;

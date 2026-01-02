@@ -1,4 +1,4 @@
-import { PrismaClient, FichaCandidato, SubQuesitos } from "@prisma/client";
+import { PrismaClient, FichaCandidato, SubQuesitos, Avaliacao, AvaliacaoQuesito, BlocoProva } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -289,6 +289,78 @@ export class RelatoriosService {
             totalFinal,
         };
     }
+
+    async gerarRelatorioPorCategoriaConcurso(
+        categoriaId: number,
+        concursoIdConcurso: number
+    ): Promise<(CandidatoResumo & { posicao: number })[]> {
+        const candidatos = await prisma.candidato.findMany({
+            where: { categoriaId, concursoIdConcurso },
+            include: {
+                Categoria: true,
+                Concurso: true,
+                CTG: true,
+                fichaCandidato: true,
+                avalicoes: {
+                    include: {
+                        Usuario: true,
+                        ProvaPratica: true,
+                        BlocoProva: true,
+                        quesitosAvaliados: true,
+                    },
+                },
+            },
+        });
+
+        // monta o relatório candidato por candidato
+        const relatorio: CandidatoResumo[] = candidatos.map((c) => {
+            const notaTeorica = c.fichaCandidato?.notaFinalProvaTeorica ?? 0;
+
+            const avaliadores: AvaliadorResumo[] = (c.avalicoes ?? [])
+                .filter((av: Avaliacao) => av.provaPraticaId !== null || av.blocoProvaId !== null)
+                .map(
+                    (
+                        av: Avaliacao & {
+                            Usuario: { nomeCompleto: string };
+                            BlocoProva: BlocoProva | null;
+                            quesitosAvaliados: AvaliacaoQuesito[];
+                        }
+                    ) => {
+                        const nomeAvaliador = av.Usuario?.nomeCompleto ?? "—";
+                        const nomeBloco = av.BlocoProva?.nomeBloco ?? "Bloco não informado";
+
+                        const notaFinalBloco = (av.quesitosAvaliados ?? []).reduce(
+                            (acc: number, q: AvaliacaoQuesito) => acc + (q.notaQuesito ?? 0),
+                            0
+                        );
+
+                        const blocos: BlocoResumo[] = [{ nomeBloco, notaFinalBloco }];
+                        const totalAvaliador = blocos.reduce((acc: number, b: BlocoResumo) => acc + b.notaFinalBloco, 0);
+
+                        return { nomeAvaliador, blocos, totalAvaliador };
+                    }
+                );
+
+            const notaPratica = avaliadores.reduce((acc: number, a: AvaliadorResumo) => acc + a.totalAvaliador, 0);
+            const notaFinal = notaTeorica + notaPratica;
+
+            return {
+                candidatoId: c.idCandidato,
+                nomeCandidato: c.nomeCompleto,
+                CTG: c.CTG.nomeCTG,
+                categoria: c.Categoria?.nomeCategoria ?? "",
+                concurso: c.Concurso?.nomeConcurso ?? "",
+                notaProvaTeorica: notaTeorica,
+                notaProvasPraticas: notaPratica,
+                notaFinal,
+                avaliadores,
+            };
+        });
+
+        const ordenado = relatorio.sort((a: CandidatoResumo, b: CandidatoResumo) => b.notaFinal - a.notaFinal);
+        return ordenado.map((c: CandidatoResumo, idx: number) => ({ ...c, posicao: idx + 1 }));
+    }
+
 }
 
 const relatorios = new RelatoriosService(prisma);
@@ -333,4 +405,27 @@ export interface RelatorioGeralCandidatoDTO {
     notaProvaTeorica: number;
     notaProvasPraticas: number;
     notaFinal: number;
+}
+
+export interface BlocoResumo {
+    nomeBloco: string;
+    notaFinalBloco: number;
+}
+
+export interface AvaliadorResumo {
+    nomeAvaliador: string;
+    blocos: BlocoResumo[];
+    totalAvaliador: number;
+}
+
+export interface CandidatoResumo {
+    candidatoId: number;
+    nomeCandidato: string;
+    CTG: string;
+    categoria: string;
+    concurso: string;
+    notaProvaTeorica: number;
+    notaProvasPraticas: number;
+    notaFinal: number;
+    avaliadores: AvaliadorResumo[];
 }

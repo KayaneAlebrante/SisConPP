@@ -4,12 +4,13 @@ import RankingCategoriaList from "../components/Lists/RankingCategoriaList";
 import SideNavBar from "../components/SideNavBar/SideNavBar";
 import ReportHeader from "../components/PDFModelo/timbradoSisConPP";
 import RelatorioIndividualDetalhado from "../components/Relatorios/RelatorioIndividual";
+import RelatorioCategoriaTabela from "../components/Relatorios/RelatorioCategoriaTabela";
 import { listarConcurso, listarCategorias, listarCandidatos } from "../services/api";
 import { Concurso } from "../types/Concurso";
 import { Categoria } from "../types/Categoria";
 import { Candidato } from "../types/Candidato";
 import { toast } from "react-toastify";
-import { FileText, Trophy, Printer } from "lucide-react";
+import { FileText, Trophy, Printer, User } from "lucide-react";
 
 export default function Relatorios() {
   const [concursos, setConcursos] = useState<Concurso[]>([]);
@@ -21,7 +22,9 @@ export default function Relatorios() {
   const componentRefGeral = useRef(null);
   const componentRefRanking = useRef(null);
   const [candidatoSelecionado, setCandidatoSelecionado] = useState<number | null>(null);
-  const [categoriaSelecionada,  setCategoriaSelecionada] = useState<number | null>(null);
+  const [categoriaSelecionada, setCategoriaSelecionada] = useState<number | null>(null);
+  const [concursoDetalhadoId, setConcursoDetalhadoId] = useState<number | null>(null);
+  const [categoriaDetalhadaId, setCategoriaDetalhadaId] = useState<number | null>(null);
 
   const usuarioLogado = (() => {
     try {
@@ -239,96 +242,185 @@ export default function Relatorios() {
                 )}
               </div>
             </div>
+          </div>
 
-            <div className="bg-secondary-light rounded-2xl shadow-lg p-6 flex flex-col h-full min-h-[600px] print:bg-white print:p-0 print:shadow-none print:min-h-0 print:mt-10">
-              <div className="print:hidden flex items-center justify-between gap-2 mb-4">
-                <div className="flex items-center gap-2">
-                  <div className="bg-white/20 p-2 rounded-lg">
-                    <FileText className="text-white" size={24} />
-                  </div>
-                  <h2 className="text-xl font-bold text-white">Relatório Individual</h2>
+          <div className="bg-secondary-light rounded-2xl shadow-lg p-6 flex flex-col h-full w-full print:bg-white print:p-0 print:shadow-none print:min-h-0 print:mt-10">
+            <div className="print:hidden flex items-center justify-between gap-2 mb-4">
+              <div className="flex items-center gap-2">
+                <div className="bg-white/20 p-2 rounded-lg">
+                  <User className="text-white" size={24} />
                 </div>
-
-                {candidatoSelecionado && (
-                  <button
-                    onClick={handlePrint}
-                    className="bg-white text-secondary font-bold py-2 px-4 rounded-lg flex items-center gap-2 hover:bg-gray-100 transition shadow-sm"
-                  >
-                    <Printer size={18} /> Imprimir
-                  </button>
-                )}
+                <h2 className="text-xl font-bold text-white">Relatório Individual</h2>
               </div>
 
-              <div className="print:hidden flex flex-col md:flex-row gap-4 mb-4">
-                {/* Categoria */}
-                <div className="flex-1">
-                  <label className="text-sm font-semibold text-white mb-2 ml-1">Categoria</label>
-                  <select
-                    className="w-full p-3 rounded-lg"
-                    value={categoriaSelecionada ?? ""}
-                    onChange={(e) => {
-                      const value = e.target.value ? Number(e.target.value) : null;
-                      setCategoriaSelecionada(value);
-                      setCandidatoSelecionado(null); 
-                    }}
-                  >
-                    <option value="">Selecione...</option>
-                    {categorias.map((cat) => (
-                      <option key={cat.idCategoria} value={cat.idCategoria}>
-                        {cat.nomeCategoria}
+              {candidatoSelecionado && (
+                <button
+                  onClick={handlePrint}
+                  className="bg-white text-secondary font-bold py-2 px-4 rounded-lg flex items-center gap-2 hover:bg-gray-100 transition shadow-sm"
+                >
+                  <Printer size={18} /> Imprimir
+                </button>
+              )}
+            </div>
+
+            <div className="print:hidden flex flex-col md:flex-row gap-4 mb-4">
+              {/* Categoria */}
+              <div className="flex-1">
+                <label className="text-sm font-semibold text-white mb-2 ml-1">Categoria</label>
+                <select
+                  className="w-full p-3 rounded-lg"
+                  value={categoriaSelecionada ?? ""}
+                  onChange={(e) => {
+                    const value = e.target.value ? Number(e.target.value) : null;
+                    setCategoriaSelecionada(value);
+                    setCandidatoSelecionado(null);
+                  }}
+                >
+                  <option value="">Selecione...</option>
+                  {categorias.map((cat) => (
+                    <option key={cat.idCategoria} value={cat.idCategoria}>
+                      {cat.nomeCategoria}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex-1">
+                <label className="text-sm font-semibold text-white mb-2 ml-1">Candidato</label>
+                <select
+                  className="w-full p-3 rounded-lg disabled:opacity-60"
+                  value={candidatoSelecionado ?? ""}
+                  onChange={(e) =>
+                    setCandidatoSelecionado(e.target.value ? Number(e.target.value) : null)
+                  }
+                  disabled={!categoriaSelecionada}
+                >
+                  <option value="">
+                    {!categoriaSelecionada ? "Selecione a categoria" : "Selecione..."}
+                  </option>
+                  {candidatos
+                    .filter((c) =>
+                      categoriaSelecionada ? c.categoriaId === categoriaSelecionada : true
+                    )
+                    .map((c) => (
+                      <option key={c.idCandidato} value={c.idCandidato}>
+                        {c.nomeCompleto}
                       </option>
                     ))}
-                  </select>
-                </div>
-
-                <div className="flex-1">
-                  <label className="text-sm font-semibold text-white mb-2 ml-1">Candidato</label>
-                  <select
-                    className="w-full p-3 rounded-lg disabled:opacity-60"
-                    value={candidatoSelecionado ?? ""}
-                    onChange={(e) =>
-                      setCandidatoSelecionado(e.target.value ? Number(e.target.value) : null)
-                    }
-                    disabled={!categoriaSelecionada}
-                  >
-                    <option value="">
-                      {!categoriaSelecionada ? "Selecione a categoria" : "Selecione..."}
-                    </option>
-                    {candidatos
-                      .filter((c) =>
-                        categoriaSelecionada ? c.categoriaId === categoriaSelecionada : true
-                      )
-                      .map((c) => (
-                        <option key={c.idCandidato} value={c.idCandidato}>
-                          {c.nomeCompleto}
-                        </option>
-                      ))}
-                  </select>
-                </div>
-              </div>
-
-              <div
-                className="bg-white rounded-xl p-4 flex-1 shadow-inner flex flex-col overflow-hidden print:shadow-none print:p-0 print:overflow-visible"
-              >
-                {candidatoSelecionado ? (
-                  <>
-                    <ReportHeader
-                      title="Relatório Individual do Candidato"
-                      subtitle={getNomeCategoria(categoriaSelecionada)}
-                      user={usuarioLogado}
-                    />
-                    <RelatorioIndividualDetalhado candidatoId={candidatoSelecionado} />
-                  </>
-                ) : (
-                  <div className="flex-1 flex flex-col items-center justify-center text-gray-400 gap-2 opacity-60 print:hidden">
-                    <FileText size={48} />
-                    <p className="text-lg font-medium">Selecione uma categoria e um candidato</p>
-                  </div>
-                )}
+                </select>
               </div>
             </div>
 
+            <div
+              className="bg-white rounded-xl p-4 flex-1 shadow-inner flex flex-col overflow-hidden print:shadow-none print:p-0 print:overflow-visible"
+            >
+              {candidatoSelecionado ? (
+                <>
+                  <ReportHeader
+                    title="Relatório Individual do Candidato"
+                    subtitle={getNomeCategoria(categoriaSelecionada)}
+                    user={usuarioLogado}
+                  />
+                  <RelatorioIndividualDetalhado candidatoId={candidatoSelecionado} />
+                </>
+              ) : (
+                <div className="flex-1 flex flex-col items-center justify-center text-gray-400 gap-2 opacity-60 print:hidden">
+                  <User size={48} />
+                  <p className="text-lg font-medium">Selecione uma categoria e um candidato</p>
+                </div>
+              )}
+            </div>
           </div>
+
+          <div className="bg-secondary-light rounded-2xl shadow-lg p-6 flex flex-col h-full w-full print:bg-white print:p-0 print:shadow-none print:min-h-0 print:mt-10">
+            {/* Header */}
+            <div className="print:hidden flex items-center justify-between gap-2 mb-4">
+              <div className="flex items-center gap-2">
+                <div className="bg-white/20 p-2 rounded-lg">
+                  <FileText className="text-white" size={24} />
+                </div>
+                <h2 className="text-xl font-bold text-white">Relatório Detalhado por Categoria</h2>
+              </div>
+
+              {categoriaDetalhadaId && concursoDetalhadoId && (
+                <button
+                  onClick={handlePrint}
+                  className="bg-white text-secondary font-bold py-2 px-4 rounded-lg flex items-center gap-2 hover:bg-gray-100 transition shadow-sm"
+                >
+                  <Printer size={18} /> Imprimir
+                </button>
+              )}
+            </div>
+
+            {/* Filtros */}
+            <div className="print:hidden flex flex-col md:flex-row gap-4 mb-4">
+              {/* Concurso */}
+              <div className="flex-1">
+                <label className="text-sm font-semibold text-white mb-2 ml-1">Concurso</label>
+                <select
+                  className="w-full p-3 rounded-lg"
+                  value={concursoDetalhadoId ?? ""}
+                  onChange={(e) => {
+                    const value = e.target.value ? Number(e.target.value) : null;
+                    setConcursoDetalhadoId(value);
+                    setCategoriaDetalhadaId(null); // reset categoria ao trocar concurso
+                  }}
+                >
+                  <option value="">Selecione...</option>
+                  {concursos.map((con) => (
+                    <option key={con.idConcurso} value={con.idConcurso}>
+                      {con.nomeConcurso}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Categoria */}
+              <div className="flex-1">
+                <label className="text-sm font-semibold text-white mb-2 ml-1">Categoria</label>
+                <select
+                  className="w-full p-3 rounded-lg disabled:opacity-60"
+                  value={categoriaDetalhadaId ?? ""}
+                  onChange={(e) => setCategoriaDetalhadaId(e.target.value ? Number(e.target.value) : null)}
+                  disabled={!concursoDetalhadoId}
+                >
+                  <option value="">
+                    {!concursoDetalhadoId ? "Selecione o concurso" : "Selecione..."}
+                  </option>
+                  {categorias.map((cat) => (
+                    <option key={cat.idCategoria} value={cat.idCategoria}>
+                      {cat.nomeCategoria}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Conteúdo */}
+            <div className="bg-white rounded-xl p-4 flex-1 shadow-inner flex flex-col overflow-hidden print:shadow-none print:p-0 print:overflow-visible">
+              {categoriaDetalhadaId && concursoDetalhadoId ? (
+                <>
+                  <ReportHeader
+                    title="Relatório Detalhado da Categoria"
+                    subtitle={
+                      categorias.find((c) => c.idCategoria === categoriaDetalhadaId)?.nomeCategoria ?? ""
+                    }
+                    user={usuarioLogado}
+                  />
+                  <RelatorioCategoriaTabela
+                    categoriaId={categoriaDetalhadaId}
+                    concursoIdConcurso={concursoDetalhadoId}
+                  />
+                </>
+              ) : (
+                <div className="flex-1 flex flex-col items-center justify-center text-gray-400 gap-2 opacity-60 print:hidden">
+                  <FileText size={48} />
+                  <p className="text-lg font-medium">Selecione um concurso e uma categoria</p>
+                </div>
+              )}
+            </div>
+          </div>
+
         </div>
       </div>
     </div>

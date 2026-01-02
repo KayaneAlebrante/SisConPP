@@ -8,8 +8,8 @@ import { Comissao, ComissaoProvaPraticaForm } from '../types/Comissao';
 import { PreferenciaSorteio, Danca, CriarSorteioPayload } from '../types/SorteioDanca';
 import { BlocoProva, ProvaPratica, Quesitos, SubQuesitos } from '../types/ProvaPratica';
 import { ProvaTeorica, ProvaTeoricaF } from '../types/ProvaTeorica';
-import { CriarAvaliacaoTeoricaPayload } from '../types/Avaliacao';
-import { RelatorioGeralCandidatoDTO, RelatorioRankingDTO, RelatorioIndividualDTO } from '../types/Relatorios';
+import { RelatorioGeralCandidatoDTO, RelatorioRankingDTO, RelatorioIndividualDTO, RelatorioCategoriaDTO } from '../types/Relatorios';
+import { CriarAvaliacaoCompletaDTO } from '../types/Avaliacao';
 
 // ---- CONFIGURAÇÃO DO AXIOS ----
 export const api = axios.create({
@@ -321,21 +321,6 @@ export const deletarSubQuesito = async (idSubQuesito: number) => {
 
 //---- Avaliacação ----
 
-export type CriarAvaliacaoCompletaDTO = {
-  comissaoId: number;
-  avaliadorId: number;
-  candidatoId: number;
-  blocoProvaId: number;
-  quesitos: {
-    quesitoId: number;
-    comentario?: string;
-    subQuesitos: {
-      subQuesitoId: number;
-      notaSubQuesito: number;
-    }[];
-  }[];
-};
-
 export async function criarAvaliacaoCompleta(payload: CriarAvaliacaoCompletaDTO) {
   const { data } = await api.post("/avaliacao/avaliacaoCompleta", payload);
   return data;
@@ -346,7 +331,7 @@ export async function buscarEstruturaAvaliacao(avaliadorId: number, candidatoId:
   return response.data;
 }
 
-export async function criarAvaliacaoTeorica(payload: CriarAvaliacaoTeoricaPayload) {
+export async function criarAvaliacaoTeorica(payload: CriarAvaliacaoCompletaDTO) {
   const { data } = await api.post("/avaliacao/avaliacaoTeorica", payload);
   return data;
 }
@@ -377,3 +362,12 @@ export async function RelatorioIndividual(candidatoId: number) {
   );
   return response.data;
 };
+
+export async function getRelatorioPorCategoriaConcurso(
+  categoriaId: number,
+  concursoIdConcurso: number
+): Promise<RelatorioCategoriaDTO[]> {
+  const response = await api.get<RelatorioCategoriaDTO[]>(`/relatorios/relatorioDetalhado/${categoriaId}/${concursoIdConcurso}`);
+  console.log(response);
+  return response.data;
+}

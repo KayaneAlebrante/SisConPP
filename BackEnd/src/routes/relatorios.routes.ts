@@ -17,4 +17,9 @@ router.get( "/individual/:candidatoId", async (req: Request, res: Response) => {
         await relatoriosController.relatorioIndividualDetalhado(req, res);
 });
 
+router.get( "/relatorioDetalhado/:categoriaId/:concursoIdConcurso/",  async (req: Request, res: Response) => {
+        await relatoriosController.gerarRelatorioPorCategoriaConcurso(req, res);
+});
+
+
 export default router;
