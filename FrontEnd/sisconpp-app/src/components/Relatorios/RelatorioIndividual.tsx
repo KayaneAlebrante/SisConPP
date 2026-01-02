@@ -37,9 +37,8 @@ export default function RelatorioIndividualDetalhado({ candidatoId }: Props) {
   }
 
   return (
-    <div className="max-w-5xl mx-auto p-8 bg-neutral-surface rounded-xl shadow-lg border border-outline print:shadow-none print:border-none print:p-0">
+    <div className="w-full mx-auto p-8 bg-neutral-surface rounded-xl shadow-lg border border-outline print:shadow-none print:border-none print:p-0">
       
-      {/* --- CABEÇALHO DO CANDIDATO --- */}
       <div className="border-b-2 border-outline pb-6 mb-8 flex flex-col md:flex-row justify-between items-center gap-4">
         <div className="flex-1">
           <h2 className="text-3xl font-bold text-neutral-onSurface mb-2 flex items-center gap-2">
@@ -57,11 +56,9 @@ export default function RelatorioIndividualDetalhado({ candidatoId }: Props) {
         </div>
       </div>
 
-      {/* --- LISTA DE AVALIADORES --- */}
       <div className="space-y-10">
         {relatorio.avaliadores.map((av, idx) => (
           <div key={idx} className="relative">
-            {/* Cabeçalho do Avaliador */}
             <div className="flex items-center gap-3 mb-4 sticky top-0 bg-neutral-surface z-10 py-2 print:static">
               <div className="bg-neutral-container p-2 rounded-full">
                 <User size={20} className="text-neutral-onContainer" />
@@ -73,11 +70,9 @@ export default function RelatorioIndividualDetalhado({ candidatoId }: Props) {
               </span>
             </div>
 
-            {/* Blocos de Avaliação */}
             <div className="grid gap-6 md:grid-cols-1">
               {av.blocos.map((bloco, bIdx) => (
                 <div key={bIdx} className="bg-neutral-surface rounded-xl border border-outline overflow-hidden break-inside-avoid">
-                  {/* Título do Bloco */}
                   <div className="bg-neutral-container px-5 py-3 border-b border-outline flex justify-between items-center">
                     <h5 className="font-bold text-neutral-onSurface flex items-center gap-2">
                       <CheckCircle size={16} className="text-primary" />
@@ -88,7 +83,6 @@ export default function RelatorioIndividualDetalhado({ candidatoId }: Props) {
                     </span>
                   </div>
 
-                  {/* Lista de Quesitos */}
                   <div className="p-4 space-y-4">
                     {bloco.quesitos.map((q, qIdx) => {
                       const temComentario = q.comentario && q.comentario.trim() !== "";
@@ -146,7 +140,6 @@ export default function RelatorioIndividualDetalhado({ candidatoId }: Props) {
         ))}
       </div>
 
-      {/* --- PONTUAÇÃO FINAL --- */}
       <div className="mt-10 pt-6 border-t-2 border-primary flex justify-end items-center gap-4 print:mt-4 break-inside-avoid">
         <span className="text-lg font-medium text-neutral-onContainer uppercase">Pontuação Final</span>
         <div className="text-3xl font-black bg-primary-dark text-primary-on px-6 py-2 rounded-lg shadow-lg print:shadow-none print:border print:border-black print:text-black print:bg-white">
