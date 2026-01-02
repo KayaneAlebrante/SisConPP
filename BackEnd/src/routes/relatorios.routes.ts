@@ -13,8 +13,13 @@ router.get( "/ranking/:concursoId/:categoriaId", authMiddleware, async (req: Req
         await relatoriosController.rankingPorCategoria(req, res);
 });
 
-router.get( "/individual/:candidatoId", async (req: Request, res: Response) => {
+router.get( "/individual/:candidatoId", authMiddleware, async (req: Request, res: Response) => {
         await relatoriosController.relatorioIndividualDetalhado(req, res);
 });
+
+router.get( "/relatorioDetalhado/:categoriaId/:concursoIdConcurso/", authMiddleware, async (req: Request, res: Response) => {
+        await relatoriosController.gerarRelatorioPorCategoriaConcurso(req, res);
+});
+
 
 export default router;

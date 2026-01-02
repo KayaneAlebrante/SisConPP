@@ -20,7 +20,6 @@ export default function AvaliacaoPage() {
   const [avaliadorSelecionado, setAvaliadorSelecionado] = useState<number | null>(null);
   const [categoriaSelecionada, setCategoriaSelecionada] = useState<number | null>(null);
   const [blocoSelecionado, setBlocoSelecionado] = useState<number | null>(null);
-
   const [candidatos, setCandidatos] = useState<Candidato[]>([]);
   const [avaliadores, setAvaliadores] = useState<UsuarioAvaliador[]>([]);
   const [provasSelecionadas, setProvasSelecionadas] = useState<ProvaAccordionDTO[]>([]);
@@ -118,60 +117,46 @@ export default function AvaliacaoPage() {
       }
 
       const comissaoId = avaliador.ComissaoUsuario?.comissaoId ?? 0;
-      const blocoProvaId = blocoSelecionado ?? provasSelecionadas[0]?.blocosProvas[0]?.idBloco ?? 0;
+      const provaPraticaId = provasSelecionadas[0]?.idProvaPratica ?? 0;
 
-      const payload = {
-        comissaoId,
-        avaliadorId: avaliadorSelecionado,
-        candidatoId: candidatoSelecionado,
-        blocoProvaId,
-        quesitos: provasSelecionadas.flatMap((prova) =>
-          prova.blocosProvas.flatMap((bloco) =>
-            bloco.quesitos.map((quesito) => ({
-              quesitoId: quesito.idQuesito,
-              comentario: comentarios[quesito.idQuesito] ?? "",
-              subQuesitos: quesito.subQuesitos.map((sub) => ({
-                subQuesitoId: sub.idSubequestios,
-                notaSubQuesito: Number(notas[sub.idSubequestios] ?? 0),
-              })),
+      for (const bloco of provasSelecionadas[0]?.blocosProvas ?? []) {
+        const payload = {
+          comissaoId,
+          avaliadorId: avaliadorSelecionado,
+          candidatoId: candidatoSelecionado,
+          blocoProvaId: bloco.idBloco,
+          provaPraticaId,
+          quesitos: bloco.quesitos.map((quesito) => ({
+            quesitoId: quesito.idQuesito,
+            comentario: comentarios[quesito.idQuesito] ?? "",
+            subQuesitos: quesito.subQuesitos.map((sub) => ({
+              subQuesitoId: sub.idSubequestios,
+              notaSubQuesito: Number(notas[sub.idSubequestios] ?? 0),
             })),
-          )
-        ),
+          })),
+          ficha: {
+            idFicha: ficha?.idFicha,
+            concursoId: ficha?.concursoId,
+            notaFinalProvaPratica: ficha?.notaFinalProvaPratica,
+          },
+        };
 
-        ficha: {
-          idFicha: ficha?.idFicha,
-          concrusoId: ficha?.concursoId,
-          notaFinalProvaPratica: ficha?.notaFinalProvaPratica
-        }
-      };
-
-      console.log(payload);
-      await criarAvaliacaoCompleta(payload);
-
-      toast.success("Avaliação salva com sucesso!");
-
-      setNotas({});
-      setComentarios({});
-      setCandidatoSelecionado(null);
-      setAvaliadorSelecionado(null);
-      setCategoriaSelecionada(null);
-      setBlocoSelecionado(null);
-      setProvasSelecionadas([]);
-    } catch (error: unknown) {
-      let msg = "Erro ao salvar avaliação.";
-      if (typeof error === "object" && error !== null && "response" in error) {
-        const axiosError = error as { response?: { data?: { message?: string }, status?: number } };
-        msg = axiosError.response?.data?.message ?? msg;
-        if (axiosError.response?.status === 409) {
-          msg = "Já existe uma avaliação para este candidato e avaliador.";
-        }
+        await criarAvaliacaoCompleta(payload);
       }
 
-      toast.error(msg);
+      toast.success("Avaliações por bloco salvas com sucesso!");
+
       setNotas({});
       setComentarios({});
+      setBlocoSelecionado(null);
+      setCandidatoSelecionado(null);
+      setAvaliadorSelecionado(null);
       setProvasSelecionadas([]);
+      setFicha(null);
 
+    } catch (error) {
+      toast.error("Erro ao salvar avaliações");
+      console.error(error);
     }
   };
 

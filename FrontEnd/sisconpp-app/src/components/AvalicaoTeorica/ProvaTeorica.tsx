@@ -5,7 +5,9 @@ import QuesitoCard from "./QuesitoCard";
 interface Props {
   prova: ProvaTeoricaAccordionDTO;
   notas: Record<number, number>;
+  comentarios: Record<number, string>;
   onChangeNota: (id: number, nota: number) => void;
+  onChangeComentario: (quesitoId: number, comentario: string) => void;
   onChangeAnexoGabarito: (file: File | null) => void;
   onChangeAnexoRedacao: (file: File | null) => void;
 }
@@ -13,7 +15,9 @@ interface Props {
 export default function ProvaTeoricaAccordion({
   prova,
   notas,
+  comentarios,
   onChangeNota,
+  onChangeComentario,
   onChangeAnexoGabarito,
   onChangeAnexoRedacao,
 }: Props) {
@@ -47,9 +51,11 @@ export default function ProvaTeoricaAccordion({
           {prova.quesitos.map((quesito) => (
             <QuesitoCard
               key={quesito.idQuesito}
+              comentarios={comentarios}
               quesito={quesito}
               notas={notas}
               onChangeNota={onChangeNota}
+              onChangeComentario={onChangeComentario}
             />
           ))}
           

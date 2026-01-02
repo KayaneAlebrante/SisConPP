@@ -91,6 +91,39 @@ class RelatoriosController {
             }
         }
     }
+
+    async gerarRelatorioPorCategoriaConcurso(req: Request, res: Response) {
+        const { categoriaId, concursoIdConcurso, } = req.params;
+
+        if (!categoriaId || !concursoIdConcurso) {
+            return res.status(400).json({
+                mensagem: "Id da Categoria e Id do Concurso são obrigatórios",
+            });
+        }
+
+
+        try {
+            const relatorioCategoira =
+                await relatoriosService.gerarRelatorioPorCategoriaConcurso(
+                    Number(categoriaId),
+                    Number(concursoIdConcurso)
+                );
+
+            return res.status(200).json(relatorioCategoira);
+
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                console.error("Erro ao gerar Relatorio por categoria e concurso:", error);
+                return res.status(400).json({ mensagem: error.message });
+            } else {
+                console.error("Erro desconhecido:", error);
+                return res.status(400).json({
+                    mensagem: "Erro desconhecido."
+                });
+            }
+        }
+    }
+
 }
 
 export default new RelatoriosController();

@@ -1,4 +1,4 @@
-import { PrismaClient, FichaCandidato, SubQuesitos } from "@prisma/client";
+import { PrismaClient, FichaCandidato, SubQuesitos, Avaliacao, AvaliacaoQuesito, BlocoProva } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -289,6 +289,122 @@ export class RelatoriosService {
             totalFinal,
         };
     }
+
+  async gerarRelatorioPorCategoriaConcurso(
+  categoriaId: number,
+  concursoIdConcurso: number
+): Promise<(CandidatoResumo & { posicao: number })[]> {
+  const candidatos = await prisma.candidato.findMany({
+    where: { categoriaId, concursoIdConcurso },
+    include: {
+      Categoria: true,
+      Concurso: true,
+      CTG: true,
+      fichaCandidato: true,
+      avalicoes: {
+        include: {
+          Usuario: true,
+          BlocoProva: true,
+          ProvaPratica: true,
+          quesitosAvaliados: {
+            include: {
+              subQuesitosAvaliados: true
+            }
+          }
+        }
+      }
+    }
+  });
+
+  const relatorio: CandidatoResumo[] = candidatos.map((c) => {
+    const notaTeorica = c.fichaCandidato?.notaFinalProvaTeorica ?? 0;
+
+    // Agrupamento por avaliador
+    const mapaAvaliadores = new Map<number, {
+      nomeAvaliador: string;
+      totalAvaliador: number;
+      blocosMap: Map<string, number>;
+    }>();
+
+    (c.avalicoes ?? []).forEach((av) => {
+      if (!av.provaPraticaId && !av.blocoProvaId) return;
+
+      const idAvaliador = av.avaliadorId;
+      const nomeAvaliador = av.Usuario?.nomeCompleto ?? "Avaliador";
+
+      // Nome do agrupamento (Bloco ou Prova)
+      let nomeDoAgrupamento = "";
+      if (av.BlocoProva) {
+        nomeDoAgrupamento = av.BlocoProva.nomeBloco;
+      } else if (av.ProvaPratica) {
+        nomeDoAgrupamento = av.ProvaPratica.nomeProva;
+      } else {
+        nomeDoAgrupamento = "Atividade não identificada";
+      }
+
+      // Soma das notas dos quesitos e subquesitos
+      const notaDestaAvaliacao = (av.quesitosAvaliados ?? []).reduce((accQ, q) => {
+        const notaSub = (q.subQuesitosAvaliados ?? []).reduce(
+          (accS, sq) => accS + (sq.notaSubQuesito ?? 0),
+          0
+        );
+        return accQ + (q.notaQuesito ?? 0) + notaSub;
+      }, 0);
+
+      // Cria avaliador se não existir
+      if (!mapaAvaliadores.has(idAvaliador)) {
+        mapaAvaliadores.set(idAvaliador, {
+          nomeAvaliador,
+          totalAvaliador: 0,
+          blocosMap: new Map<string, number>()
+        });
+      }
+
+      const dadosAvaliador = mapaAvaliadores.get(idAvaliador)!;
+
+      // Soma ao total geral
+      dadosAvaliador.totalAvaliador += notaDestaAvaliacao;
+
+      // Soma ao bloco específico
+      const notaAtualDoBloco = dadosAvaliador.blocosMap.get(nomeDoAgrupamento) ?? 0;
+      dadosAvaliador.blocosMap.set(nomeDoAgrupamento, notaAtualDoBloco + notaDestaAvaliacao);
+    });
+
+    // Transforma Maps em arrays
+    const avaliadores: AvaliadorResumo[] = Array.from(mapaAvaliadores.values()).map((av) => {
+      const blocos: BlocoResumo[] = Array.from(av.blocosMap.entries()).map(([nome, nota]) => ({
+        nomeBloco: nome,
+        notaFinalBloco: nota
+      }));
+
+      return {
+        nomeAvaliador: av.nomeAvaliador,
+        blocos,
+        totalAvaliador: av.totalAvaliador
+      };
+    });
+
+    const notaPratica = avaliadores.reduce((acc, a) => acc + a.totalAvaliador, 0);
+    const notaFinal = notaTeorica + notaPratica;
+
+    return {
+      candidatoId: c.idCandidato,
+      nomeCandidato: c.nomeCompleto,
+      CTG: c.CTG?.nomeCTG ?? "",
+      categoria: c.Categoria?.nomeCategoria ?? "",
+      concurso: c.Concurso?.nomeConcurso ?? "",
+      notaProvaTeorica: notaTeorica,
+      notaProvasPraticas: notaPratica,
+      notaFinal,
+      avaliadores
+    };
+  });
+
+  // Ordena por nota final
+  const ordenado = relatorio.sort((a, b) => b.notaFinal - a.notaFinal);
+console.dir(ordenado, { depth: null, colors: true });
+  return ordenado.map((c, idx) => ({ ...c, posicao: idx + 1 }));
+}
 }
 
 const relatorios = new RelatoriosService(prisma);
@@ -333,4 +449,27 @@ export interface RelatorioGeralCandidatoDTO {
     notaProvaTeorica: number;
     notaProvasPraticas: number;
     notaFinal: number;
+}
+
+export interface BlocoResumo {
+    nomeBloco: string;
+    notaFinalBloco: number;
+}
+
+export interface AvaliadorResumo {
+    nomeAvaliador: string;
+    blocos: BlocoResumo[];
+    totalAvaliador: number;
+}
+
+export interface CandidatoResumo {
+    candidatoId: number;
+    nomeCandidato: string;
+    CTG: string;
+    categoria: string;
+    concurso: string;
+    notaProvaTeorica: number;
+    notaProvasPraticas: number;
+    notaFinal: number;
+    avaliadores: AvaliadorResumo[];
 }

@@ -7,9 +7,8 @@ export class AvaliacaoService {
 
     async criarAvaliacaoCompleta(data: CriarAvaliacaoCompletaDTO) {
         try {
-            return await this.prisma.$transaction(async (avaliacaoProva) => {
-
-                const avaliacaoExistente = await avaliacaoProva.avaliacao.findFirst({
+            return await this.prisma.$transaction(async (prisma) => {
+                const avaliacaoExistente = await prisma.avaliacao.findFirst({
                     where: {
                         avaliadorId: data.avaliadorId,
                         candidatoId: data.candidatoId,
@@ -18,17 +17,17 @@ export class AvaliacaoService {
                 });
 
                 if (avaliacaoExistente) {
-                    throw new Error(
-                        "Já existe uma avaliação cadastrada para este avaliador e candidato."
-                    );
+                    throw new Error("Já existe uma avaliação cadastrada para este avaliador e candidato.");
                 }
 
-                const avaliacao = await avaliacaoProva.avaliacao.create({
+                const avaliacao = await prisma.avaliacao.create({
                     data: {
                         comissaoId: data.comissaoId,
                         avaliadorId: data.avaliadorId,
                         candidatoId: data.candidatoId,
                         blocoProvaId: data.blocoProvaId,
+                        provaPraticaId: data.provaPraticaId,     
+                        fichaCandidatoIdFicha: data.ficha.idFicha,
                         notaFinal: 0,
                     },
                 });
@@ -40,18 +39,17 @@ export class AvaliacaoService {
                         notaQuesito += sub.notaSubQuesito;
                     }
 
-                    const avaliacaoQuesito =
-                        await avaliacaoProva.avaliacaoQuesito.create({
-                            data: {
-                                avaliacaoId: avaliacao.idAvalicao,
-                                quesitoId: quesito.quesitoId,
-                                comentario: quesito.comentario ?? null,
-                                notaQuesito,
-                            },
-                        });
+                    const avaliacaoQuesito = await prisma.avaliacaoQuesito.create({
+                        data: {
+                            avaliacaoId: avaliacao.idAvalicao,
+                            quesitoId: quesito.quesitoId,
+                            comentario: quesito.comentario ?? null,
+                            notaQuesito,
+                        },
+                    });
 
                     for (const sub of quesito.subQuesitos) {
-                        await avaliacaoProva.avaliacaoSubQuesito.create({
+                        await prisma.avaliacaoSubQuesito.create({
                             data: {
                                 avaliacaoQuesitoId: avaliacaoQuesito.idAvaliacaoQuesito,
                                 subQuesitoId: sub.subQuesitoId,
@@ -61,40 +59,31 @@ export class AvaliacaoService {
                     }
                 }
 
-                const somaQuesitos =
-                    await avaliacaoProva.avaliacaoQuesito.aggregate({
-                        where: {
-                            avaliacaoId: avaliacao.idAvalicao,
-                        },
-                        _sum: {
-                            notaQuesito: true,
-                        },
-                    });
+                const somaQuesitos = await prisma.avaliacaoQuesito.aggregate({
+                    where: { avaliacaoId: avaliacao.idAvalicao },
+                    _sum: { notaQuesito: true },
+                });
 
-                const notaFinalProvaPratica =
-                    somaQuesitos._sum.notaQuesito ?? 0;
+                const notaFinalProvaPratica = somaQuesitos._sum.notaQuesito ?? 0;
 
-                await avaliacaoProva.avaliacao.update({
+                await prisma.avaliacao.update({
                     where: { idAvalicao: avaliacao.idAvalicao },
                     data: { notaFinal: notaFinalProvaPratica },
                 });
 
-                await avaliacaoProva.fichaCandidato.update({
+                await prisma.fichaCandidato.update({
                     where: { idFicha: data.ficha.idFicha },
                     data: {
                         notaFinalProvasPraticas: notaFinalProvaPratica,
-                        notaCandidato: {
-                            increment: notaFinalProvaPratica
-                        }
+                        notaCandidato: { increment: notaFinalProvaPratica },
                     },
                 });
 
                 return {
-                    message: "Avaliação Prática criada com sucesso",
+                    message: "Avaliação prática criada com sucesso",
                     notaFinalProvaPratica,
                 };
             });
-
         } catch (error) {
             console.error("Erro ao criar avaliação:", error);
             throw error;
@@ -186,15 +175,15 @@ export class AvaliacaoService {
         return this.prisma.$transaction(async (prisma) => {
             const avaliacao = await prisma.avaliacao.create({
                 data: {
-                    avaliadorId: 1,
                     candidatoId: data.candidatoId,
+                    avaliadorId: data.avaliadorId,
                     provaTeoricaId: data.provaTeoricaId,
+                    fichaCandidatoIdFicha: data.ficha.idFicha,
                     notaFinal: 0,
                 },
             });
 
             for (const quesito of data.quesitos) {
-
                 let notaQuesitoFinal = quesito.notaQuesito ?? 0;
 
                 const avaliacaoQuesito = await prisma.avaliacaoQuesito.create({
@@ -202,9 +191,10 @@ export class AvaliacaoService {
                         avaliacaoId: avaliacao.idAvalicao,
                         quesitoId: quesito.quesitoId,
                         notaQuesito: notaQuesitoFinal,
-                        comentario: quesito.comentario ?? null
+                        comentario: quesito.comentario ?? null,
                     },
                 });
+
                 if (quesito.subQuesitos?.length) {
                     notaQuesitoFinal = 0;
 
@@ -222,21 +212,17 @@ export class AvaliacaoService {
 
                     await prisma.avaliacaoQuesito.update({
                         where: { idAvaliacaoQuesito: avaliacaoQuesito.idAvaliacaoQuesito },
-                        data: { 
+                        data: {
                             notaQuesito: notaQuesitoFinal,
-                            comentario: quesito.comentario ?? null
+                            comentario: quesito.comentario ?? null,
                         },
                     });
                 }
             }
 
             const somaQuesitos = await prisma.avaliacaoQuesito.aggregate({
-                where: {
-                    avaliacaoId: avaliacao.idAvalicao,
-                },
-                _sum: {
-                    notaQuesito: true,
-                },
+                where: { avaliacaoId: avaliacao.idAvalicao },
+                _sum: { notaQuesito: true },
             });
 
             const notaFinalProvaTeorica = somaQuesitos._sum.notaQuesito ?? 0;
@@ -250,14 +236,10 @@ export class AvaliacaoService {
                 where: { idFicha: data.ficha.idFicha },
                 data: {
                     notaFinalProvaTeorica: notaFinalProvaTeorica,
-                    notaCandidato: {
-                        increment: notaFinalProvaTeorica,
-                    },
-
+                    notaCandidato: { increment: notaFinalProvaTeorica },
                     anexoGabarito: data.ficha.anexoGabarito
                         ? new Uint8Array(data.ficha.anexoGabarito)
                         : undefined,
-
                     anexoRedacao: data.ficha.anexoRedacao
                         ? new Uint8Array(data.ficha.anexoRedacao)
                         : undefined,
@@ -270,7 +252,6 @@ export class AvaliacaoService {
             };
         });
     }
-
 
     async buscarEstruturaTeorica(candidatoId: number) {
         const candidato = await this.prisma.candidato.findUnique({
@@ -305,6 +286,7 @@ type CriarAvaliacaoCompletaDTO = {
     comissaoId: number
     avaliadorId: number
     candidatoId: number
+    provaPraticaId: number
     blocoProvaId?: number
     quesitos: {
         quesitoId: number
@@ -325,6 +307,7 @@ type CriarAvaliacaoCompletaDTO = {
 
 type CriarAvaliacaoTeoricaDTO = {
     candidatoId: number;
+    avaliadorId: number;
     provaTeoricaId: number;
 
     quesitos: {

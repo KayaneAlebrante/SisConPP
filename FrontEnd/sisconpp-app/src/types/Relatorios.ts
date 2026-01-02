@@ -52,3 +52,27 @@ export interface RelatorioIndividualDTO {
 
   totalFinal: number; 
 }
+
+export interface BlocoResumo {
+  nomeBloco: string;
+  notaFinalBloco: number;
+}
+
+export interface AvaliadorResumo {
+  nomeAvaliador: string;
+  blocos: BlocoResumo[];
+  totalAvaliador: number;
+}
+
+export interface RelatorioCategoriaDTO {
+  candidatoId: number;
+  nomeCandidato: string;
+  CTG: string;
+  categoria: string;
+  concurso: string;
+  notaProvaTeorica: number;
+  notaProvasPraticas: number;
+  notaFinal: number;
+  avaliadores: AvaliadorResumo[];
+  posicao: number; 
+}

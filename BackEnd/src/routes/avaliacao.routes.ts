@@ -20,11 +20,11 @@ router.put("/avaliacao/:idAvaliacao", authMiddleware, async (req: Request, res: 
     await avaliacaoController.editarAvaliacao(req, res);
 });
 
-router.get( "/avaliacao/:avaliadorId/:candidatoId", async (req: Request, res: Response) => {
+router.get( "/avaliacao/:avaliadorId/:candidatoId", authMiddleware, async (req: Request, res: Response) => {
     await avaliacaoController.buscarEstruturaCompleta(req, res);
 });
 
-router.get( "/avaliacaoTeorica/:candidatoId", async (req: Request, res: Response) => {
+router.get( "/avaliacaoTeorica/:candidatoId", authMiddleware, async (req: Request, res: Response) => {
     await avaliacaoController.buscarEstruturaTeorica(req, res);
 });
 

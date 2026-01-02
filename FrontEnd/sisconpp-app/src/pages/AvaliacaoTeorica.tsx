@@ -23,6 +23,15 @@ export default function AvaliacaoTeoricaPage() {
     const [comentarios, setComentarios] = useState<Record<number, string>>({});
     const [ficha, setFicha] = useState<FichaCandidato | null>(null);
 
+    const usuarioLogado = (() => {
+        try {
+            const usuario = JSON.parse(localStorage.getItem("usuario") || "{}");
+            return usuario?.id ?? null;
+        } catch {
+            return null;
+        }
+    })();
+
     useEffect(() => {
         const fetchCandidatos = async () => {
             try {
@@ -104,6 +113,7 @@ export default function AvaliacaoTeoricaPage() {
             for (const prova of provasSelecionadas) {
                 const payload = {
                     candidatoId: Number(candidatoSelecionado),
+                    avaliadorId: usuarioLogado,
                     provaTeoricaId: prova.idprovaTeorica,
                     quesitos: prova.quesitos.map((quesito) => ({
                         quesitoId: quesito.idQuesito,
@@ -209,6 +219,16 @@ export default function AvaliacaoTeoricaPage() {
                                 setComentarios((prev) => ({ ...prev, [id]: comentario }))
                             }
                             onSalvar={handleSalvarAvaliacao}
+                            onChangeAnexoGabarito={(file) => {
+                                if (file) {
+                                    setFicha((prev) => prev ? { ...prev, anexoGabarito: file.name } : prev);
+                                }
+                            }}
+                            onChangeAnexoRedacao={(file) => {
+                                if (file) {
+                                    setFicha((prev) => prev ? { ...prev, anexoRedacao: file.name } : prev);
+                                }
+                            }}
                         />
                     )}
                 </div>
