@@ -16,7 +16,11 @@ function getLimiteOpcionais(categoriaId: number | null | undefined, tipoProva: s
   if (!categoriaId) return 3;
 
   if (categoriaId === 2) {
-    return tipoProva === "Artística" ? 2 : 3;
+    if(tipoProva === "Prova Artística" || tipoProva === "Artistica"){
+      return 2
+    }else if(tipoProva === "Prova Campeira" || tipoProva === "Campeira"){
+      return 3
+    }
   }
 
   if ([1, 3, 5, 7, 9].includes(categoriaId)) {
