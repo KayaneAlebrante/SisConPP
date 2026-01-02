@@ -26,3 +26,29 @@ export interface RankingCategoriaDTO {
   notaFinal: number;
 }
 
+export interface RelatorioIndividualDTO {
+  candidatoId: number;
+  nomeCandidato: string;  
+  categoria: string;    
+  concurso: string;  
+  notaCandidato: number; 
+  avaliadores: {
+    nomeAvaliador: string;
+    blocos: {
+      nomeBloco: string;
+      quesitos: {
+        nomeQuesito: string;
+        notaQuesito: number;
+        comentario: string;
+        subquesitos: {
+          nomeSubQuesito: string;
+          nota: number;
+        }[];
+      }[];
+      totalBloco: number; 
+    }[];
+    totalAvaliador: number;
+  }[];
+
+  totalFinal: number; 
+}

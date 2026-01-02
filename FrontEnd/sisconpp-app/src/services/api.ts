@@ -9,7 +9,7 @@ import { PreferenciaSorteio, Danca, CriarSorteioPayload } from '../types/Sorteio
 import { BlocoProva, ProvaPratica, Quesitos, SubQuesitos } from '../types/ProvaPratica';
 import { ProvaTeorica, ProvaTeoricaF } from '../types/ProvaTeorica';
 import { CriarAvaliacaoTeoricaPayload } from '../types/Avaliacao';
-import { RelatorioGeralCandidatoDTO, RelatorioRankingDTO } from '../types/Relatorios';
+import { RelatorioGeralCandidatoDTO, RelatorioRankingDTO, RelatorioIndividualDTO } from '../types/Relatorios';
 
 // ---- CONFIGURAÇÃO DO AXIOS ----
 export const api = axios.create({
@@ -367,6 +367,13 @@ export async function relatorioGeral(concursoId: number) {
 export async function rankingPorCategoria(concursoId: number, categoriaId: number) {
   const response = await api.get<RelatorioRankingDTO[]>(
     `/relatorios/ranking/${concursoId}/${categoriaId}`
+  );
+  return response.data;
+};
+
+export async function RelatorioIndividual(candidatoId: number) {
+  const response = await api.get<RelatorioIndividualDTO>(
+    `/relatorios/individual/${candidatoId}`
   );
   return response.data;
 };

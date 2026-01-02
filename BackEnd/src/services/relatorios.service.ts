@@ -108,10 +108,9 @@ export class RelatoriosService {
                                 BlocoProva: true,
                             },
                         },
-                        // Importante: incluir os subquesitos avaliados e seus nomes
                         subQuesitosAvaliados: {
                             include: {
-                                SubQuesito: true, // model SubQuesitos do seu schema
+                                SubQuesito: true,
                             },
                         },
                     },
@@ -175,8 +174,6 @@ export class RelatoriosService {
                 }
 
                 const blocoMap = avaliador.blocos.get(bloco.idBloco)!;
-
-                // Mapear subquesitos avaliados (nome do SubQuesitos + nota do AvaliacaoSubQuesito)
                 const subquesitos =
                     aq.subQuesitosAvaliados?.map((sq) => ({
                         nomeSubQuesito: sq.SubQuesito?.nomeSubquesito ?? "",
@@ -196,8 +193,29 @@ export class RelatoriosService {
             }
         }
 
+        const ficha = await this.prisma.fichaCandidato.findUnique({
+            where: { candidatoId },
+            include: {
+                Candidato: {
+                    select: {
+                        idCandidato: true,
+                        nomeCompleto: true,
+                        Categoria: { select: { nomeCategoria: true } },
+                        Concurso: { select: { nomeConcurso: true } },
+                    },
+                },
+                Concurso: {
+                    select: { nomeConcurso: true },
+                },
+            },
+        });
+
         return {
             candidatoId,
+            nomeCandidato: ficha?.Candidato.nomeCompleto,
+            categoria: ficha?.Candidato.Categoria.nomeCategoria,
+            concurso: ficha?.Concurso.nomeConcurso,
+            notaCandidato: ficha?.notaCandidato,
             avaliadores: Array.from(avaliadoresMap.values())
                 .sort((a, b) => a.nomeAvaliador.localeCompare(b.nomeAvaliador))
                 .map((av) => ({
