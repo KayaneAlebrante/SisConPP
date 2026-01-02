@@ -9,6 +9,7 @@ class AvaliacaoController {
                 avaliadorId,
                 candidatoId,
                 blocoProvaId,
+                provaPraticaId,
                 quesitos,
                 ficha
             } = req.body
@@ -18,6 +19,7 @@ class AvaliacaoController {
                 !avaliadorId ||
                 !candidatoId ||
                 !blocoProvaId ||
+                !provaPraticaId ||
                 !Array.isArray(quesitos)
             ) {
                 return res.status(400).json({
@@ -30,6 +32,7 @@ class AvaliacaoController {
                 avaliadorId,
                 candidatoId,
                 blocoProvaId,
+                provaPraticaId,
                 quesitos,
                 ficha
             })
@@ -121,7 +124,6 @@ class AvaliacaoController {
                 quesitos,
                 ficha,
             });
-            console.log(avaliacaoTeorica);
 
             return res.status(201).json(avaliacaoTeorica);
         } catch (error: any) {
