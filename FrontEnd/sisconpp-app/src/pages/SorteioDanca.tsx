@@ -75,8 +75,8 @@ console.log(preferencias);
     return (
         <div className="flex flex-row min-h-screen w-full bg-neutral-background">
             <SideNavBar />
-            <div className="flex-1 p-6 bg-neutral-background flex flex-col items-center overflow-y-auto">
-                <div className="w-full max-w-6xl bg-secondary-light p-8 rounded-2xl shadow-lg mb-4">
+            <div className="w-full flex-1 p-6 bg-neutral-background flex flex-col items-center overflow-y-auto">
+                <div className="w-full bg-secondary-light p-8 rounded-2xl shadow-lg mb-4">
                     <DancaForm
                         categorias={categorias}
                         candidatos={candidatosFiltrados}
@@ -115,7 +115,7 @@ console.log(preferencias);
                 </div>
 
                 {!preferenciasSalvas && (
-                    <div className="w-full max-w-6xl bg-secondary-light p-8 rounded-2xl shadow-lg mb-4">
+                    <div className="w-full bg-secondary-light p-8 rounded-2xl shadow-lg mb-4">
                         <DancaList
                             dancas={dancas}
                             selecionados={selecionados}

@@ -5,17 +5,16 @@ const prisma = new PrismaClient();
 class DancaService {
     constructor(private prisma: PrismaClient) {}
 
-    async criarDanca(nomeDanca: string, tipo: "DANCA_DE_SALAO" | "DANCA_TRADICIONAL", quesitoId: number) {
+    async criarDanca(nomeDanca: string, tipo: "DANCA_DE_SALAO" | "DANCA_TRADICIONAL") {
         return await this.prisma.danca.create({
             data: {
                 nomeDanca,
                 dancaSalaoTradicional: tipo,
-                quesitoId,
             },
         });
     }
 
-    async atualizarDanca(idDanca: number, dados: Partial<{ nomeDanca: string; dancaSalaoTradicional: "DANCA_DE_SALAO" | "DANCA_TRADICIONAL"; quesitoId: number }>) {
+    async atualizarDanca(idDanca: number, dados: Partial<{ nomeDanca: string; dancaSalaoTradicional: "DANCA_DE_SALAO" | "DANCA_TRADICIONAL"; }>) {
         return await this.prisma.danca.update({
             where: { idDanca },
             data: dados,

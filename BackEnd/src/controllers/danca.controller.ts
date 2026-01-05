@@ -5,7 +5,7 @@ class DancaController {
   async criarDanca(req: Request, res: Response) {
     try {
       const { nomeDanca, tipo, quesitoId } = req.body;
-      const novaDanca = await dancaService.criarDanca(nomeDanca, tipo, quesitoId);
+      const novaDanca = await dancaService.criarDanca(nomeDanca, tipo);
       res.status(201).json(novaDanca);
     } catch (error) {
       console.error("Erro ao criar dança:", error);
