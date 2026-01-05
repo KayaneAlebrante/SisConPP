@@ -298,7 +298,6 @@ model Quesitos {
 
   subQuesitos       SubQuesitos[]
   recursos          Recurso[]
-  dancas            Danca[]
   avaliacaoQuesitos AvaliacaoQuesito[]
 }
 
@@ -340,11 +339,8 @@ model Danca {
   idDanca                              Int                      @id @default(autoincrement())
   nomeDanca                            String
   dancaSalaoTradicional                DancaSalaoTradicional
-  quesitoId                            Int
   preferenciaSorteioDanca              PreferenciaSorteioDanca? @relation(fields: [preferenciaSorteioDancaIdPreferencia], references: [idPreferencia])
   preferenciaSorteioDancaIdPreferencia Int?
-  quesitos                             Quesitos?                @relation(fields: [quesitosIdQuesito], references: [idQuesito])
-  quesitosIdQuesito                    Int?
 }
 
 enum DancaSalaoTradicional {
