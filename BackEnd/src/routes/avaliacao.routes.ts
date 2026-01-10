@@ -28,4 +28,8 @@ router.get( "/avaliacaoTeorica/:candidatoId", authMiddleware, async (req: Reques
     await avaliacaoController.buscarEstruturaTeorica(req, res);
 });
 
+router.get("/avaliacoes", authMiddleware, async (req: Request, res: Response) => {
+    await avaliacaoController.listarAvaliacoes(req, res);
+});
+
 export default router;

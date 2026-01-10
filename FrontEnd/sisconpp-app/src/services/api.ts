@@ -341,6 +341,11 @@ export async function buscarEstruturaTeorica(candidatoId: number) {
   return response.data;
 }
 
+export async function listarAvaliacoes() {
+  const response = await api.get("/avaliacao/avaliacoes");
+  return response.data;
+}
+
 //---- Relatoriois ----
 export async function relatorioGeral(concursoId: number) {
   const response = await api.get<RelatorioGeralCandidatoDTO[]>(

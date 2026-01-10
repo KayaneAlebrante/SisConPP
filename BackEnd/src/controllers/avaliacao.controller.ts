@@ -90,6 +90,19 @@ class AvaliacaoController {
         }
     }
 
+    async listarAvaliacoes(req: Request, res: Response) {
+        try {
+            const avaliacoes = await AvaliacaoService.listarAvaliacoes();
+            return res.status(200).json(avaliacoes);
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                console.error("Erro ao listar avaliações:", error);
+                return res.status(400).json({ mensagem: error.message });
+            }
+            return res.status(500).json({ mensagem: "Erro desconhecido." });
+        }
+    }
+    
     async buscarEstruturaCompleta(req: Request, res: Response) {
         const { avaliadorId, candidatoId } = req.params;
 

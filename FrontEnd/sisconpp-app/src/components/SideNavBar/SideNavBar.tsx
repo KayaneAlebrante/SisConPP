@@ -37,7 +37,7 @@ const Sidebar: FC = () => {
     { label: "CTGs", icon: Building2, href: "/ctg", roles: ["SECRETARIO"] },
     { label: "RTs", icon: CopyPlus, href: "/rt", roles: ["SECRETARIO"] },
     { label: "Concursos", icon: LayoutDashboard, href: "/concurso", roles: ["SECRETARIO"] },
-    { label: "Candidatos", icon: Users, href: "/candidatos", roles: ["SECRETARIO", "AUXILIAR"] },
+    { label: "Candidatos", icon: Users, href: "/candidatos", roles: ["SECRETARIO"] },
     { label: "Avaliadores", icon: BookText, href: "/avaliadores", roles: ["SECRETARIO"] },
     { label: "Auxiliar", icon: User, href: "/auxiliares", roles: ["SECRETARIO"] },
     { label: "Comissões Avaliadoras", icon: Users, href: "/comissao", roles: ["SECRETARIO"] },
