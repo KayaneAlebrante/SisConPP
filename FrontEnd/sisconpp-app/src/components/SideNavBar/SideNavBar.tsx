@@ -45,11 +45,10 @@ const Sidebar: FC = () => {
     { label: "Adicionar planilhas Prova Prática", icon: FilePlus, href: "/prova-pratica-criacao", roles: ["SECRETARIO"] },
     { label: "Adicionar Prova Teorica", icon: BookPlus, href: "/prova-teorica-criacao", roles: ["SECRETARIO"] },
     { label: "Adicionar Avaliação Prática", icon: SquareMenu, href: "/avaliacao-pratica", roles: ["SECRETARIO", "AVALIADOR"] },
-    { label: "Adicionar Avaliação Teorica", icon: BookType, href: "/avaliacao-teorica", roles: ["SECRETARIO", "AVALIADOR"] },
+    { label: "Adicionar Avaliação Teorica", icon: BookType, href: "/avaliacao-teorica", roles: ["SECRETARIO"] },
     { label: "Relatórios", icon: BookText, href: "/relatorios", roles: ["SECRETARIO"] },
   ];
 
-  // Filtra os menus de acordo com a função
   const filteredMenuItems = userRole
     ? menuItems.filter((item) => item.roles.includes(userRole))
     : [];
@@ -60,7 +59,6 @@ const Sidebar: FC = () => {
         isOpen ? "w-64" : "w-20"
       } bg-primary-dark border-r border-primary text-primary-onContainer shadow-lg`}
     >
-      {/* Botão toggle */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="absolute -right-3 top-9 bg-primary-dark border border-primary-light rounded-full p-1.5 hover:bg-primary-light hover:text-primary-dark text-primary-on transition-colors"
@@ -68,7 +66,6 @@ const Sidebar: FC = () => {
         {isOpen ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
       </button>
 
-      {/* Logo */}
       <div className="flex flex-col items-center py-6 px-4">
         <img
           src={imgLogoLight}
@@ -86,7 +83,6 @@ const Sidebar: FC = () => {
         )}
       </div>
 
-      {/* Menu filtrado */}
       <nav className="flex flex-col justify-between gap-1">
         {filteredMenuItems.map(({ label, icon: Icon, href }) => (
           <a
@@ -100,7 +96,6 @@ const Sidebar: FC = () => {
         ))}
       </nav>
 
-      {/* Rodapé */}
       <div className="mt-auto p-4 flex justify-end text-primary-light">
         <AlertCircle size={20} />
       </div>
