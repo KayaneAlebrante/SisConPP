@@ -116,7 +116,7 @@ export default function AvaliacaoPage() {
       }
 
       const avaliadorId = usuarioLogado?.funcao === "AVALIADOR"
-        ? usuarioLogado.idUsuario
+        ? usuarioLogado.id
         : avaliadorSelecionado;
 
       if (!avaliadorId) {
