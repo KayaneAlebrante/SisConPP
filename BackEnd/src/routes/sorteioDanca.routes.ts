@@ -1,10 +1,11 @@
 import express, {Request, Response} from "express";
 import sorteioDancaController from "../controllers/sorteioDanca.controller";
 import { authMiddleware } from "../middlewares/authMiddleware";
+import { permitirFuncoes } from "../middlewares/roleMiddleware";
 
 const router = express.Router();
 
-router.post("/", authMiddleware, async (req: Request, res: Response) => {
+router.post("/", authMiddleware, permitirFuncoes(["SECRETARIO", "AUXILIAR"]), async (req: Request, res: Response) => {
     await sorteioDancaController.realizarSorteio(req, res);
 });
 

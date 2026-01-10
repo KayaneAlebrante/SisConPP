@@ -1,22 +1,23 @@
 import express, {Request, Response } from "express";
 import blocoProvaController from "../controllers/blocoProva.controller";
 import { authMiddleware } from "../middlewares/authMiddleware";
+import { permitirFuncoes } from "../middlewares/roleMiddleware";
 
 const route = express.Router();
 
-route.post("/", async (req: Request, res: Response) => {
+route.post("/", authMiddleware, permitirFuncoes(["SECRETARIO"]), async (req: Request, res: Response) => {
     await blocoProvaController.criarBlocoProva(req, res);
 });
 
-route.put("/",authMiddleware,  async (req: Request, res: Response) => {
+route.put("/",authMiddleware, permitirFuncoes(["SECRETARIO"]), async (req: Request, res: Response) => {
     await blocoProvaController.editarBlocoProva(req, res);
 });
 
-route.get("/:idBloco", authMiddleware, async (req: Request, res: Response) => {
+route.get("/:idBloco", authMiddleware, permitirFuncoes(["SECRETARIO"]), async (req: Request, res: Response) => {
     await blocoProvaController.consultarBlocoProva(req, res);
 });
 
-route.get("/", authMiddleware,  async (req: Request, res: Response) => {
+route.get("/", authMiddleware, permitirFuncoes(["SECRETARIO"]), async (req: Request, res: Response) => {
     await blocoProvaController.consultarBlocosProva(req, res);
 });
 
