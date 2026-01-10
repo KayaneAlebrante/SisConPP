@@ -53,7 +53,7 @@ export default function RTList({ onEdit }: RTListProps) {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="w-full flex flex-col h-full">
       <h2 className="text-xl font-bold mb-4 text-secondary-on">Lista de Regiões Tradicionalistas</h2>
       <table className="w-full bg-white rounded-xl shadow-md overflow-hidden">
         <thead>
