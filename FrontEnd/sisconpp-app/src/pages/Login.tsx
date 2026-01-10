@@ -24,6 +24,7 @@ function Login() {
       localStorage.setItem("token", data.token);
       localStorage.setItem("usuario", JSON.stringify(data.usuario));
       toast.success("Login realizado com sucesso!");
+      console.log("Dados do usuário:", data.usuario);
 
       navigate("/tela-inicial");
     } catch (error: unknown) {
@@ -33,6 +34,8 @@ function Login() {
       if (error instanceof Error){
         mensagem = error.message;
       }
+      
+      
 
       setErro(mensagem);
       toast.error(mensagem);

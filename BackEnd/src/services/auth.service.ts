@@ -28,7 +28,7 @@ class AuthService {
       process.env.JWT_SECRET || "segredo",
       { expiresIn: "1d" }
     );
-    console.log("Usuário logado:", usuario.login, "Função:", usuario.funcao);
+
     return {
       token,
       usuario: {
