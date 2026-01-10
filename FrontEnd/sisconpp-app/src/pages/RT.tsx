@@ -29,8 +29,8 @@ function RTPage() {
   return (
     <div className="flex flex-row min-h-screen w-full bg-neutral-background">
       <SideNavBar />
-      <div className="flex-1 p-4 bg-neutral-background flex flex-col items-center overflow-y-auto">
-        <div className="w-full max-w-5xl mt-10 mb-6 px-2 flex justify-end">
+      <div className="flex-1 p-6 bg-neutral-background flex flex-col items-center overflow-y-auto">
+        <div className="w-full max-w-full mt-10 mb-6 px-2 flex justify-end">
           <button
             onClick={openModal}
             className="bg-secondary-container text-white font-bold py-2 px-4 rounded-lg hover:bg-secondary-dark transition duration-300 ease-in-out"
@@ -39,7 +39,7 @@ function RTPage() {
           </button>
         </div>
 
-        <div className="w-full max-w-6xl bg-secondary-light p-8 rounded-2xl shadow-lg mb-4">
+        <div className="w-full max-w-full bg-secondary-light p-8 rounded-2xl shadow-lg mb-4">
           <RTList key={refreshList.toString()} onEdit={handleEdit} />
         </div>
       </div>

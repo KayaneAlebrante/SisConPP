@@ -120,7 +120,7 @@ export default function ProvaTeoricaCriacao() {
             <SideNavBar />
 
             <div className="flex-1 p-6 flex flex-col items-center overflow-y-auto">
-                <div className="w-full max-w-6xl bg-secondary-light p-8 rounded-2xl shadow-lg mb-8">
+                <div className="w-full max-w-full bg-secondary-light p-8 rounded-2xl shadow-lg mb-8">
                     <div className="grid md:grid-cols-2 gap-6 items-end">
                         <div>
                             <label className="font-semibold text-white mb-2 block">Categoria</label>
@@ -151,7 +151,7 @@ export default function ProvaTeoricaCriacao() {
                     </div>
                 </div>
 
-                <div className="w-full max-w-6xl bg-secondary-light p-6 md:p-8 rounded-2xl shadow-lg mb-4 space-y-4 min-h-[500px]">
+                <div className="w-full max-w-full bg-secondary-light p-6 md:p-8 rounded-2xl shadow-lg mb-4 space-y-4 min-h-[500px]">
                     {loading && <p className="text-center text-secondary-onFixed">Carregando provas...</p>}
 
                     {!loading && provas.length === 0 && (

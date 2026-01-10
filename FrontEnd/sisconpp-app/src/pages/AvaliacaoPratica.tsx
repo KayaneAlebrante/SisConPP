@@ -16,6 +16,7 @@ import { toast } from "react-toastify";
 import AvaliacaoAccordion from "../components/AvaliacaoPratica/AvaliacaoAccordion";
 
 export default function AvaliacaoPage() {
+  const usuarioLogado = JSON.parse(localStorage.getItem("usuario") || "null");
   const [candidatoSelecionado, setCandidatoSelecionado] = useState<number | null>(null);
   const [avaliadorSelecionado, setAvaliadorSelecionado] = useState<number | null>(null);
   const [categoriaSelecionada, setCategoriaSelecionada] = useState<number | null>(null);
@@ -27,6 +28,12 @@ export default function AvaliacaoPage() {
   const [comentarios, setComentarios] = useState<Record<number, string>>({});
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [ficha, setFicha] = useState<FichaCandidatoProvaPratica | null>(null);
+
+  useEffect(() => {
+    if (usuarioLogado.funcao === "AVALIADOR") {
+      setAvaliadorSelecionado(usuarioLogado.id);
+    }
+  }, [usuarioLogado]);
 
   useEffect(() => {
     const fetchCandidatos = async () => {
@@ -85,8 +92,6 @@ export default function AvaliacaoPage() {
     fetchEstrutura();
   }, [candidatoSelecionado, avaliadorSelecionado]);
 
-  const avaliadoresFiltrados = avaliadores;
-
   useEffect(() => {
     const fetchFicha = async () => {
       if (!candidatoSelecionado) {
@@ -110,19 +115,23 @@ export default function AvaliacaoPage() {
         return;
       }
 
-      const avaliador = avaliadores.find(a => a.idUsuario === avaliadorSelecionado);
-      if (!avaliador) {
+      const avaliadorId = usuarioLogado?.funcao === "AVALIADOR"
+        ? usuarioLogado.id
+        : avaliadorSelecionado;
+
+      if (!avaliadorId) {
         toast.error("Avaliador inválido");
         return;
       }
 
-      const comissaoId = avaliador.ComissaoUsuario?.comissaoId ?? 0;
+      const avaliador = avaliadores.find(a => a.idUsuario === avaliadorId);
+      const comissaoId = avaliador?.ComissaoUsuario?.comissaoId ?? 0;
       const provaPraticaId = provasSelecionadas[0]?.idProvaPratica ?? 0;
 
       for (const bloco of provasSelecionadas[0]?.blocosProvas ?? []) {
         const payload = {
           comissaoId,
-          avaliadorId: avaliadorSelecionado,
+          avaliadorId: avaliadorId,
           candidatoId: candidatoSelecionado,
           blocoProvaId: bloco.idBloco,
           provaPraticaId,
@@ -165,8 +174,11 @@ export default function AvaliacaoPage() {
       <SideNavBar />
 
       <div className="flex-1 p-6 flex flex-col items-center overflow-y-auto">
+        {/* Filtros */}
         <div className="w-full bg-secondary-light p-8 rounded-2xl shadow-lg mb-8">
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className={`grid gap-6 ${usuarioLogado?.funcao === "AVALIADOR" ? "md:grid-cols-2" : "md:grid-cols-3"}`}>
+
+            {/* Categoria */}
             <div>
               <label className="font-semibold text-white mb-2 block">Categoria</label>
               <select
@@ -185,6 +197,7 @@ export default function AvaliacaoPage() {
               </select>
             </div>
 
+            {/* Candidato */}
             <div>
               <label className="font-semibold text-white mb-2 block">Candidato</label>
               <select
@@ -217,33 +230,36 @@ export default function AvaliacaoPage() {
               </select>
             </div>
 
-
-            <div>
-              <label className="font-semibold text-white mb-2 block">Avaliador</label>
-              <select
-                className="w-full p-3 rounded-lg"
-                value={avaliadorSelecionado ?? ""}
-                onChange={(e) =>
-                  setAvaliadorSelecionado(e.target.value ? Number(e.target.value) : null)
-                }
-              >
-                <option value="">Selecione</option>
-                {avaliadoresFiltrados.map((a) => (
-                  <option key={a.idUsuario} value={a.idUsuario}>
-                    {a.nomeCompleto}
-                  </option>
-                ))}
-              </select>
-            </div>
+            {/* Avaliador só aparece se não for avaliador logado */}
+            {usuarioLogado?.funcao !== "AVALIADOR" && (
+              <div>
+                <label className="font-semibold text-white mb-2 block">Avaliador</label>
+                <select
+                  className="w-full p-3 rounded-lg"
+                  value={avaliadorSelecionado ?? ""}
+                  onChange={(e) =>
+                    setAvaliadorSelecionado(e.target.value ? Number(e.target.value) : null)
+                  }
+                >
+                  <option value="">Selecione</option>
+                  {avaliadores.map((a) => (
+                    <option key={a.idUsuario} value={a.idUsuario}>
+                      {a.nomeCompleto}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
         </div>
 
-
+        {/* Área da planilha */}
         <div className="w-full bg-secondary-light p-6 md:p-8 rounded-2xl shadow-lg min-h-[500px]">
-          {!candidatoSelecionado || !avaliadorSelecionado ? (
+          {!candidatoSelecionado ||
+            (!avaliadorSelecionado && usuarioLogado?.funcao !== "AVALIADOR") ? (
             <div className="text-center text-gray-200 py-20">
               <p className="text-lg font-semibold">
-                Selecione um candidato, categoria e avaliador
+                Selecione um candidato, categoria {usuarioLogado?.funcao !== "AVALIADOR" && "e avaliador"}
               </p>
             </div>
           ) : (
@@ -255,10 +271,7 @@ export default function AvaliacaoPage() {
                 setNotas((prev) => ({ ...prev, [id]: nota }))
               }
               onChangeComentario={(id, comentario) =>
-                setComentarios((prev) => ({
-                  ...prev,
-                  [id]: comentario,
-                }))
+                setComentarios((prev) => ({ ...prev, [id]: comentario }))
               }
               onSalvar={handleSalvarAvaliacao}
               categoriaSelecionada={categoriaSelecionada}

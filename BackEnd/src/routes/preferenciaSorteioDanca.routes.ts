@@ -1,18 +1,19 @@
 import express, { Request, Response } from "express";
 import PreferenciaSorteioDancaController from "../controllers/preferenciaSorteioDanca.controller";
 import { authMiddleware } from "../middlewares/authMiddleware";
+import { permitirFuncoes } from "../middlewares/roleMiddleware";
 
 const router = express.Router();
 
-router.post("/", authMiddleware, async (req: Request, res: Response) => {
+router.post("/", authMiddleware, permitirFuncoes(["SECRETARIO", "AUXILIAR"]), async (req: Request, res: Response) => {
     await PreferenciaSorteioDancaController.criarPreferencias(req, res);
 });
 
-router.get("/:candidatoId", authMiddleware,  async (req: Request, res: Response) => {
+router.get("/:candidatoId", authMiddleware, permitirFuncoes(["SECRETARIO", "AUXILIAR"]), async (req: Request, res: Response) => {
     await PreferenciaSorteioDancaController.visualizarPreferencias(req, res);
 });
 
-router.put("/", authMiddleware, async (req: Request, res: Response) => {
+router.put("/", authMiddleware, permitirFuncoes(["SECRETARIO", "AUXILIAR"]), async (req: Request, res: Response) => {
     await PreferenciaSorteioDancaController.atualizarSorteioDancaId(req, res);
 });
 

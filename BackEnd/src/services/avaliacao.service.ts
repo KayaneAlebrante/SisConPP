@@ -119,6 +119,15 @@ export class AvaliacaoService {
         }
     }
 
+    async listarAvaliacoes() {
+        try {
+            const avaliacoes = await this.prisma.avaliacao.findMany();
+            return avaliacoes;
+        } catch (error) {
+            throw new Error(`Erro ao listar avaliações: ${error}`);
+        }   
+    }
+
     async buscarEstruturaCompleta(
         avaliadorId: number,
         candidatoId: number,
