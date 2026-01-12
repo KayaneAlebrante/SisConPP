@@ -42,7 +42,7 @@ class QuesitoService {
                     provaTeoricaIdprovaTeorica: provaTeoricaIdprovaTeorica
                 },
             });
-            console.log(quesito);
+     
             return quesito;
         } catch (error) {
             console.error("Erro detalhado:", error);

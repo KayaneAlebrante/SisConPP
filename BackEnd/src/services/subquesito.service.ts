@@ -19,7 +19,6 @@ class SubQuesitosService{
                 },
             });
 
-            console.log("Subquesito criado com sucesso.");
             return subquesito;
         }catch (error) {
             console.error("Erro detalhado:", error);

@@ -55,7 +55,7 @@ const Sidebar: FC = () => {
 
   return (
     <div
-      className={`h-full min-h-screen transition-all duration-300 relative flex flex-col ${
+      className={`min-h-full transition-all duration-300 relative flex flex-col ${
         isOpen ? "w-64" : "w-20"
       } bg-primary-dark border-r border-primary text-primary-onContainer shadow-lg`}
     >
