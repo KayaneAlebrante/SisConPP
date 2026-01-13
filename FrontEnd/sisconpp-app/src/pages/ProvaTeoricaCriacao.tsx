@@ -7,7 +7,7 @@ import SubQuesitosForm from "../components/Forms/ProvasForms/subQuesitosForm";
 import { listarCategorias, buscarProvasTeoricas, buscarProvasTeoricasPorCategoria } from "../services/api";
 import { Categoria } from "../types/Categoria";
 import { ProvaTeorica, Quesitos, SubQuesitos } from "../types/ProvaTeorica";
-import { Plus } from "lucide-react";
+import { Plus, BookOpen, Filter } from "lucide-react";
 import { toast } from "react-toastify";
 import ProvaAccordionTeorica from "../components/Provas/ProvaAccordionTeorica";
 
@@ -31,6 +31,10 @@ export default function ProvaTeoricaCriacao() {
     const [refresh, setRefresh] = useState(false);
     const [provasAbertas, setProvasAbertas] = useState<Set<number>>(new Set());;
     const [quesitosAbertos, setQuesitosAbertos] = useState<Set<number>>(new Set());
+
+    // --- Estilos Padronizados ---
+    const selectClass = "w-full rounded-xl border border-outline bg-surface-containerHigh p-2.5 text-neutral-onSurface focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all text-sm";
+    const labelClass = "block text-sm font-semibold text-neutral-onSurface mb-1.5";
 
     useEffect(() => {
         const fetchCategorias = async () => {
@@ -119,20 +123,44 @@ export default function ProvaTeoricaCriacao() {
         <div className="flex min-h-screen w-full bg-neutral-background">
             <SideNavBar />
 
-            <div className="flex-1 p-6 flex flex-col items-center overflow-y-auto">
-                <div className="w-full max-w-full bg-secondary-light p-8 rounded-2xl shadow-lg mb-8">
-                    <div className="grid md:grid-cols-2 gap-6 items-end">
-                        <div>
-                            <label className="font-semibold text-white mb-2 block">Categoria</label>
+            <main className="flex-1 p-6 md:p-8 flex flex-col overflow-y-auto max-h-screen">
+                <div className="w-full bg-surface-containerLowest rounded-2xl shadow-sm border border-outline-variant flex flex-col min-h-[600px]">
+
+                    <div className="p-6 border-b border-outline-variant flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div className="flex items-center gap-3">
+                            <div className="p-3 bg-primary-container rounded-xl text-primary-onContainer shadow-sm">
+                                <BookOpen size={24} />
+                            </div>
+                            <div>
+                                <h1 className="text-xl font-bold text-primary-dark">Prova Teórica</h1>
+                                <p className="text-sm text-neutral-onSurface opacity-70">
+                                    Gerencie as provas escritas e seus quesitos.
+                                </p>
+                            </div>
+                        </div>
+
+                        <button
+                            onClick={() => openProvaModal()}
+                            className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-white px-5 py-2.5 rounded-xl shadow-md transition-all active:scale-95 font-semibold"
+                        >
+                            <Plus size={20} />
+                            Nova Prova Teórica
+                        </button>
+                    </div>
+                    <div className="p-6 md:p-8 flex-1 flex flex-col">
+
+                        <div className="mb-8 w-full md:w-1/3">
+                            <label className={labelClass}>
+                                <span className="flex items-center gap-2">
+                                    <Filter size={16} className="text-primary"/> Filtrar por Categoria
+                                </span>
+                            </label>
                             <select
-                                className="w-full p-3 rounded-lg"
+                                className={selectClass}
                                 value={categoriaSelecionada ?? ""}
-                                onChange={(e) => {
-                                    const valor = e.target.value ? Number(e.target.value) : null;
-                                    setCategoriaSelecionada(valor);
-                                }}
+                                onChange={(e) => setCategoriaSelecionada(e.target.value ? Number(e.target.value) : null)}
                             >
-                                <option value="">Selecione</option>
+                                <option value="">Todas as Categorias</option>
                                 {categorias.map((cat) => (
                                     <option key={cat.idCategoria} value={cat.idCategoria}>
                                         {cat.nomeCategoria}
@@ -141,40 +169,38 @@ export default function ProvaTeoricaCriacao() {
                             </select>
                         </div>
 
-                        <button
-                            onClick={() => openProvaModal()}
-                            className="w-full bg-secondary-container text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2"
-                        >
-                            <Plus size={20} />
-                            Adicionar Prova Teórica
-                        </button>
+                        <div className="space-y-4">
+                            {loading && (
+                                <div className="text-center py-10 text-neutral-onSurface opacity-50 animate-pulse">
+                                    Carregando provas...
+                                </div>
+                            )}
+
+                            {!loading && provas.length === 0 && (
+                                <div className="text-center py-16 border-2 border-dashed border-outline-variant rounded-xl">
+                                    <p className="text-neutral-onSurface opacity-50 font-medium">
+                                        Nenhuma prova teórica encontrada. <br/>
+                                        Selecione outra categoria ou crie uma nova prova.
+                                    </p>
+                                </div>
+                            )}
+
+                            {!loading && provas.map((prova) => (
+                                <ProvaAccordionTeorica
+                                    key={prova.idprovaTeorica}
+                                    prova={prova}
+                                    isOpen={!!prova.idprovaTeorica && provasAbertas.has(prova.idprovaTeorica)}
+                                    onToggle={toggleProva}
+                                    quesitosAbertos={quesitosAbertos}
+                                    onToggleQuesito={toggleQuesito}
+                                    onAddQuesito={(idQuesito) => openQuesitoModal(undefined, idQuesito)}
+                                    onAddSub={(idQuesito) => openSubModal(undefined, idQuesito)}
+                                />
+                            ))}
+                        </div>
                     </div>
                 </div>
-
-                <div className="w-full max-w-full bg-secondary-light p-6 md:p-8 rounded-2xl shadow-lg mb-4 space-y-4 min-h-[500px]">
-                    {loading && <p className="text-center text-secondary-onFixed">Carregando provas...</p>}
-
-                    {!loading && provas.length === 0 && (
-                        <p className="text-center text-secondary-onFixed">
-                            Nenhuma prova teórica encontrada para esta categoria.
-                        </p>
-                    )}
-
-                    {!loading &&
-                        provas.map((prova) => (
-                            <ProvaAccordionTeorica
-                                key={prova.idprovaTeorica}
-                                prova={prova}
-                                isOpen={!!prova.idprovaTeorica && provasAbertas.has(prova.idprovaTeorica)}
-                                onToggle={toggleProva}
-                                quesitosAbertos={quesitosAbertos}
-                                onToggleQuesito={toggleQuesito}
-                                onAddQuesito={(idQuesito) => openQuesitoModal(undefined, idQuesito)}
-                                onAddSub={(idQuesito) => openSubModal(undefined, idQuesito)}
-                            />
-                        ))}
-                </div>
-            </div>
+            </main>
 
             <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
                 {modalType === "PROVA" && (
@@ -200,5 +226,5 @@ export default function ProvaTeoricaCriacao() {
                 )}
             </Modal>
         </div>
-    )
-}   
+    );
+}
