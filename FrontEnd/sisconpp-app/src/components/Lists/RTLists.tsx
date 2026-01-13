@@ -17,7 +17,9 @@ export default function RTList({ onEdit }: RTListProps) {
   const fetchRTs = async () => {
     try {
       const response = (await listarRTs()) as RT[];
-      setRTs(response);
+      // Opcional: Ordenar por número da RT
+      const sorted = response.sort((a, b) => a.numeroRT - b.numeroRT);
+      setRTs(sorted);
     } catch (error) {
       toast.error("Erro ao carregar RTs");
       console.error(error);
@@ -33,19 +35,18 @@ export default function RTList({ onEdit }: RTListProps) {
 
     try {
       await deleteRT(rtSelecionadoId);
-
-      toast.success("RT exluído com sucesso!");
+      toast.success("RT excluída com sucesso!");
       fetchRTs();
       setIsDialogOpen(false);
       setRtSelecionadoId(null);
     } catch (error: unknown) {
       let msg = "Erro ao deletar RT.";
-
-      if (typeof error === 'object' && error !== null && 'response' in error) {
-        const axiosError = error as { response?: { data?: { message?: string } } };
-        msg = axiosError.response?.data?.message ?? msg;
+      if (error instanceof Object && "response" in error) {
+        const apiError = error as { response?: { data?: { message?: string } } };
+        if (apiError.response?.data?.message) {
+          msg = apiError.response.data.message;
+        }
       }
-
       toast.error(msg);
       setIsDialogOpen(false);
       setRtSelecionadoId(null);
@@ -53,52 +54,68 @@ export default function RTList({ onEdit }: RTListProps) {
   };
 
   return (
-    <div className="w-full flex flex-col h-full">
-      <h2 className="text-xl font-bold mb-4 text-secondary-on">Lista de Regiões Tradicionalistas</h2>
-      <table className="w-full bg-white rounded-xl shadow-md overflow-hidden">
-        <thead>
-          <tr className="text-left bg-secondary-dark text-secondary-light">
-            <th className="p-3 first:rounded-tl-xl">Nome</th>
-            <th className="p-3">Número</th>
-            <th className="p-3 last:rounded-tr-xl">Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rts.map((rt) => (
-            <tr key={rt.idRT} className="border-t hover:bg-secondary-light/20 transition">
-              <td className="p-3">{rt.nomeRT}</td>
-              <td className="p-3">{rt.numeroRT}</td>
-              <td className="p-3 flex gap-2">
-                <button
-                  className="text-green-600 hover:text-green-800"
-                  onClick={() => onEdit(rt)}
-                >
-                  <Pencil size={18} />
-                </button>
-                <button
-                  className="text-red-600 hover:text-red-800"
-                  onClick={() => {
-                    setRtSelecionadoId(rt.idRT);
-                    setIsDialogOpen(true);
-                  }}
-                >
-                  <Trash2 size={18} />
-                </button>
-              </td>
+    <div className="flex flex-col h-full bg-neutral-background p-6">
+      <div className="bg-surface-containerLowest rounded-2xl shadow-sm border border-outline-variant overflow-hidden">
+        <table className="w-full">
+          <thead>
+            <tr className="text-left bg-surface-variant/30 text-neutral-onVariant border-b border-outline-variant">
+              <th className="p-4 font-semibold text-xs uppercase tracking-wider">Nome da Região</th>
+              <th className="p-4 font-semibold text-xs uppercase tracking-wider">Número</th>
+              <th className="p-4 font-semibold text-xs uppercase tracking-wider text-center">Ações</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="divide-y divide-outline-variant">
+            {rts.map((rt) => (
+              <tr
+                key={rt.idRT}
+                className="hover:bg-surface-container transition-colors"
+              >
+                <td className="p-4 text-neutral-onSurface font-medium">{rt.nomeRT}</td>
+                <td className="p-4">
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-primary-container text-primary-onContainer">
+                    {rt.numeroRT}ª RT
+                  </span>
+                </td>
+                <td className="p-4 flex gap-2 justify-center">
+                  <button
+                    title="Editar"
+                    className="p-2 rounded-full text-secondary hover:bg-secondary-fixedDim/30 transition-all"
+                    onClick={() => onEdit(rt)}
+                  >
+                    <Pencil size={18} />
+                  </button>
+                  <button
+                    title="Excluir"
+                    className="p-2 rounded-full text-error hover:bg-error-container/30 transition-all"
+                    onClick={() => {
+                      setRtSelecionadoId(rt.idRT);
+                      setIsDialogOpen(true);
+                    }}
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
 
-      <Dialog
-        isOpen={isDialogOpen}
-        onClose={() => {
-          setIsDialogOpen(false);
-          setRtSelecionadoId(null);
-        }}
-        onConfirm={handleConfirmDelete}
-        message="Tem certeza que deseja excluir esta RT?"
-      />
+        {rts.length === 0 && (
+          <div className="p-8 text-center text-neutral-onVariant opacity-60">
+            Nenhuma RT cadastrada.
+          </div>
+        )}
+
+        <Dialog
+          isOpen={isDialogOpen}
+          onClose={() => {
+            setIsDialogOpen(false);
+            setRtSelecionadoId(null);
+          }}
+          onConfirm={handleConfirmDelete}
+          message="Tem certeza que deseja excluir esta Região Tradicionalista? Isso pode afetar CTGs vinculados."
+        />
+      </div>
     </div>
   );
 }

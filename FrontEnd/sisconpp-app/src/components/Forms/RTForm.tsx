@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { cadastrarRT, atualizarRT } from '../../services/api';
 import { RT } from '../../types/RT';
 import { toast } from 'react-toastify';
+import { Save, XCircle } from 'lucide-react';
 
 interface RTFormProps {
   onClose: () => void;
@@ -14,6 +15,9 @@ export default function RTForm({ onClose, rtToEdit }: RTFormProps) {
     nomeRT: '',
     numeroRT: 0,
   });
+  
+  const inputClass = "w-full rounded-xl border border-outline bg-surface-containerHigh p-2.5 text-neutral-onSurface focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all text-sm";
+  const labelClass = "block text-sm font-semibold text-neutral-onSurface mb-1.5";
 
   useEffect(() => {
     if (rtToEdit) {
@@ -47,54 +51,59 @@ export default function RTForm({ onClose, rtToEdit }: RTFormProps) {
   };
 
   return (
-    <div className="w-full">
-      <h2 className="text-xl font-semibold text-neutral-onBackground mb-4">
-        {rtToEdit ? 'Editar' : 'Cadastrar'} Região Tradicionalista
-      </h2>
+    <div className="w-full text-neutral-onBackground">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-primary-dark">
+            {rtToEdit ? 'Editar RT' : 'Nova RT'}
+        </h1>
+        <p className="text-sm text-neutral-onSurface opacity-70">
+            Informe os dados da Região Tradicionalista.
+        </p>
+      </div>
 
-      <form onSubmit={handleSubmit}>
-        <div className="flex flex-col mb-4">
-          <label className="text-sm font-medium text-neutral-onBackground mb-1">
-            Nome da Região Tradicionalista
-          </label>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className={labelClass}>Nome da Região Tradicionalista</label>
           <input
             type="text"
             name="nomeRT"
             value={formData.nomeRT}
             onChange={handleChange}
-            className="rounded-lg p-2 bg-surface-containerHigh border border-outline focus:outline-none focus:ring-2 focus:ring-primary text-neutral-onBackground"
+            className={inputClass}
+            placeholder="Ex: 18ª Região Tradicionalista"
             required
           />
         </div>
 
-        <div className="flex flex-col mb-4">
-          <label className="text-sm font-medium text-neutral-onBackground mb-1">
-            Número da Região Tradicionalista
-          </label>
+        <div>
+          <label className={labelClass}>Número da RT</label>
           <input
             type="number"
             name="numeroRT"
-            value={formData.numeroRT}
+            value={formData.numeroRT || ''}
             onChange={handleChange}
-            className="rounded-lg p-2 bg-surface-containerHigh border border-outline focus:outline-none focus:ring-2 focus:ring-primary text-neutral-onBackground"
+            className={inputClass}
+            placeholder="Ex: 18"
             required
           />
         </div>
 
-        <div className="flex justify-end gap-2 mt-6">
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-4 py-2 rounded-lg border border-gray-400 text-gray-700 hover:bg-gray-100 transition"
-          >
-            Cancelar
-          </button>
-          <button
-            type="submit"
-            className="px-4 py-2 bg-secondary text-secondary-on font-medium rounded-lg hover:bg-secondary-dark transition"
-          >
-            {rtToEdit ? 'Salvar alterações' : 'Cadastrar'}
-          </button>
+        <div className="flex justify-end gap-3 pt-6 border-t border-outline-variant mt-6">
+            <button
+                type="button"
+                onClick={onClose}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-outline text-neutral-onSurface hover:bg-surface-variant transition font-medium"
+            >
+                <XCircle size={18} />
+                Cancelar
+            </button>
+            <button
+                type="submit"
+                className="flex items-center gap-2 px-5 py-2.5 bg-secondary hover:bg-secondary-dark text-secondary-on rounded-xl shadow-md transition font-bold"
+            >
+                <Save size={18} />
+                {rtToEdit ? 'Salvar Alterações' : 'Cadastrar'}
+            </button>
         </div>
       </form>
     </div>
