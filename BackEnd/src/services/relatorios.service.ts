@@ -148,9 +148,14 @@ export class RelatoriosService {
         let totalFinal = 0;
 
         for (const avaliacao of avaliacoes) {
-            // 🔹 Caso seja Prova Teórica
+            /**
+             * ======================================================
+             * 🔹 PROVA TEÓRICA
+             * ======================================================
+             */
             if (avaliacao.provaTeoricaId) {
-                const idAvaliador = -1; // identificador especial
+                const idAvaliador = -1;
+
                 if (!avaliadoresMap.has(idAvaliador)) {
                     avaliadoresMap.set(idAvaliador, {
                         nomeAvaliador: "Prova Teórica",
@@ -172,20 +177,30 @@ export class RelatoriosService {
                 const blocoMap = avaliador.blocos.get(avaliacao.provaTeoricaId)!;
 
                 for (const aq of avaliacao.quesitosAvaliados) {
-                    const temNota = aq.notaQuesito !== null && aq.notaQuesito > 0;
-                    const temSubquesitos = aq.subQuesitosAvaliados?.length > 0;
-                    if (!temNota && !temSubquesitos) continue;
-
                     const subquesitos =
-                        aq.subQuesitosAvaliados?.map((sq) => ({
-                            nomeSubQuesito: sq.SubQuesito?.nomeSubquesito ?? "",
-                            nota: sq.notaSubQuesito ?? 0,
-                        })) ?? [];
+                        aq.subQuesitosAvaliados
+                            ?.filter(
+                                (sq) =>
+                                    sq.notaSubQuesito !== null &&
+                                    sq.notaSubQuesito > 0
+                            )
+                            .map((sq) => ({
+                                nomeSubQuesito:
+                                    sq.SubQuesito?.nomeSubquesito ?? "",
+                                nota: sq.notaSubQuesito!,
+                            })) ?? [];
+
+                    const temNota =
+                        aq.notaQuesito !== null && aq.notaQuesito > 0;
+
+                    if (!temNota && subquesitos.length === 0) continue;
 
                     blocoMap.quesitos.set(aq.Quesito.idQuesito, {
                         nomeQuesito: aq.Quesito.nomeQuesito,
-                        notaQuesito: aq.notaQuesito,
-                        comentario: aq.comentario ?? null,
+                        notaQuesito: aq.notaQuesito ?? 0,
+                        comentario: aq.comentario?.trim()
+                            ? aq.comentario
+                            : null,
                         subquesitos,
                     });
 
@@ -194,10 +209,18 @@ export class RelatoriosService {
                     totalFinal += aq.notaQuesito ?? 0;
                 }
 
+                if (blocoMap.quesitos.size === 0) {
+                    avaliador.blocos.delete(avaliacao.provaTeoricaId);
+                }
+
                 continue;
             }
 
-            // 🔹 Avaliações normais (avaliadores humanos)
+            /**
+             * ======================================================
+             * 🔹 AVALIADORES HUMANOS
+             * ======================================================
+             */
             const idAvaliador = avaliacao.Usuario.idUsuario;
 
             if (!avaliadoresMap.has(idAvaliador)) {
@@ -215,10 +238,23 @@ export class RelatoriosService {
                 const bloco = quesito?.BlocoProva;
                 if (!quesito || !bloco) continue;
 
-                // 🔹 Filtra quesitos sem nota e sem subquesitos
-                const temNota = aq.notaQuesito !== null && aq.notaQuesito > 0;
-                const temSubquesitos = aq.subQuesitosAvaliados?.length > 0;
-                if (!temNota && !temSubquesitos) continue;
+                const subquesitos =
+                    aq.subQuesitosAvaliados
+                        ?.filter(
+                            (sq) =>
+                                sq.notaSubQuesito !== null &&
+                                sq.notaSubQuesito > 0
+                        )
+                        .map((sq) => ({
+                            nomeSubQuesito:
+                                sq.SubQuesito?.nomeSubquesito ?? "",
+                            nota: sq.notaSubQuesito!,
+                        })) ?? [];
+
+                const temNota =
+                    aq.notaQuesito !== null && aq.notaQuesito > 0;
+
+                if (!temNota && subquesitos.length === 0) continue;
 
                 if (!avaliador.blocos.has(bloco.idBloco)) {
                     avaliador.blocos.set(bloco.idBloco, {
@@ -229,16 +265,13 @@ export class RelatoriosService {
                 }
 
                 const blocoMap = avaliador.blocos.get(bloco.idBloco)!;
-                const subquesitos =
-                    aq.subQuesitosAvaliados?.map((sq) => ({
-                        nomeSubQuesito: sq.SubQuesito?.nomeSubquesito ?? "",
-                        nota: sq.notaSubQuesito ?? 0,
-                    })) ?? [];
 
                 blocoMap.quesitos.set(quesito.idQuesito, {
                     nomeQuesito: quesito.nomeQuesito,
-                    notaQuesito: aq.notaQuesito,
-                    comentario: aq.comentario ?? null,
+                    notaQuesito: aq.notaQuesito ?? 0,
+                    comentario: aq.comentario?.trim()
+                        ? aq.comentario
+                        : null,
                     subquesitos,
                 });
 
@@ -248,6 +281,11 @@ export class RelatoriosService {
             }
         }
 
+        /**
+         * ======================================================
+         * 🔹 DADOS DO CANDIDATO
+         * ======================================================
+         */
         const ficha = await this.prisma.fichaCandidato.findUnique({
             where: { candidatoId },
             include: {
@@ -256,7 +294,6 @@ export class RelatoriosService {
                         idCandidato: true,
                         nomeCompleto: true,
                         Categoria: { select: { nomeCategoria: true } },
-                        Concurso: { select: { nomeConcurso: true } },
                     },
                 },
                 Concurso: {
@@ -272,15 +309,22 @@ export class RelatoriosService {
             concurso: ficha?.Concurso.nomeConcurso,
             notaCandidato: ficha?.notaCandidato,
             avaliadores: Array.from(avaliadoresMap.values())
-                .sort((a, b) => a.nomeAvaliador.localeCompare(b.nomeAvaliador))
+                .filter((av) => av.blocos.size > 0)
+                .sort((a, b) =>
+                    a.nomeAvaliador.localeCompare(b.nomeAvaliador)
+                )
                 .map((av) => ({
                     nomeAvaliador: av.nomeAvaliador,
                     blocos: Array.from(av.blocos.values())
-                        .sort((a, b) => a.nomeBloco.localeCompare(b.nomeBloco))
+                        .filter((bl) => bl.quesitos.size > 0)
+                        .sort((a, b) =>
+                            a.nomeBloco.localeCompare(b.nomeBloco)
+                        )
                         .map((bl) => ({
                             nomeBloco: bl.nomeBloco,
-                            quesitos: Array.from(bl.quesitos.values()).sort((a, b) =>
-                                a.nomeQuesito.localeCompare(b.nomeQuesito)
+                            quesitos: Array.from(bl.quesitos.values()).sort(
+                                (a, b) =>
+                                    a.nomeQuesito.localeCompare(b.nomeQuesito)
                             ),
                             totalBloco: bl.totalBloco,
                         })),
@@ -289,6 +333,7 @@ export class RelatoriosService {
             totalFinal,
         };
     }
+
 
     async gerarRelatorioPorCategoriaConcurso(
         categoriaId: number,
