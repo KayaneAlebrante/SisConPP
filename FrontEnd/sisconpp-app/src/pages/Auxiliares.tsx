@@ -36,7 +36,11 @@ export default function AuxiliaresPage() {
             <SideNavBar />
 
             <main className="flex-1 p-6 md:p-8 flex flex-col overflow-y-auto max-h-screen">
+                
+                {/* CARD UNIFICADO */}
                 <div className="w-full bg-surface-containerLowest rounded-2xl shadow-sm border border-outline-variant flex flex-col">
+                    
+                    {/* CABEÇALHO */}
                     <div className="p-6 border-b border-outline-variant flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <div className="flex items-center gap-3">
                             <div className="p-3 bg-primary-container rounded-xl text-primary-onContainer shadow-sm">
@@ -57,6 +61,7 @@ export default function AuxiliaresPage() {
                         </button>
                     </div>
 
+                    {/* LISTA */}
                     <div className="w-full">
                         <AuxiliaresList
                             key={refreshList.toString()}
