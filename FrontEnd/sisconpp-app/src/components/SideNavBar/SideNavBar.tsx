@@ -34,7 +34,10 @@ const Sidebar: FC = () => {
   }, []);
 
   const handleLogout = () => {
+    localStorage.removeItem("token");
     localStorage.removeItem("usuario");
+    sessionStorage.clear(); 
+
     window.location.href = "/login";
   };
 
