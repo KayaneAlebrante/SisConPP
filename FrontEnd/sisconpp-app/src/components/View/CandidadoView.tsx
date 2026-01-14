@@ -2,13 +2,12 @@ import { useMemo } from "react";
 import { Candidato } from "../../types/Candidato";
 import { CTG } from "../../types/CTG";
 import { Categoria } from "../../types/Categoria";
-import { Paperclip, ArrowLeft, XCircle, Image as ImageIcon, Eye } from "lucide-react";
+import { Paperclip, XCircle, Image as ImageIcon, Eye } from "lucide-react";
 
 interface Props {
   candidato: Candidato;
   ctg?: CTG;
   categoria?: Categoria;
-  onVoltar: () => void;
 }
 
 interface BufferResponse {
@@ -23,7 +22,7 @@ type CandidatoExpandido = Candidato & {
   categoria?: Categoria;
 };
 
-export default function VisualizacaoCandidato({ candidato, onVoltar }: Props) {
+export default function VisualizacaoCandidato({ candidato}: Props) {
   const dadosCandidato = candidato as CandidatoExpandido;
 
   const dadosCTG = dadosCandidato.CTG || dadosCandidato.ctg;
@@ -93,13 +92,6 @@ export default function VisualizacaoCandidato({ candidato, onVoltar }: Props) {
 
   return (
     <div className="w-full max-w-5xl p-4">
-      <button
-        className="text-green-600 mb-6 flex items-center hover:underline font-medium"
-        onClick={onVoltar}
-      >
-        <ArrowLeft className="mr-1" size={20} /> Voltar
-      </button>
-
       <div className="flex flex-col lg:flex-row gap-8">
         
         <div className="w-full lg:w-1/3 flex flex-col">

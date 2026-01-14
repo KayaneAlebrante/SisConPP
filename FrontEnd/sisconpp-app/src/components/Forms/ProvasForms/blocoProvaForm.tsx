@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BlocoProva } from '../../../types/ProvaPratica';
 import { toast } from 'react-toastify';
 import { criarBlocoProva } from '../../../services/api';
+import { Save, XCircle, Layers } from 'lucide-react';
 
 export interface BlocoProvaFormState {
     idBloco?: number;
@@ -23,6 +24,11 @@ export default function BlocoProvaForm({ onClose, blocoToEdit, provaPraticaId }:
         notaMaximaBloco: 0,
         provaPraticaId: provaPraticaId || 0,
     });
+    const [loading, setLoading] = useState(false);
+
+    // Estilos Padronizados
+    const inputClass = "w-full rounded-xl border border-outline bg-surface-containerHigh p-2.5 text-neutral-onSurface focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all text-sm";
+    const labelClass = "block text-sm font-semibold text-neutral-onSurface mb-1.5";
 
     useEffect(() => {
         if (blocoToEdit) {
@@ -49,11 +55,12 @@ export default function BlocoProvaForm({ onClose, blocoToEdit, provaPraticaId }:
         e.preventDefault();
 
         try {
-            // Validação Básica
             if (formData.nomeBloco.trim() === '' || formData.notaMaximaBloco <= 0) {
                 toast.warning('Preencha o nome do bloco e a nota máxima.');
                 return;
             }
+
+            setLoading(true);
 
             const payload: BlocoProva = {
                 idBloco: formData.idBloco || 0,
@@ -63,7 +70,6 @@ export default function BlocoProvaForm({ onClose, blocoToEdit, provaPraticaId }:
                 quesitos: blocoToEdit?.quesitos || []
             };
 
-            console.log('Salvando Bloco:', payload);
             await criarBlocoProva(payload);            
             toast.success(blocoToEdit ? 'Bloco atualizado!' : 'Bloco criado!');
             onClose();
@@ -71,21 +77,29 @@ export default function BlocoProvaForm({ onClose, blocoToEdit, provaPraticaId }:
         } catch (error) {
             console.error("Erro ao salvar bloco:", error);
             toast.error('Erro ao salvar bloco.');
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        <div className="w-full">
-            <h1 className="text-xl font-semibold text-neutral-onBackground mb-4">
-                {blocoToEdit ? 'Editar' : 'Criar'} Bloco de Prova
-            </h1>
+        <div className="w-full text-neutral-onBackground">
+            
+            {/* Cabeçalho */}
+            <div className="mb-6">
+                <h1 className="text-2xl font-bold text-primary-dark flex items-center gap-2">
+                    <Layers className="text-primary" /> 
+                    {blocoToEdit ? 'Editar Bloco' : 'Novo Bloco'}
+                </h1>
+                <p className="text-sm text-neutral-onSurface opacity-70">
+                    Blocos agrupam quesitos dentro de uma prova prática.
+                </p>
+            </div>
 
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className="space-y-5">
 
-                <div className="flex flex-col mb-4">
-                    <label className="text-sm font-medium mb-1" htmlFor="nomeBloco">
-                        Nome do Bloco
-                    </label>
+                <div>
+                    <label className={labelClass} htmlFor="nomeBloco">Nome do Bloco</label>
                     <input
                         type="text"
                         id="nomeBloco"
@@ -94,14 +108,12 @@ export default function BlocoProvaForm({ onClose, blocoToEdit, provaPraticaId }:
                         onChange={handleChange}
                         required
                         placeholder="Ex: Bloco Artístico"
-                        className="rounded-lg p-2 bg-surface-containerHigh border border-outline focus:outline-none focus:ring-2 focus:ring-primary"
+                        className={inputClass}
                     />
                 </div>
 
-                <div className="flex flex-col mb-6">
-                    <label className="text-sm font-medium mb-1" htmlFor="notaMaximaBloco">
-                        Nota Máxima do Bloco
-                    </label>
+                <div>
+                    <label className={labelClass} htmlFor="notaMaximaBloco">Nota Máxima do Bloco</label>
                     <input
                         type="number"
                         step="0.1"
@@ -111,23 +123,26 @@ export default function BlocoProvaForm({ onClose, blocoToEdit, provaPraticaId }:
                         onChange={handleChange}
                         required
                         min="0"
-                        className="rounded-lg p-2 bg-surface-containerHigh border border-outline focus:outline-none focus:ring-2 focus:ring-primary"
+                        className={inputClass}
                     />
                 </div>
 
-                <div className="flex justify-end gap-2">
+                {/* Rodapé */}
+                <div className="flex justify-end gap-3 pt-6 border-t border-outline-variant mt-6">
                     <button
                         type="button"
                         onClick={onClose}
-                        className="px-4 py-2 rounded-lg border border-gray-400 text-gray-700 hover:bg-gray-100 transition"
+                        className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-outline text-neutral-onSurface hover:bg-surface-variant transition font-medium"
                     >
-                        Cancelar
+                        <XCircle size={18} /> Cancelar
                     </button>
                     <button
                         type="submit"
-                        className="px-4 py-2 bg-secondary text-secondary-on font-medium rounded-lg hover:bg-secondary-dark transition"
+                        disabled={loading}
+                        className="flex items-center gap-2 px-5 py-2.5 bg-secondary hover:bg-secondary-dark text-secondary-on rounded-xl shadow-md transition font-bold disabled:opacity-70"
                     >
-                        {blocoToEdit ? 'Salvar alterações' : 'Criar Bloco'}
+                        <Save size={18} />
+                        {loading ? "Salvando..." : (blocoToEdit ? 'Salvar Alterações' : 'Criar Bloco')}
                     </button>
                 </div>
             </form>

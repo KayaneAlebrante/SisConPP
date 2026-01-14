@@ -10,419 +10,274 @@ import { Concurso } from "../types/Concurso";
 import { Categoria } from "../types/Categoria";
 import { Candidato } from "../types/Candidato";
 import { toast } from "react-toastify";
-import { FileText, Trophy, Printer, User } from "lucide-react";
+import { FileText, Trophy, Printer, User, Filter, FileBarChart2, LayoutList } from "lucide-react";
+
+type TabOption = 'GERAL' | 'RANKING' | 'INDIVIDUAL' | 'DETALHADO';
 
 export default function Relatorios() {
-  const [concursos, setConcursos] = useState<Concurso[]>([]);
-  const [categorias, setCategorias] = useState<Categoria[]>([]);
-  const [candidatos, setCandidatos] = useState<Candidato[]>([]);
-  const [concursoGeralId, setConcursoGeralId] = useState<number | null>(null);
-  const [concursoRankingId, setConcursoRankingId] = useState<number | null>(null);
-  const [categoriaId, setCategoriaId] = useState<number | null>(null);
-  const componentRefGeral = useRef(null);
-  const componentRefRanking = useRef(null);
-  const [candidatoSelecionado, setCandidatoSelecionado] = useState<number | null>(null);
-  const [categoriaSelecionada, setCategoriaSelecionada] = useState<number | null>(null);
-  const [concursoDetalhadoId, setConcursoDetalhadoId] = useState<number | null>(null);
-  const [categoriaDetalhadaId, setCategoriaDetalhadaId] = useState<number | null>(null);
 
-  const usuarioLogado = (() => {
-    try {
-      const usuario = JSON.parse(localStorage.getItem("usuario") || "{}");
-      return usuario.nome || "Usuário";
-    } catch {
-      return "Usuário";
-    }
-  })();
+    const [concursos, setConcursos] = useState<Concurso[]>([]);
+    const [categorias, setCategorias] = useState<Categoria[]>([]);
+    const [candidatos, setCandidatos] = useState<Candidato[]>([]);
+    const [activeTab, setActiveTab] = useState<TabOption>('GERAL');
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [concursosData, categoriasData] = await Promise.all([
-          listarConcurso(),
-          listarCategorias()
-        ]);
-        setConcursos(concursosData as Concurso[]);
-        setCategorias(categoriasData as Categoria[]);
-      } catch {
-        toast.error("Erro ao carregar dados.");
-      }
+    const [concursoGeralId, setConcursoGeralId] = useState<number | null>(null);
+    
+    const [concursoRankingId, setConcursoRankingId] = useState<number | null>(null);
+    const [categoriaRankingId, setCategoriaRankingId] = useState<number | null>(null);
+    
+    const [candidatoIndividualId, setCandidatoIndividualId] = useState<number | null>(null);
+    const [categoriaIndividualId, setCategoriaIndividualId] = useState<number | null>(null);
+    
+    const [concursoDetalhadoId, setConcursoDetalhadoId] = useState<number | null>(null);
+    const [categoriaDetalhadaId, setCategoriaDetalhadaId] = useState<number | null>(null);
+
+
+    const componentRef = useRef(null);
+
+    const selectClass = "w-full rounded-xl border border-outline bg-surface-containerHigh p-2.5 text-neutral-onSurface focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all text-sm";
+    const labelClass = "block text-sm font-semibold text-neutral-onSurface mb-1.5";
+    const tabClass = (isActive: boolean) => `flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${isActive ? 'border-primary text-primary' : 'border-transparent text-neutral-onSurface opacity-60 hover:opacity-100 hover:border-outline-variant'}`;
+
+    const usuarioLogado = (() => {
+        try {
+            const usuario = JSON.parse(localStorage.getItem("usuario") || "{}");
+            return usuario.nome || "Usuário";
+        } catch {
+            return "Usuário";
+        }
+    })();
+
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                const [concursosData, categoriasData, candidatosData] = await Promise.all([
+                    listarConcurso(),
+                    listarCategorias(),
+                    listarCandidatos()
+                ]);
+                setConcursos(concursosData as Concurso[]);
+                setCategorias(categoriasData as Categoria[]);
+                setCandidatos(candidatosData as Candidato[]);
+            } catch {
+                toast.error("Erro ao carregar dados do sistema.");
+            }
+        };
+        loadData();
+    }, []);
+
+    const getNomeConcurso = (id: number | null) => concursos.find(c => c.idConcurso === id)?.nomeConcurso || "";
+    const getNomeCategoria = (id: number | null) => categorias.find(c => c.idCategoria === id)?.nomeCategoria || "";
+
+    const handlePrint = () => {
+        window.print();
     };
-    fetchData();
-  }, []);
 
-  useEffect(() => {
-    const fetchCandidatos = async () => {
-      try {
-        const response = await listarCandidatos();
-        setCandidatos(response as Candidato[]);
-      } catch {
-        toast.error("Erro ao carregar candidatos");
-      }
-    };
-    fetchCandidatos();
-  }, []);
-
-  useEffect(() => {
-    const fetchCategorias = async () => {
-      try {
-        const response = await listarCategorias();
-        setCategorias(response as Categoria[]);
-      } catch {
-        toast.error("Erro ao carregar categorias");
-      }
-    };
-    fetchCategorias();
-  }, []);
-
-  const getNomeConcurso = (id: number | null) =>
-    concursos.find(c => c.idConcurso === id)?.nomeConcurso || "";
-
-  const getNomeCategoria = (id: number | null) =>
-    categorias.find(c => c.idCategoria === id)?.nomeCategoria || "";
-
-  const handlePrint = () => {
-    window.print();
-  };
-
-  return (
-    <div className="flex min-h-screen w-full bg-neutral-background">
-      <div className="print:hidden">
-        <SideNavBar />
-      </div>
-
-      <div className="flex-1 p-6 bg-neutral-background flex flex-col overflow-y-auto print:p-0 print:bg-white print:overflow-visible">
-        <div className="w-full mb-6 print:hidden">
-          <h1 className="text-2xl font-bold text-neutral-onBackground flex items-center gap-2">
-            <FileText className="text-primary" />
-            Relatórios
-          </h1>
-        </div>
-
-        <div className="w-full flex-1 flex flex-col gap-8">
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 w-full h-full print:block">
-
-            <div className="bg-secondary-light rounded-2xl shadow-lg p-6 flex flex-col h-full min-h-[600px] print:bg-white print:p-0 print:shadow-none print:min-h-0 print:mb-10">
-
-              <div className="print:hidden">
-                <div className="flex items-center justify-between gap-2 mb-4">
-                  <div className="flex items-center gap-2">
-                    <div className="bg-white/20 p-2 rounded-lg">
-                      <FileText className="text-white" size={24} />
+    const renderFilters = () => {
+        switch (activeTab) {
+            case 'GERAL':
+                return (
+                    <div className="w-full md:w-1/2">
+                        <label className={labelClass}>Selecione o Concurso</label>
+                        <select className={selectClass} value={concursoGeralId ?? ""} onChange={(e) => setConcursoGeralId(Number(e.target.value) || null)}>
+                            <option value="">Selecione...</option>
+                            {concursos.map(c => <option key={c.idConcurso} value={c.idConcurso}>{c.nomeConcurso}</option>)}
+                        </select>
                     </div>
-                    <h2 className="text-xl font-bold text-white">Relatório Geral</h2>
-                  </div>
-                  {concursoGeralId && (
-                    <button
-                      onClick={handlePrint}
-                      className="bg-white text-secondary font-bold py-2 px-4 rounded-lg flex items-center gap-2 hover:bg-gray-100 transition shadow-sm"
-                    >
-                      <Printer size={18} /> Imprimir
-                    </button>
-                  )}
-                </div>
-
-                <div className="flex flex-col mb-4">
-                  <label className="text-sm font-semibold text-white mb-2 ml-1">Selecione o Concurso</label>
-                  <select
-                    className="w-full p-3 rounded-lg border-none focus:ring-2 focus:ring-primary text-gray-700 shadow-sm"
-                    value={concursoGeralId ?? ""}
-                    onChange={(e) => setConcursoGeralId(e.target.value ? Number(e.target.value) : null)}
-                  >
-                    <option value="">Selecione...</option>
-                    {concursos.map((concurso) => (
-                      <option key={concurso.idConcurso} value={concurso.idConcurso}>
-                        {concurso.nomeConcurso}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div ref={componentRefGeral} className="bg-white rounded-xl p-4 flex-1 shadow-inner flex flex-col overflow-hidden print:shadow-none print:p-0 print:overflow-visible">
-
-                {concursoGeralId && (
-                  <ReportHeader
-                    title="Relatório Geral"
-                    subtitle={getNomeConcurso(concursoGeralId)}
-                    user={usuarioLogado}
-                  />
-                )}
-
-                {concursoGeralId ? (
-                  <div className="flex-1 overflow-auto print:overflow-visible">
-                    <RelatorioGeralList concursoId={concursoGeralId} />
-                  </div>
-                ) : (
-                  <div className="flex-1 flex flex-col items-center justify-center text-gray-400 gap-2 opacity-60 print:hidden">
-                    <FileText size={48} />
-                    <p className="text-lg font-medium">Aguardando seleção...</p>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="bg-secondary-light rounded-2xl shadow-lg p-6 flex flex-col h-full min-h-[600px] print:bg-white print:p-0 print:shadow-none print:min-h-0 print:mt-10">
-
-              <div className="print:hidden">
-                <div className="flex items-center justify-between gap-2 mb-4">
-                  <div className="flex items-center gap-2">
-                    <div className="bg-white/20 p-2 rounded-lg">
-                      <Trophy className="text-white" size={24} />
+                );
+            case 'RANKING':
+                return (
+                    <div className="grid md:grid-cols-2 gap-4 w-full">
+                        <div>
+                            <label className={labelClass}>Concurso</label>
+                            <select className={selectClass} value={concursoRankingId ?? ""} onChange={(e) => setConcursoRankingId(Number(e.target.value) || null)}>
+                                <option value="">Selecione...</option>
+                                {concursos.map(c => <option key={c.idConcurso} value={c.idConcurso}>{c.nomeConcurso}</option>)}
+                            </select>
+                        </div>
+                        <div>
+                            <label className={labelClass}>Categoria</label>
+                            <select className={selectClass} value={categoriaRankingId ?? ""} onChange={(e) => setCategoriaRankingId(Number(e.target.value) || null)} disabled={!concursoRankingId}>
+                                <option value="">Selecione...</option>
+                                {categorias.map(c => <option key={c.idCategoria} value={c.idCategoria}>{c.nomeCategoria}</option>)}
+                            </select>
+                        </div>
                     </div>
-                    <h2 className="text-xl font-bold text-white">Relatorio por Categoria</h2>
-                  </div>
-                  {concursoRankingId && categoriaId && (
-                    <button
-                      onClick={handlePrint}
-                      className="bg-white text-secondary font-bold py-2 px-4 rounded-lg flex items-center gap-2 hover:bg-gray-100 transition shadow-sm"
-                    >
-                      <Printer size={18} /> Imprimir
-                    </button>
-                  )}
+                );
+            case 'INDIVIDUAL':
+                return (
+                    <div className="grid md:grid-cols-2 gap-4 w-full">
+                        <div>
+                            <label className={labelClass}>Categoria</label>
+                            <select 
+                                className={selectClass} 
+                                value={categoriaIndividualId ?? ""} 
+                                onChange={(e) => {
+                                    setCategoriaIndividualId(Number(e.target.value) || null);
+                                    setCandidatoIndividualId(null);
+                                }}
+                            >
+                                <option value="">Selecione...</option>
+                                {categorias.map(c => <option key={c.idCategoria} value={c.idCategoria}>{c.nomeCategoria}</option>)}
+                            </select>
+                        </div>
+                        <div>
+                            <label className={labelClass}>Candidato</label>
+                            <select 
+                                className={selectClass} 
+                                value={candidatoIndividualId ?? ""} 
+                                onChange={(e) => setCandidatoIndividualId(Number(e.target.value) || null)}
+                                disabled={!categoriaIndividualId}
+                            >
+                                <option value="">Selecione...</option>
+                                {candidatos
+                                    .filter(c => categoriaIndividualId ? c.categoriaId === categoriaIndividualId : true)
+                                    .map(c => <option key={c.idCandidato} value={c.idCandidato}>{c.nomeCompleto}</option>)
+                                }
+                            </select>
+                        </div>
+                    </div>
+                );
+            case 'DETALHADO':
+                return (
+                    <div className="grid md:grid-cols-2 gap-4 w-full">
+                        <div>
+                            <label className={labelClass}>Concurso</label>
+                            <select className={selectClass} value={concursoDetalhadoId ?? ""} onChange={(e) => setConcursoDetalhadoId(Number(e.target.value) || null)}>
+                                <option value="">Selecione...</option>
+                                {concursos.map(c => <option key={c.idConcurso} value={c.idConcurso}>{c.nomeConcurso}</option>)}
+                            </select>
+                        </div>
+                        <div>
+                            <label className={labelClass}>Categoria</label>
+                            <select className={selectClass} value={categoriaDetalhadaId ?? ""} onChange={(e) => setCategoriaDetalhadaId(Number(e.target.value) || null)} disabled={!concursoDetalhadoId}>
+                                <option value="">Selecione...</option>
+                                {categorias.map(c => <option key={c.idCategoria} value={c.idCategoria}>{c.nomeCategoria}</option>)}
+                            </select>
+                        </div>
+                    </div>
+                );
+        }
+    };
+
+    const renderContent = () => {
+        let showContent = false;
+        let title = "";
+        let subtitle = "";
+        let ContentComponent = null;
+
+        if (activeTab === 'GERAL' && concursoGeralId) {
+            showContent = true;
+            title = "Relatório Geral";
+            subtitle = getNomeConcurso(concursoGeralId);
+            ContentComponent = <RelatorioGeralList concursoId={concursoGeralId} />;
+        } else if (activeTab === 'RANKING' && concursoRankingId && categoriaRankingId) {
+            showContent = true;
+            title = "Resultado por Categoria Oficial";
+            subtitle = `${getNomeConcurso(concursoRankingId)} - ${getNomeCategoria(categoriaRankingId)}`;
+            ContentComponent = <RankingCategoriaList concursoId={concursoRankingId} categoriaId={categoriaRankingId} />;
+        } else if (activeTab === 'INDIVIDUAL' && candidatoIndividualId) {
+            showContent = true;
+            title = "Relatório Individual do Candidato";
+            subtitle = getNomeCategoria(categoriaIndividualId);
+            ContentComponent = <RelatorioIndividualDetalhado candidatoId={candidatoIndividualId} />;
+        } else if (activeTab === 'DETALHADO' && concursoDetalhadoId && categoriaDetalhadaId) {
+            showContent = true;
+            title = "Relatório Detalhado da Categoria";
+            subtitle = getNomeCategoria(categoriaDetalhadaId);
+            ContentComponent = <RelatorioCategoriaTabela categoriaId={categoriaDetalhadaId} concursoIdConcurso={concursoDetalhadoId} />;
+        }
+
+        if (!showContent) {
+            return (
+                <div className="flex flex-col items-center justify-center py-20 text-neutral-onSurface opacity-40 border-2 border-dashed border-outline-variant rounded-xl mt-6">
+                    <Filter size={48} className="mb-4" />
+                    <p className="text-lg font-medium">Selecione os filtros acima para gerar o relatório.</p>
                 </div>
+            );
+        }
 
-                <div className="flex flex-col md:flex-row gap-4 mb-4">
-                  <div className="flex-1">
-                    <label className="text-sm font-semibold text-white mb-2 ml-1">Concurso</label>
-                    <select
-                      className="w-full p-3 rounded-lg border-none text-gray-700 shadow-sm"
-                      value={concursoRankingId ?? ""}
-                      onChange={(e) => {
-                        setConcursoRankingId(e.target.value ? Number(e.target.value) : null);
-                        setCategoriaId(null);
-                      }}
-                    >
-                      <option value="">Selecione...</option>
-                      {concursos.map((c) => (
-                        <option key={c.idConcurso} value={c.idConcurso}>{c.nomeConcurso}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="flex-1">
-                    <label className="text-sm font-semibold text-white mb-2 ml-1">Categoria</label>
-                    <select
-                      className="w-full p-3 rounded-lg border-none text-gray-700 shadow-sm disabled:bg-white/50"
-                      value={categoriaId ?? ""}
-                      onChange={(e) => setCategoriaId(e.target.value ? Number(e.target.value) : null)}
-                      disabled={!concursoRankingId}
-                    >
-                      <option value="">{!concursoRankingId ? "Aguardando..." : "Selecione..."}</option>
-                      {categorias.map((c) => (
-                        <option key={c.idCategoria} value={c.idCategoria}>{c.nomeCategoria}</option>
-                      ))}
-                    </select>
-                  </div>
+        return (
+            <div ref={componentRef} className="mt-6 bg-white p-6 rounded-xl border border-outline-variant shadow-sm print:border-none print:shadow-none print:p-0">
+                <ReportHeader title={title} subtitle={subtitle} user={usuarioLogado} />
+                <div className="mt-6">
+                    {ContentComponent}
                 </div>
-              </div>
-
-              <div ref={componentRefRanking} className="bg-white rounded-xl p-4 flex-1 shadow-inner flex flex-col overflow-hidden print:shadow-none print:p-0 print:overflow-visible">
-
-                {concursoRankingId && categoriaId && (
-                  <ReportHeader
-                    title="Relatorio do Resultado por Categoria Oficial"
-                    subtitle={`${getNomeConcurso(concursoRankingId)} - ${getNomeCategoria(categoriaId)}`}
-                    user={usuarioLogado}
-                  />
-                )}
-
-                {concursoRankingId && categoriaId ? (
-                  <div className="flex-1 overflow-auto print:overflow-visible">
-                    <RankingCategoriaList
-                      concursoId={concursoRankingId}
-                      categoriaId={categoriaId}
-                    />
-                  </div>
-                ) : (
-                  <div className="flex-1 flex flex-col items-center justify-center text-gray-400 gap-2 opacity-60 print:hidden">
-                    <Trophy size={48} />
-                    <p className="text-lg font-medium">Aguardando filtros...</p>
-                  </div>
-                )}
-              </div>
             </div>
-          </div>
+        );
+    };
 
-          <div className="bg-secondary-light rounded-2xl shadow-lg p-6 flex flex-col h-full w-full print:bg-white print:p-0 print:shadow-none print:min-h-0 print:mt-10">
-            <div className="print:hidden flex items-center justify-between gap-2 mb-4">
-              <div className="flex items-center gap-2">
-                <div className="bg-white/20 p-2 rounded-lg">
-                  <User className="text-white" size={24} />
+    return (
+        <div className="flex min-h-screen w-full bg-neutral-background">
+            <div className="print:hidden">
+                <SideNavBar />
+            </div>
+
+            <main className="flex-1 p-6 md:p-8 flex flex-col overflow-y-auto  print:p-0 print:overflow-visible print:bg-white">
+                
+                {/* CARD UNIFICADO */}
+                <div className="w-full bg-surface-containerLowest rounded-2xl shadow-sm border border-outline-variant flex flex-col min-h-[600px] print:border-none print:shadow-none">
+                    
+                    {/* CABEÇALHO GERAL (Não impresso) */}
+                    <div className="p-6 border-b border-outline-variant print:hidden">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <div className="p-3 bg-primary-container rounded-xl text-primary-onContainer shadow-sm">
+                                    <FileBarChart2 size={24} />
+                                </div>
+                                <div>
+                                    <h1 className="text-xl font-bold text-primary-dark">Central de Relatórios</h1>
+                                    <p className="text-sm text-neutral-onSurface opacity-70">
+                                        Gere, visualize e imprima os resultados do concurso.
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            {/* Botão de Impressão Global (aparece se houver conteúdo) */}
+                            <button
+                                onClick={handlePrint}
+                                className="flex items-center gap-2 bg-secondary hover:bg-secondary-dark text-white px-5 py-2.5 rounded-xl shadow-md transition-all active:scale-95 font-bold"
+                            >
+                                <Printer size={20} />
+                                Imprimir
+                            </button>
+                        </div>
+
+                        {/* TAB NAVIGATION */}
+                        <div className="flex gap-1 mt-8 overflow-x-auto">
+                            <button onClick={() => setActiveTab('GERAL')} className={tabClass(activeTab === 'GERAL')}>
+                                <FileText size={18} /> Geral
+                            </button>
+                            <button onClick={() => setActiveTab('RANKING')} className={tabClass(activeTab === 'RANKING')}>
+                                <Trophy size={18} /> Ranking
+                            </button>
+                            <button onClick={() => setActiveTab('INDIVIDUAL')} className={tabClass(activeTab === 'INDIVIDUAL')}>
+                                <User size={18} /> Individual
+                            </button>
+                            <button onClick={() => setActiveTab('DETALHADO')} className={tabClass(activeTab === 'DETALHADO')}>
+                                <LayoutList size={18} /> Detalhado
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* ÁREA DE CONTEÚDO */}
+                    <div className="p-6 md:p-8 flex-1 bg-neutral-50/50 print:bg-white print:p-0">
+                        
+                        {/* Filtros (Ocultos na impressão) */}
+                        <div className="bg-white p-6 rounded-xl border border-outline-variant shadow-sm mb-6 print:hidden">
+                            <h3 className="text-sm font-bold text-neutral-onSurface uppercase tracking-wider mb-4 flex items-center gap-2">
+                                <Filter size={16} /> Filtros do Relatório
+                            </h3>
+                            {renderFilters()}
+                        </div>
+
+                        {/* Relatório Gerado */}
+                        <div className="animate-fadeIn">
+                            {renderContent()}
+                        </div>
+                    </div>
                 </div>
-                <h2 className="text-xl font-bold text-white">Relatório Individual</h2>
-              </div>
-
-              {candidatoSelecionado && (
-                <button
-                  onClick={handlePrint}
-                  className="bg-white text-secondary font-bold py-2 px-4 rounded-lg flex items-center gap-2 hover:bg-gray-100 transition shadow-sm"
-                >
-                  <Printer size={18} /> Imprimir
-                </button>
-              )}
-            </div>
-
-            <div className="print:hidden flex flex-col md:flex-row gap-4 mb-4">
-              {/* Categoria */}
-              <div className="flex-1">
-                <label className="text-sm font-semibold text-white mb-2 ml-1">Categoria</label>
-                <select
-                  className="w-full p-3 rounded-lg"
-                  value={categoriaSelecionada ?? ""}
-                  onChange={(e) => {
-                    const value = e.target.value ? Number(e.target.value) : null;
-                    setCategoriaSelecionada(value);
-                    setCandidatoSelecionado(null);
-                  }}
-                >
-                  <option value="">Selecione...</option>
-                  {categorias.map((cat) => (
-                    <option key={cat.idCategoria} value={cat.idCategoria}>
-                      {cat.nomeCategoria}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="flex-1">
-                <label className="text-sm font-semibold text-white mb-2 ml-1">Candidato</label>
-                <select
-                  className="w-full p-3 rounded-lg disabled:opacity-60"
-                  value={candidatoSelecionado ?? ""}
-                  onChange={(e) =>
-                    setCandidatoSelecionado(e.target.value ? Number(e.target.value) : null)
-                  }
-                  disabled={!categoriaSelecionada}
-                >
-                  <option value="">
-                    {!categoriaSelecionada ? "Selecione a categoria" : "Selecione..."}
-                  </option>
-                  {candidatos
-                    .filter((c) =>
-                      categoriaSelecionada ? c.categoriaId === categoriaSelecionada : true
-                    )
-                    .map((c) => (
-                      <option key={c.idCandidato} value={c.idCandidato}>
-                        {c.nomeCompleto}
-                      </option>
-                    ))}
-                </select>
-              </div>
-            </div>
-
-            <div
-              className="bg-white rounded-xl p-4 flex-1 shadow-inner flex flex-col overflow-hidden print:shadow-none print:p-0 print:overflow-visible"
-            >
-              {candidatoSelecionado ? (
-                <>
-                  <ReportHeader
-                    title="Relatório Individual do Candidato"
-                    subtitle={getNomeCategoria(categoriaSelecionada)}
-                    user={usuarioLogado}
-                  />
-                  <RelatorioIndividualDetalhado candidatoId={candidatoSelecionado} />
-                </>
-              ) : (
-                <div className="flex-1 flex flex-col items-center justify-center text-gray-400 gap-2 opacity-60 print:hidden">
-                  <User size={48} />
-                  <p className="text-lg font-medium">Selecione uma categoria e um candidato</p>
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className="bg-secondary-light rounded-2xl shadow-lg p-6 flex flex-col h-full w-full print:bg-white print:p-0 print:shadow-none print:min-h-0 print:mt-10">
-            {/* Header */}
-            <div className="print:hidden flex items-center justify-between gap-2 mb-4">
-              <div className="flex items-center gap-2">
-                <div className="bg-white/20 p-2 rounded-lg">
-                  <FileText className="text-white" size={24} />
-                </div>
-                <h2 className="text-xl font-bold text-white">Relatório Detalhado por Categoria</h2>
-              </div>
-
-              {categoriaDetalhadaId && concursoDetalhadoId && (
-                <button
-                  onClick={handlePrint}
-                  className="bg-white text-secondary font-bold py-2 px-4 rounded-lg flex items-center gap-2 hover:bg-gray-100 transition shadow-sm"
-                >
-                  <Printer size={18} /> Imprimir
-                </button>
-              )}
-            </div>
-
-            {/* Filtros */}
-            <div className="print:hidden flex flex-col md:flex-row gap-4 mb-4">
-              {/* Concurso */}
-              <div className="flex-1">
-                <label className="text-sm font-semibold text-white mb-2 ml-1">Concurso</label>
-                <select
-                  className="w-full p-3 rounded-lg"
-                  value={concursoDetalhadoId ?? ""}
-                  onChange={(e) => {
-                    const value = e.target.value ? Number(e.target.value) : null;
-                    setConcursoDetalhadoId(value);
-                    setCategoriaDetalhadaId(null); // reset categoria ao trocar concurso
-                  }}
-                >
-                  <option value="">Selecione...</option>
-                  {concursos.map((con) => (
-                    <option key={con.idConcurso} value={con.idConcurso}>
-                      {con.nomeConcurso}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Categoria */}
-              <div className="flex-1">
-                <label className="text-sm font-semibold text-white mb-2 ml-1">Categoria</label>
-                <select
-                  className="w-full p-3 rounded-lg disabled:opacity-60"
-                  value={categoriaDetalhadaId ?? ""}
-                  onChange={(e) => setCategoriaDetalhadaId(e.target.value ? Number(e.target.value) : null)}
-                  disabled={!concursoDetalhadoId}
-                >
-                  <option value="">
-                    {!concursoDetalhadoId ? "Selecione o concurso" : "Selecione..."}
-                  </option>
-                  {categorias.map((cat) => (
-                    <option key={cat.idCategoria} value={cat.idCategoria}>
-                      {cat.nomeCategoria}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            {/* Conteúdo */}
-            <div className="bg-white rounded-xl p-4 flex-1 shadow-inner flex flex-col overflow-hidden print:shadow-none print:p-0 print:overflow-visible">
-              {categoriaDetalhadaId && concursoDetalhadoId ? (
-                <>
-                  <ReportHeader
-                    title="Relatório Detalhado da Categoria"
-                    subtitle={
-                      categorias.find((c) => c.idCategoria === categoriaDetalhadaId)?.nomeCategoria ?? ""
-                    }
-                    user={usuarioLogado}
-                  />
-                  <RelatorioCategoriaTabela
-                    categoriaId={categoriaDetalhadaId}
-                    concursoIdConcurso={concursoDetalhadoId}
-                  />
-                </>
-              ) : (
-                <div className="flex-1 flex flex-col items-center justify-center text-gray-400 gap-2 opacity-60 print:hidden">
-                  <FileText size={48} />
-                  <p className="text-lg font-medium">Selecione um concurso e uma categoria</p>
-                </div>
-              )}
-            </div>
-          </div>
-
+            </main>
         </div>
-      </div>
-    </div>
-  );
+    );
 }

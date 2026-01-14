@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { PlusCircle, Users } from 'lucide-react';
 import SideNavBar from '../components/SideNavBar/SideNavBar';
 import Modal from '../../src/components/Modal/Modal';
 import { type Candidato } from '../types/Candidato';
@@ -38,25 +39,38 @@ export default function CandidatoPage() {
         <div className="flex flex-row min-h-screen w-full bg-neutral-background">
             <SideNavBar />
 
-            <div className="flex-1 p-6 bg-neutral-background flex flex-col items-center overflow-y-auto">
-                <div className="w-full max-w-full mt-10 mb-6 px-2 flex justify-end">
-                    <button
-                        onClick={openModal}
-                        className="bg-secondary-container text-white font-bold py-2 px-4 rounded-lg hover:bg-secondary-dark transition duration-300 ease-in-out"
-                    >
-                        Adicionar candidato
-                    </button>
-                </div>
+            <main className="flex-1 p-6 md:p-8 flex flex-col overflow-y-auto max-h-screen">
+                <div className="w-full bg-surface-containerLowest rounded-2xl shadow-sm border border-outline-variant flex flex-col">
+                    <div className="p-6 border-b border-outline-variant flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div className="flex items-center gap-3">
+                            <div className="p-3 bg-primary-container rounded-xl text-primary-onContainer">
+                                <Users size={24} />
+                            </div>
+                            <div>
+                                <h1 className="text-xl font-bold text-primary-dark">Lista de Candidatos</h1>
+                                <p className="text-sm text-neutral-onSurface opacity-70">Gerencie todos os inscritos</p>
+                            </div>
+                        </div>
 
-                <div className="w-full max-w-full h-full bg-secondary-light p-8 rounded-2xl shadow-lg">
-                    <CandidatoList
-                        key={refreshList.toString()}
-                        onEdit={handleEdit}
-                        onVisualizar={handleVisualizar}
-                        onCredenciar={handleCredenciar}
-                    />
+                        <button
+                            onClick={openModal}
+                            className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-white font-semibold py-2.5 px-5 rounded-xl shadow-sm transition-all active:scale-95"
+                        >
+                            <PlusCircle size={20} />
+                            Adicionar Candidato
+                        </button>
+                    </div>
+
+                    <div className="w-full">
+                        <CandidatoList
+                            key={refreshList.toString()}
+                            onEdit={handleEdit}
+                            onVisualizar={handleVisualizar}
+                            onCredenciar={handleCredenciar}
+                        />
+                    </div>
                 </div>
-            </div>
+            </main>
 
             <Modal isOpen={isModalOpen} onClose={closeModal}>
                 <CandidatoForm onClose={closeModal} candidatoToEdit={candidatoToEdit} />

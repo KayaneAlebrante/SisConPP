@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Concurso } from "../../types/Concurso";
 import { toast } from "react-toastify";
-import { Pencil, Trash2, Search } from "lucide-react";
+import { Pencil, Trash2, Search, CalendarDays } from "lucide-react";
 import Dialog from "../Modal/Dialog";
 import { listarConcurso, deletarConcurso } from "../../services/api";
 import Modal from "../Modal/Modal";
@@ -39,20 +39,18 @@ export default function ConcursoList({ onEdit }: ConcursoListProps) {
 
         try {
             await deletarConcurso(concursoSelecionadoId);
-
             toast.success("Concurso excluído com sucesso!");
             fetchConcursos();
             setIsDialogOpen(false);
             setConcursoSelecionadoId(null);
-
         } catch (error: unknown) {
-            let msg = "Erro ao deletar concurso.";
-
-            if (typeof error === 'object' && error !== null && 'response' in error) {
-                const axiosError = error as { response?: { data?: { message?: string } } };
-                msg = axiosError.response?.data?.message ?? msg;
+            let msg = "Erro ao deletar Concurso.";
+            if (error instanceof Object && "response" in error) {
+                const apiError = error as { response?: { data?: { message?: string } } };
+                if (apiError.response?.data?.message) {
+                    msg = apiError.response.data.message;
+                }
             }
-
             toast.error(msg);
             setIsDialogOpen(false);
             setConcursoSelecionadoId(null);
@@ -60,91 +58,112 @@ export default function ConcursoList({ onEdit }: ConcursoListProps) {
     };
 
     const formatarData = (data: Date | string) => {
+        if (!data) return "--/--/----";
         const dateObj = new Date(data);
-        const dia = String(dateObj.getUTCDate()).padStart(2, "0");
-        const mes = String(dateObj.getUTCMonth() + 1).padStart(2, "0");
-        const ano = dateObj.getUTCFullYear();
-        return `${dia}/${mes}/${ano}`;
+        return dateObj.toLocaleDateString('pt-BR');
     };
 
     return (
-        <div className="flex flex-col h-full">
-            <h2 className="text-xl font-bold mb-4 text-secondary-on">Lista de Concursos</h2>
-            <table className="w-full bg-white rounded-xl shadow-md overflow-hidden">
-                <thead>
-                    <tr className="text-left bg-secondary-dark text-secondary-light">
-                        <th className="p-3 first:rounded-tl-xl">Nome do Concurso</th>
-                        <th className="p-3">Data da Prova Escrita</th>
-                        <th className="p-3">Data da Provas Praticas</th>
-                        <th className="p-3">Local</th>
-                        <th className="p-3 last:rounded-tr-xl">Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {concursos.map((concurso) => (
-                        <tr key={concurso.idConcurso} className="border-t hover:bg-secondary-light/20 transition">
-                            <td className="p-3">{concurso.nomeConcurso}</td>
-                            <td className="p-3">{formatarData(concurso.dataProvaEscrita)}</td>
-                            <td className="p-3">{formatarData(concurso.dataProvasPraticas)}</td>
-                            <td className="p-3">{concurso.local}</td>
-                            <td className="p-3 flex gap-2">
-                                <button
-                                    className="text-green-600 hover:text-green-800"
-                                    onClick={() => {
-                                        setSelectedConcurso(concurso);
-                                        setIsViewModalOpen(true);
-                                    }}
-                                >
-                                    <Search size={18} />
-                                </button>
-                                <button
-
-                                    className="text-blue-600 hover:text-blue-800"
-                                    onClick={() => onEdit(concurso)}
-                                >
-                                    <Pencil size={18} />
-                                </button>
-                                <button
-                                    className="text-red-600 hover:text-red-800"
-                                    onClick={() => {
-                                        setConcursoSelecionadoId(concurso.idConcurso);
-                                        setIsDialogOpen(true);
-                                    }}
-                                >
-                                    <Trash2 size={18} />
-                                </button>
-                            </td>
+        <div className="flex flex-col h-full bg-neutral-background p-6">
+            <div className="bg-surface-containerLowest rounded-2xl shadow-sm border border-outline-variant overflow-hidden">
+                <table className="w-full">
+                    <thead>
+                        <tr className="text-left bg-surface-variant/30 text-neutral-onVariant border-b border-outline-variant">
+                            <th className="p-4 font-semibold text-xs uppercase tracking-wider">Nome do Concurso</th>
+                            <th className="p-4 font-semibold text-xs uppercase tracking-wider">Local</th>
+                            <th className="p-4 font-semibold text-xs uppercase tracking-wider">Prova Escrita</th>
+                            <th className="p-4 font-semibold text-xs uppercase tracking-wider">Provas Práticas</th>
+                            <th className="p-4 font-semibold text-xs uppercase tracking-wider text-center">Ações</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody className="divide-y divide-outline-variant">
+                        {concursos.map((concurso) => (
+                            <tr
+                                key={concurso.idConcurso}
+                                className="hover:bg-surface-container transition-colors"
+                            >
+                                <td className="p-4 text-neutral-onSurface font-medium">
+                                    {concurso.nomeConcurso}
+                                </td>
+                                <td className="p-4 text-neutral-onSurface text-sm">
+                                    {concurso.local}
+                                </td>
+                                <td className="p-4 text-neutral-onSurface text-sm">
+                                    <div className="flex items-center gap-2">
+                                        <CalendarDays size={14} className="text-primary" />
+                                        {formatarData(concurso.dataProvaEscrita)}
+                                    </div>
+                                </td>
+                                <td className="p-4 text-neutral-onSurface text-sm">
+                                    <div className="flex items-center gap-2">
+                                        <CalendarDays size={14} className="text-secondary" />
+                                        {formatarData(concurso.dataProvasPraticas)}
+                                    </div>
+                                </td>
+                                <td className="p-4 flex gap-2 justify-center">
+                                    <button
+                                        title="Visualizar"
+                                        className="p-2 rounded-full text-primary hover:bg-primary-fixedDim/30 transition-all"
+                                        onClick={() => {
+                                            setSelectedConcurso(concurso);
+                                            setIsViewModalOpen(true);
+                                        }}
+                                    >
+                                        <Search size={18} />
+                                    </button>
 
-            <Dialog
-                isOpen={isDialogOpen}
-                onClose={() => {
-                    setIsDialogOpen(false);
-                    setConcursoSelecionadoId(null);
-                }}
-                onConfirm={() => {
-                    if (concursoSelecionadoId !== null) {
-                        handleConfirmDelete();
-                        setIsDialogOpen(false);
-                    }
-                }}
-                message="Tem certeza que deseja excluir este concurso?"
-            />
-            <Modal
-                isOpen={isViewModalOpen}
-                onClose={() => setIsViewModalOpen(false)}
-            >
-                {selectedConcurso && (
-                    <ConcursoView
-                        concurso={selectedConcurso}
-                        onVoltar={() => setIsViewModalOpen(false)}
-                    />
+                                    <button
+                                        title="Editar"
+                                        className="p-2 rounded-full text-secondary hover:bg-secondary-fixedDim/30 transition-all"
+                                        onClick={() => onEdit(concurso)}
+                                    >
+                                        <Pencil size={18} />
+                                    </button>
+
+                                    <button
+                                        title="Excluir"
+                                        className="p-2 rounded-full text-error hover:bg-error-container/30 transition-all"
+                                        onClick={() => {
+                                            setConcursoSelecionadoId(concurso.idConcurso);
+                                            setIsDialogOpen(true);
+                                        }}
+                                    >
+                                        <Trash2 size={18} />
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+
+                {concursos.length === 0 && (
+                    <div className="p-8 text-center text-neutral-onVariant opacity-60">
+                        Nenhum concurso encontrado.
+                    </div>
                 )}
-            </Modal>
 
+                <Dialog
+                    isOpen={isDialogOpen}
+                    onClose={() => {
+                        setIsDialogOpen(false);
+                        setConcursoSelecionadoId(null);
+                    }}
+                    onConfirm={handleConfirmDelete}
+                    message="Tem certeza que deseja excluir este concurso?"
+                />
+
+                <Modal
+                    isOpen={isViewModalOpen}
+                    onClose={() => setIsViewModalOpen(false)}
+                >
+                    {selectedConcurso && (
+                        <ConcursoView
+                            concurso={selectedConcurso}
+                            onVoltar={() => setIsViewModalOpen(false)}
+                        />
+                    )}
+                </Modal>
+            </div>
         </div>
     );
 }

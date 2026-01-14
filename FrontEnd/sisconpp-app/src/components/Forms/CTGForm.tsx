@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { listarRTs, atualizarCTG, cadastrarCTG } from '../../services/api';
 import { CTG } from '../../types/CTG';
 import { toast } from 'react-toastify';
+import { Save, XCircle } from 'lucide-react';
 
 interface RT {
     idRT: number;
@@ -22,6 +23,9 @@ export default function CTGForm({ onClose, ctgToEdit }: CTGFormProps) {
 
     const [rts, setRTs] = useState<RT[]>([]); 
     const [selectedRT, setSelectedRT] = useState<number>(0); 
+
+    const inputClass = "w-full rounded-xl border border-outline bg-surface-containerHigh p-2.5 text-neutral-onSurface focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all text-sm";
+    const labelClass = "block text-sm font-semibold text-neutral-onSurface mb-1.5";
 
     useEffect(() => {
         const fetchRTs = async () => {
@@ -73,44 +77,45 @@ export default function CTGForm({ onClose, ctgToEdit }: CTGFormProps) {
             onClose();
         } catch (error) {
             console.error('Erro ao salvar CTG:', error);
-            toast.error('Erro ao salvar CTG. Verifique os dados e tente novamente.');
+            toast.error('Erro ao salvar CTG. Verifique os dados.');
         }
     };
 
-
     return (
-        <div className="w-full">
-            <h1 className="text-xl font-semibold text-neutral-onBackground mb-4">
-                {ctgToEdit ? 'Editar' : 'Cadastrar'} CTG - Centro de Tradições Gaúchas
-            </h1>
+        <div className="w-full text-neutral-onBackground">
+            <div className="mb-6">
+                <h1 className="text-2xl font-bold text-primary-dark">
+                    {ctgToEdit ? 'Editar CTG' : 'Novo CTG'}
+                </h1>
+                <p className="text-sm text-neutral-onSurface opacity-70">
+                    Preencha os dados do Centro de Tradições Gaúchas.
+                </p>
+            </div>
 
-            <form onSubmit={handleSubmit}>
-                <div className="flex flex-col mb-4">
-                    <label className="text-sm font-medium text-neutral-onBackground mb-1">
-                        Nome do CTG
-                    </label>
+            <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                    <label className={labelClass}>Nome do CTG</label>
                     <input
                         type="text"
                         name="nomeCTG"
                         value={formData.nomeCTG}
                         onChange={handleChange}
-                        className="rounded-lg p-2 bg-surface-containerHigh border border-outline focus:outline-none focus:ring-2 focus:ring-primary text-neutral-onBackground                      placeholder= CTG Herança do Pago"
+                        className={inputClass}
+                        placeholder="Ex: CTG Herança do Pago"
                         required
                     />
                 </div>
 
-                <div className="flex flex-col mb-4">
-                    <label className="text-sm font-medium text-neutral-onBackground mb-1">
-                        Região Tradicionalista
-                    </label>
+                <div>
+                    <label className={labelClass}>Região Tradicionalista (RT)</label>
                     <select
                         name="RTid"
                         value={selectedRT || ""}
                         onChange={handleRTChange}
-                        className="rounded-lg p-2 bg-surface-containerHigh border border-outline focus:outline-none focus:ring-2 focus:ring-primary text-neutral-onBackground"
+                        className={inputClass}
                         required
                     >
-                        <option value="">Selecione uma RT</option>
+                        <option value="">Selecione uma RT...</option>
                         {rts.map((rt) => (
                             <option key={rt.idRT} value={rt.idRT}>
                                 {rt.nomeRT}
@@ -119,23 +124,24 @@ export default function CTGForm({ onClose, ctgToEdit }: CTGFormProps) {
                     </select>
                 </div>
 
-                <div className="flex justify-end gap-2 mt-6">
+                <div className="flex justify-end gap-3 pt-6 border-t border-outline-variant mt-6">
                     <button
                         type="button"
                         onClick={onClose}
-                        className="px-4 py-2 rounded-lg border border-gray-400 text-gray-700 hover:bg-gray-100 transition"
+                        className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-outline text-neutral-onSurface hover:bg-surface-variant transition font-medium"
                     >
+                        <XCircle size={18} />
                         Cancelar
                     </button>
                     <button
                         type="submit"
-                        className="px-4 py-2 bg-secondary text-secondary-on font-medium rounded-lg hover:bg-secondary-dark transition"
+                        className="flex items-center gap-2 px-5 py-2.5 bg-secondary hover:bg-secondary-dark text-secondary-on rounded-xl shadow-md transition font-bold"
                     >
-                        {ctgToEdit ? 'Salvar alterações' : 'Cadastrar CTG'}
+                        <Save size={18} />
+                        {ctgToEdit ? 'Salvar Alterações' : 'Cadastrar'}
                     </button>
                 </div>
             </form>
         </div>
-
     );
 }

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify'; 
 import { criarSubQuesito, listarQuesitos } from '../../../services/api';
 import { Quesitos } from '../../../types/ProvaPratica';
+import { Save, XCircle, ListMinus } from 'lucide-react';
 
 export interface SubQuesitos {
     idSubequestios?: number;
@@ -17,14 +18,17 @@ interface SubQuesitosFormProps {
 }
 
 export default function SubQuesitosForm({ onClose, subQuesitoToEdit, quesitoId }: SubQuesitosFormProps) {
-    
     const [listaQuesitos, setListaQuesitos] = useState<Quesitos[]>([]);
-    
     const [formData, setFormData] = useState({
         nomeSubquesito: '',
         notaSubequesito: 0,
         quesitoId: 0
     });
+    const [loading, setLoading] = useState(false);
+
+    // Estilos Padronizados
+    const inputClass = "w-full rounded-xl border border-outline bg-surface-containerHigh p-2.5 text-neutral-onSurface focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all text-sm";
+    const labelClass = "block text-sm font-semibold text-neutral-onSurface mb-1.5";
 
     useEffect(() => {
         const carregarQuesitos = async () => {
@@ -61,19 +65,18 @@ export default function SubQuesitosForm({ onClose, subQuesitoToEdit, quesitoId }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
         try {
             if (formData.nomeSubquesito.trim() === '' || formData.notaSubequesito <= 0 || formData.quesitoId <= 0) {
                 toast.warning('Preencha todos os campos obrigatórios.');
                 return;
             }
             
+            setLoading(true);
             const payload = {
                 idSubequestios: subQuesitoToEdit?.idSubequestios || 0,
                 ...formData
             };
 
-            console.log('Salvando:', payload);
             await criarSubQuesito(payload);
             toast.success(subQuesitoToEdit ? 'Subquesito atualizado!' : 'Subquesito criado!');
             onClose();
@@ -81,20 +84,27 @@ export default function SubQuesitosForm({ onClose, subQuesitoToEdit, quesitoId }
         } catch (error) {
             console.error(error);
             toast.error('Erro ao salvar.');
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        <div className="w-full">
-             <h1 className="text-xl font-semibold text-neutral-onBackground mb-4">
-                {subQuesitoToEdit ? 'Editar' : 'Criar'} Subquesito
-            </h1>
+        <div className="w-full text-neutral-onBackground">
+             <div className="mb-6">
+                <h1 className="text-2xl font-bold text-primary-dark flex items-center gap-2">
+                    <ListMinus className="text-primary" /> 
+                    {subQuesitoToEdit ? 'Editar Subquesito' : 'Novo Subquesito'}
+                </h1>
+                <p className="text-sm text-neutral-onSurface opacity-70">
+                    Subdivisão de um quesito para avaliações detalhadas.
+                </p>
+            </div>
             
-            <form onSubmit={handleSubmit}>
-                <div className="flex flex-col mb-4">
-                    <label className="text-sm font-medium mb-1" htmlFor="nomeSubquesito">
-                        Nome do Subquesito
-                    </label>
+            <form onSubmit={handleSubmit} className="space-y-5">
+                
+                <div>
+                    <label className={labelClass} htmlFor="nomeSubquesito">Nome do Subquesito</label>
                     <input 
                         type="text"
                         id="nomeSubquesito"
@@ -102,62 +112,64 @@ export default function SubQuesitosForm({ onClose, subQuesitoToEdit, quesitoId }
                         value={formData.nomeSubquesito}
                         onChange={handleChange}
                         required
-                        className="rounded-lg p-2 bg-surface-containerHigh border border-outline focus:outline-none focus:ring-2 focus:ring-primary"     
+                        className={inputClass}    
+                        placeholder="Ex: Postura"
                     />
                 </div>
 
-                <div className="flex flex-col mb-4">
-                    <label className="text-sm font-medium mb-1" htmlFor="notaSubequesito">
-                        Nota Máxima
-                    </label>
-                    <input 
-                        type="number"
-                        step="0.1"
-                        id="notaSubequesito"
-                        name="notaSubequesito"
-                        value={formData.notaSubequesito}
-                        onChange={handleChange}
-                        required
-                        min="0"
-                        className="rounded-lg p-2 bg-surface-containerHigh border border-outline focus:outline-none focus:ring-2 focus:ring-primary"
-                    />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label className={labelClass} htmlFor="notaSubequesito">Nota Máxima</label>
+                        <input 
+                            type="number"
+                            step="0.1"
+                            id="notaSubequesito"
+                            name="notaSubequesito"
+                            value={formData.notaSubequesito}
+                            onChange={handleChange}
+                            required
+                            min="0"
+                            className={inputClass}
+                        />
+                    </div>
+
+                    <div>
+                         <label className={labelClass} htmlFor="quesitoId">Quesito Pai</label>
+                        <select
+                            id="quesitoId"
+                            name="quesitoId"
+                            value={formData.quesitoId}
+                            onChange={handleChange}
+                            required
+                            disabled
+                            className={`${inputClass} disabled:opacity-60 disabled:cursor-not-allowed`}
+                        >
+                            <option value="0" disabled>Selecione um Quesito</option>
+                            {listaQuesitos.map((quesito) => (
+                                <option key={quesito.idQuesito} value={quesito.idQuesito}>
+                                    {quesito.nomeQuesito}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
                 </div>
 
-                <div className="flex flex-col mb-6">
-                    <label className="text-sm font-medium mb-1" htmlFor="quesitoId">
-                        Quesito Pai
-                    </label>
-                    <select
-                        id="quesitoId"
-                        name="quesitoId"
-                        value={formData.quesitoId}
-                        onChange={handleChange}
-                        required
-                        disabled
-                        className="rounded-lg p-2 bg-surface-containerHigh border border-outline focus:outline-none focus:ring-2 focus:ring-primary"
-                    >
-                        <option value="0" disabled>Selecione um Quesito</option>
-                        {listaQuesitos.map((quesito) => (
-                            <option key={quesito.idQuesito} value={quesito.idQuesito}>
-                                {quesito.nomeQuesito}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-
-                <div className="flex justify-end gap-2">
+                {/* Rodapé */}
+                <div className="flex justify-end gap-3 pt-6 border-t border-outline-variant mt-6">
                     <button
                         type="button"
                         onClick={onClose}
-                        className="px-4 py-2 rounded-lg border border-gray-400 text-gray-700 hover:bg-gray-100 transition"
+                        className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-outline text-neutral-onSurface hover:bg-surface-variant transition font-medium"
                     >
-                        Cancelar
+                        <XCircle size={18} /> Cancelar
                     </button>
                     <button
                         type="submit"
-                        className="px-4 py-2 bg-secondary text-secondary-on font-medium rounded-lg hover:bg-secondary-dark transition"
+                        disabled={loading}
+                        className="flex items-center gap-2 px-5 py-2.5 bg-secondary hover:bg-secondary-dark text-secondary-on rounded-xl shadow-md transition font-bold disabled:opacity-70"
                     >
-                        {subQuesitoToEdit ? 'Salvar alterações' : 'Criar'}
+                        <Save size={18} />
+                        {loading ? "Salvando..." : (subQuesitoToEdit ? "Salvar Alterações" : "Criar")}
                     </button>
                 </div>
             </form>

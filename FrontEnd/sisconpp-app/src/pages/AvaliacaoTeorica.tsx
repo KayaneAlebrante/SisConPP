@@ -12,6 +12,7 @@ import {
 } from "../services/api";
 import { toast } from "react-toastify";
 import AvaliacaoAccordion from "../components/AvalicaoTeorica/AvaliacaoTeorica";
+import { BookOpenCheck, Filter, User, BookDashed } from "lucide-react";
 
 export default function AvaliacaoTeoricaPage() {
     const [candidatoSelecionado, setCandidatoSelecionado] = useState<number | null>(null);
@@ -22,6 +23,10 @@ export default function AvaliacaoTeoricaPage() {
     const [notas, setNotas] = useState<Record<number, number>>({});
     const [comentarios, setComentarios] = useState<Record<number, string>>({});
     const [ficha, setFicha] = useState<FichaCandidato | null>(null);
+
+    // Estilos Padronizados
+    const selectClass = "w-full rounded-xl border border-outline bg-surface-containerHigh p-2.5 text-neutral-onSurface focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all text-sm";
+    const labelClass = "block text-sm font-semibold text-neutral-onSurface mb-1.5";
 
     const usuarioLogado = (() => {
         try {
@@ -107,9 +112,7 @@ export default function AvaliacaoTeoricaPage() {
                 toast.error("Candidato ou ficha não carregados");
                 return;
             }
-            console.log("FICHA NO SALVAR:", ficha);
-
-
+            
             for (const prova of provasSelecionadas) {
                 const payload = {
                     candidatoId: Number(candidatoSelecionado),
@@ -133,7 +136,6 @@ export default function AvaliacaoTeoricaPage() {
                     },
                 };
 
-                console.log(payload);
                 await criarAvaliacaoTeorica(payload);
                 resetPagina();
             }
@@ -150,89 +152,127 @@ export default function AvaliacaoTeoricaPage() {
         <div className="flex min-h-screen w-full bg-neutral-background">
             <SideNavBar />
 
-            <div className="flex-1 p-6 flex flex-col items-center overflow-y-auto">
-                <div className="w-full bg-secondary-light p-8 rounded-2xl shadow-lg mb-8">
-                    <div className="grid md:grid-cols-2 gap-6">
-                        <div>
-                            <label className="font-semibold text-white mb-2 block">Categoria</label>
-                            <select
-                                className="w-full p-3 rounded-lg"
-                                value={categoriaSelecionada ?? ""}
-                                onChange={(e) =>
-                                    setCategoriaSelecionada(e.target.value ? Number(e.target.value) : null)
-                                }
-                            >
-                                <option value="">Selecione</option>
-                                {categorias.map((cat) => (
-                                    <option key={cat.idCategoria} value={cat.idCategoria}>
-                                        {cat.nomeCategoria}
-                                    </option>
-                                ))}
-                            </select>
+            <main className="flex-1 p-6 md:p-8 flex flex-col overflow-y-auto max-h-screen">
+                
+                {/* CARD UNIFICADO */}
+                <div className="w-full bg-surface-containerLowest rounded-2xl shadow-sm border border-outline-variant flex flex-col min-h-[600px]">
+                    
+                    {/* CABEÇALHO */}
+                    <div className="p-6 border-b border-outline-variant">
+                        <div className="flex items-center gap-3">
+                            <div className="p-3 bg-primary-container rounded-xl text-primary-onContainer shadow-sm">
+                                <BookOpenCheck size={24} />
+                            </div>
+                            <div>
+                                <h1 className="text-xl font-bold text-primary-dark">Avaliação Teórica</h1>
+                                <p className="text-sm text-neutral-onSurface opacity-70">
+                                    Lançamento de notas da prova escrita e redação.
+                                </p>
+                            </div>
                         </div>
+                    </div>
 
-                        <div>
-                            <label className="font-semibold text-white mb-2 block">Candidato</label>
-                            <select
-                                className="w-full p-3 rounded-lg"
-                                value={candidatoSelecionado ?? ""}
-                                onChange={(e) => {
-                                    const id = e.target.value ? Number(e.target.value) : null;
-                                    setCandidatoSelecionado(id);
-                                    if (id) {
-                                        const candidato = candidatos.find((c) => c.idCandidato === id);
-                                        if (candidato) {
-                                            setCategoriaSelecionada(candidato.categoriaId ?? null);
-                                        }
-                                    } else {
-                                        setCategoriaSelecionada(null);
-                                    }
-                                }}
-                            >
-                                <option value="">Selecione</option>
-                                {candidatos
-                                    .filter((c) =>
-                                        categoriaSelecionada ? c.categoriaId === categoriaSelecionada : true
-                                    )
-                                    .map((c) => (
-                                        <option key={c.idCandidato} value={c.idCandidato}>
-                                            {c.nomeCompleto}
+                    {/* CONTEÚDO PRINCIPAL */}
+                    <div className="p-6 md:p-8 flex-1 flex flex-col">
+                        
+                        {/* FILTROS */}
+                        <div className="grid md:grid-cols-2 gap-6 mb-8">
+                            
+                            {/* Categoria */}
+                            <div>
+                                <label className={labelClass}>
+                                    <span className="flex items-center gap-2">
+                                        <Filter size={16} className="text-primary"/> Categoria
+                                    </span>
+                                </label>
+                                <select
+                                    className={selectClass}
+                                    value={categoriaSelecionada ?? ""}
+                                    onChange={(e) => setCategoriaSelecionada(e.target.value ? Number(e.target.value) : null)}
+                                >
+                                    <option value="">Selecione</option>
+                                    {categorias.map((cat) => (
+                                        <option key={cat.idCategoria} value={cat.idCategoria}>
+                                            {cat.nomeCategoria}
                                         </option>
                                     ))}
-                            </select>
+                                </select>
+                            </div>
+
+                            {/* Candidato */}
+                            <div>
+                                <label className={labelClass}>
+                                    <span className="flex items-center gap-2">
+                                        <User size={16} className="text-primary"/> Candidato
+                                    </span>
+                                </label>
+                                <select
+                                    className={selectClass}
+                                    value={candidatoSelecionado ?? ""}
+                                    onChange={(e) => {
+                                        const id = e.target.value ? Number(e.target.value) : null;
+                                        setCandidatoSelecionado(id);
+                                        if (id) {
+                                            const candidato = candidatos.find((c) => c.idCandidato === id);
+                                            if (candidato) setCategoriaSelecionada(candidato.categoriaId ?? null);
+                                        } else {
+                                            setCategoriaSelecionada(null);
+                                        }
+                                    }}
+                                >
+                                    <option value="">Selecione</option>
+                                    {candidatos
+                                        .filter((c) => categoriaSelecionada ? c.categoriaId === categoriaSelecionada : true)
+                                        .map((c) => (
+                                            <option key={c.idCandidato} value={c.idCandidato}>
+                                                {c.nomeCompleto}
+                                            </option>
+                                        ))
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        {/* ÁREA DE AVALIAÇÃO */}
+                        <div className="flex-1">
+                            {!candidatoSelecionado ? (
+                                <div className="text-center py-20 border-2 border-dashed border-outline-variant rounded-xl bg-surface-containerHigh/30">
+                                    <BookDashed className="mx-auto h-12 w-12 text-neutral-onSurface opacity-20 mb-4" />
+                                    <p className="text-lg font-semibold text-neutral-onSurface opacity-60">
+                                        Aguardando Candidato
+                                    </p>
+                                    <p className="text-sm text-neutral-onSurface opacity-40">
+                                        Selecione um candidato acima para iniciar a avaliação.
+                                    </p>
+                                </div>
+                            ) : (
+                                <div className="animate-fadeIn">
+                                    <AvaliacaoAccordion
+                                        provas={provasSelecionadas}
+                                        notas={notas}
+                                        comentarios={comentarios}
+                                        onChangeNota={(id, nota) => setNotas((prev) => ({ ...prev, [id]: nota }))}
+                                        onChangeComentario={(id, comentario) =>
+                                            setComentarios((prev) => ({ ...prev, [id]: comentario }))
+                                        }
+                                        onSalvar={handleSalvarAvaliacao}
+                                        onChangeAnexoGabarito={(file) => {
+                                            if (file) {
+                                                setFicha((prev) => prev ? { ...prev, anexoGabarito: file.name } : prev);
+                                            }
+                                        }}
+                                        onChangeAnexoRedacao={(file) => {
+                                            if (file) {
+                                                setFicha((prev) => prev ? { ...prev, anexoRedacao: file.name } : prev);
+                                            }
+                                        }}
+                                    />
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
-
-                <div className="w-full bg-secondary-light p-6 md:p-8 rounded-2xl shadow-lg min-h-[500px]">
-                    {!candidatoSelecionado ? (
-                        <div className="text-center text-gray-200 py-20">
-                            <p className="text-lg font-semibold">Selecione um candidato e categoria</p>
-                        </div>
-                    ) : (
-                        <AvaliacaoAccordion
-                            provas={provasSelecionadas}
-                            notas={notas}
-                            comentarios={comentarios}
-                            onChangeNota={(id, nota) => setNotas((prev) => ({ ...prev, [id]: nota }))}
-                            onChangeComentario={(id, comentario) =>
-                                setComentarios((prev) => ({ ...prev, [id]: comentario }))
-                            }
-                            onSalvar={handleSalvarAvaliacao}
-                            onChangeAnexoGabarito={(file) => {
-                                if (file) {
-                                    setFicha((prev) => prev ? { ...prev, anexoGabarito: file.name } : prev);
-                                }
-                            }}
-                            onChangeAnexoRedacao={(file) => {
-                                if (file) {
-                                    setFicha((prev) => prev ? { ...prev, anexoRedacao: file.name } : prev);
-                                }
-                            }}
-                        />
-                    )}
-                </div>
-            </div>
-        </div >
+            </main>
+        </div>
     );
 }

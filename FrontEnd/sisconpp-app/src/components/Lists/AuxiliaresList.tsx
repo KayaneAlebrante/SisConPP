@@ -1,20 +1,20 @@
 import { useEffect, useState } from "react";
-import { listarUsuriosAuxiliares as listarAuxiliares, deleteUsuario, listarCTGs } from "../../services/api";
+import { listarUsuriosAuxiliares, deleteUsuario, listarCTGs } from "../../services/api";
 import { toast } from "react-toastify";
-import { Pencil, Trash2, Search } from "lucide-react";
-import { Usuario, Funcao, Credenciamento } from "../../types/Usuario";
+import { Pencil, Trash2, Search, BadgeCheck} from "lucide-react";
+import { Usuario, Credenciamento } from "../../types/Usuario";
 import { CTG } from "../../types/CTG";
 import Dialog from "../Modal/Dialog";
 import AuxiliarView from "../View/AuxiliarView";
 import Modal from "../Modal/Modal";
 
-interface AuxiliaresListProps {
+interface AuxiliarListProps {
     onEdit: (auxiliar: Usuario) => void;
     onVisualizar: (auxiliar: Usuario) => void;
     onCredenciar: (auxiliar: Usuario) => void;
 }
 
-export default function AuxiliaresList({ onEdit }: AuxiliaresListProps) {
+export default function AuxiliarList({ onEdit }: AuxiliarListProps) {
     const [auxiliares, setAuxiliares] = useState<Usuario[]>([]);
     const [ctgs, setCTGs] = useState<CTG[]>([]);
     const [isViewModalOpen, setIsViewModalOpen] = useState(false);
@@ -24,40 +24,19 @@ export default function AuxiliaresList({ onEdit }: AuxiliaresListProps) {
 
     const fetchAuxiliares = async () => {
         try {
-            type UsuarioComPessoa = {
-                idUsuario: number;
-                nomeCompleto: string;
-                cidade: string;
-                estado: string;
-                CTGId: number;
-                numCarteirinha: string;
-                login: string;
-                senha: string;
-                funcao: Funcao;
-                credenciamento: Credenciamento;
-                numCredenciamento: number;
-                comissaoUsuarioId?: number;
-            };
-
-            const response = await listarAuxiliares() as UsuarioComPessoa[];
-
-            const auxiliares: Usuario[] = response.map((usuario) => ({
-                idUsuario: usuario.idUsuario,
+            const response = await listarUsuriosAuxiliares() as Usuario[]
+            
+            const auxiliaresFormatados: Usuario[] = response.map((usuario) => ({
+                ...usuario,
                 nomeCompleto: usuario.nomeCompleto || "---",
                 cidade: usuario.cidade || "",
                 estado: usuario.estado || "",
                 CTGId: usuario.CTGId || 0,
                 numCarteirinha: usuario.numCarteirinha || "",
-                login: usuario.login,
-                senha: usuario.senha,
-                funcao: usuario.funcao,
-                credenciamento: usuario.credenciamento,
                 numCredenciamento: usuario.numCredenciamento || 0,
-                comissaoIdUsuario: usuario.comissaoUsuarioId,
             }));
 
-            setAuxiliares(auxiliares);
-
+            setAuxiliares(auxiliaresFormatados);
         } catch (error) {
             toast.error("Erro ao carregar auxiliares");
             console.error(error);
@@ -66,10 +45,9 @@ export default function AuxiliaresList({ onEdit }: AuxiliaresListProps) {
 
     const fetchCTGs = async () => {
         try {
-            const response = await listarCTGs();
-            setCTGs(response as CTG[]);
+            const response = await listarCTGs() as CTG[];
+            setCTGs(response);
         } catch (error) {
-            toast.error("Erro ao carregar CTGs");
             console.error(error);
         }
     };
@@ -84,52 +62,60 @@ export default function AuxiliaresList({ onEdit }: AuxiliaresListProps) {
 
         try {
             await deleteUsuario(auxiliarSelecionadoId);
-
-            toast.success("Usuário excluído com sucesso!");
+            toast.success("Auxiliar excluído com sucesso!");
             fetchAuxiliares();
             setIsDialogOpen(false);
             setAuxiliarSelecionadoId(null);
-
-        } catch (error: unknown) {
-            let msg = "Erro ao deletar auxiliar.";
-
-            if (typeof error === 'object' && error !== null && 'response' in error) {
-                const axiosError = error as { response?: { data?: { message?: string } } };
-                msg = axiosError.response?.data?.message ?? msg;
-            }
-
+        } catch (error) {
+            const msg = error instanceof Error ? error.message : "Erro ao excluir auxiliar";
             toast.error(msg);
             setIsDialogOpen(false);
             setAuxiliarSelecionadoId(null);
         }
-
     };
 
     const getCTGNameById = (idCTG: number | undefined) => {
-        if (!idCTG) return "CTG não informado";
+        if (!idCTG) return "Não informado";
         const ctg = ctgs.find((ctg) => ctg.idCTG === idCTG);
         return ctg?.nomeCTG || "CTG não encontrado";
     };
 
     return (
-        <div className="flex flex-col h-full">
-            <h2 className="text-xl font-bold mb-4 text-secondary-on">Lista de Auxiliares</h2>
-            <table className="w-full bg-white rounded-xl shadow-md overflow-hidden">
+        <div className="flex flex-col h-full bg-neutral-background p-6">
+            <div className="bg-surface-containerLowest rounded-2xl shadow-sm border border-outline-variant overflow-hidden">
+                <table className="w-full">
                 <thead>
-                    <tr className="text-left bg-secondary-dark text-secondary-light">
-                        <th className="p-3 first:rounded-tl-xl">Nome Completo</th>
-                        <th className="p-3">Filiação</th>
-                        <th className="p-3 last:rounded-tr-xl">Ações</th>
+                    <tr className="text-left bg-surface-variant/30 text-neutral-onVariant border-b border-outline-variant">
+                        <th className="p-4 font-semibold text-xs uppercase tracking-wider">Nome Completo</th>
+                        <th className="p-4 font-semibold text-xs uppercase tracking-wider">Filiação (CTG)</th>
+                        <th className="p-4 font-semibold text-xs uppercase tracking-wider">Credenciamento</th>
+                        <th className="p-4 font-semibold text-xs uppercase tracking-wider text-center">Ações</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-outline-variant">
                     {auxiliares.map((auxiliar) => (
-                        <tr key={auxiliar.idUsuario}>
-                            <td className="p-3">{auxiliar.nomeCompleto || "---"}</td>
-                            <td className="p-3">{getCTGNameById(auxiliar.CTGId) || "---"}</td>
-                            <td className="p-3 flex gap-2">
+                        <tr key={auxiliar.idUsuario} className="hover:bg-surface-container transition-colors">
+                            <td className="p-4 text-neutral-onSurface font-medium">
+                                {auxiliar.nomeCompleto}
+                            </td>
+                            <td className="p-4 text-neutral-onSurface text-sm">
+                                {getCTGNameById(auxiliar.CTGId)}
+                            </td>
+                            <td className="p-4">
+                                {auxiliar.credenciamento === Credenciamento.CREDENCIADO ? (
+                                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-primary-container text-primary-onContainer">
+                                        <BadgeCheck size={14} /> Credenciado {auxiliar.numCredenciamento ? `(${auxiliar.numCredenciamento})` : ''}
+                                    </span>
+                                ) : (
+                                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-surface-variant text-neutral-onVariant opacity-70">
+                                        Não Credenciado
+                                    </span>
+                                )}
+                            </td>
+                            <td className="p-4 flex gap-2 justify-center">
                                 <button
-                                    className="text-green-600 hover:text-green-800"
+                                    title="Visualizar"
+                                    className="p-2 rounded-full text-primary hover:bg-primary-fixedDim/30 transition-all"
                                     onClick={() => {
                                         setSelectedAuxiliar(auxiliar);
                                         setIsViewModalOpen(true);
@@ -137,14 +123,18 @@ export default function AuxiliaresList({ onEdit }: AuxiliaresListProps) {
                                 >
                                     <Search size={18} />
                                 </button>
+
                                 <button
-                                    className="text-green-600 hover:text-green-800"
+                                    title="Editar"
+                                    className="p-2 rounded-full text-secondary hover:bg-secondary-fixedDim/30 transition-all"
                                     onClick={() => onEdit(auxiliar)}
                                 >
                                     <Pencil size={18} />
                                 </button>
+
                                 <button
-                                    className="text-red-600 hover:text-red-800"
+                                    title="Excluir"
+                                    className="p-2 rounded-full text-error hover:bg-error-container/30 transition-all"
                                     onClick={() => {
                                         setAuxiliarSelecionadoId(auxiliar.idUsuario);
                                         setIsDialogOpen(true);
@@ -158,18 +148,20 @@ export default function AuxiliaresList({ onEdit }: AuxiliaresListProps) {
                 </tbody>
             </table>
 
+            {auxiliares.length === 0 && (
+                <div className="p-8 text-center text-neutral-onVariant opacity-60">
+                    Nenhum auxiliar cadastrado.
+                </div>
+            )}
+
             <Dialog
                 isOpen={isDialogOpen}
                 onClose={() => {
                     setIsDialogOpen(false);
                     setAuxiliarSelecionadoId(null);
                 }}
-                onConfirm={() => {
-                    if (auxiliarSelecionadoId !== null) {
-                        handleConfirmDelete();
-                    }
-                }}
-                message="Tem certeza que deseja excluir este avaliador?"
+                onConfirm={handleConfirmDelete}
+                message="Tem certeza que deseja excluir este auxiliar?"
             />
 
             <Modal
@@ -179,13 +171,12 @@ export default function AuxiliaresList({ onEdit }: AuxiliaresListProps) {
                 {selectedAuxiliar && (
                     <AuxiliarView
                         auxiliar={selectedAuxiliar}
-                        ctg={ctgs.find(ctg => ctg.idCTG === selectedAuxiliar.CTGId)}
+                        ctg={ctgs.find((ctg) => ctg.idCTG === selectedAuxiliar.CTGId)}
                         onVoltar={() => setIsViewModalOpen(false)}
                     />
                 )}
             </Modal>
-
-
         </div>
+    </div>
     );
 }

@@ -125,66 +125,64 @@ export default function CandidatoList({ onEdit }: CandidatoListProps) {
         return categoria?.nomeCategoria || "Categoria não encontrada";
     };
 
+    const getBadgeStyle = (nomeCategoria: string) => {
+        const nome = nomeCategoria.toLowerCase();
+        if (nome.includes('prenda')) {
+            return "bg-secondary-container text-secondary-onContainer";
+        }
+        if (nome.includes('peão') || nome.includes('peao')) {
+            return "bg-primary-container text-primary-onContainer";
+        }
+        return "bg-surface-variant text-surface-onVariant";
+    };
+
     return (
-        <div className="flex flex-col h-full">
-            <h2 className="text-xl font-bold mb-4 text-secondary-on">Lista de Candidatos</h2>
-            <table className="w-full bg-white rounded-xl shadow-md overflow-hidden">
-                <thead>
-                    <tr className="text-left bg-secondary-dark text-secondary-light">
-                        <th className="p-3 first:rounded-tl-xl">Nome Completo</th>
-                        <th className="p-3">CTG</th>
-                        <th className="p-3">Categoria</th>
-                        <th className="p-3 last:rounded-tr-xl">Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {candidatos.map((candidato) => (
-                        <tr key={candidato.idCandidato}>
-                            <td className="p-3">{candidato.nomeCompleto || "---"}</td>
-                            <td className="p-3">{getCTGNameById(candidato.CTGId)}</td>
-                            <td className="p-3">{getCategoriaNameById(candidato.categoriaId)}</td>
-                            <td className="p-3 flex gap-2">
-                                <button
-                                    className="text-green-600 hover:text-green-800"
-                                    onClick={() => {
-                                        setCandidatoParaFicha(candidato);
-                                        setIsFichaModalOpen(true);
-                                    }}
-                                >
-                                    <FilePlus2 size={18} />
-                                </button>
-
-                                <button
-                                    className="text-green-600 hover:text-green-800"
-                                    onClick={() => {
-                                        handleVisualizarCandidato(candidato.idCandidato);
-                                        setIsViewModalOpen(true);
-                                    }}
-                                >
-                                    <Search size={18} />
-                                </button>
-
-                                <button
-                                    className="text-blue-600 hover:text-blue-800"
-                                    onClick={() => onEdit(candidato)}
-                                >
-                                    <Pencil size={18} />
-                                </button>
-
-                                <button
-                                    className="text-red-600 hover:text-red-800"
-                                    onClick={() => {
-                                        setCandidatoSelecionadoId(candidato.idCandidato);
-                                        setIsDialogOpen(true);
-                                    }}
-                                >
-                                    <Trash2 size={18} />
-                                </button>
-                            </td>
+        <div className="flex flex-col h-full bg-neutral-background p-6">
+            <div className="bg-surface-containerLowest rounded-2xl shadow-sm border border-outline-variant overflow-hidden">
+                <table className="w-full">
+                    <thead>
+                        <tr className="text-left bg-surface-variant/30 text-neutral-onVariant border-b border-outline-variant">
+                            <th className="p-4 font-semibold text-xs uppercase tracking-wider">Nome Completo</th>
+                            <th className="p-4 font-semibold text-xs uppercase tracking-wider">CTG</th>
+                            <th className="p-4 font-semibold text-xs uppercase tracking-wider">Categoria</th>
+                            <th className="p-4 font-semibold text-xs uppercase tracking-wider text-center">Ações</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody className="divide-y divide-outline-variant">
+                        {candidatos.map((candidato) => {
+                            const nomeCategoria = getCategoriaNameById(candidato.categoriaId);
+
+                            return (
+                                <tr key={candidato.idCandidato} className="hover:bg-surface-container transition-colors">
+                                    <td className="p-4 text-neutral-onSurface font-medium">
+                                        {candidato.nomeCompleto || "---"}
+                                    </td>
+                                    <td className="p-4 text-neutral-onSurface text-sm">
+                                        {getCTGNameById(candidato.CTGId)}
+                                    </td>
+                                    <td className="p-4">
+                                        <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${getBadgeStyle(nomeCategoria)}`}>
+                                            {nomeCategoria}
+                                        </span>
+                                    </td>
+                                    <td className="p-4 flex gap-2 justify-center">
+                                        <button title="Ficha" className="p-2 rounded-full text-tertiary-dark hover:bg-tertiary-fixedDim/30 transition-all" onClick={() => { setCandidatoParaFicha(candidato); setIsFichaModalOpen(true); }}> <FilePlus2 size={18} /> </button>
+                                        <button title="Ver" className="p-2 rounded-full text-primary hover:bg-primary-fixedDim/30 transition-all" onClick={() => { handleVisualizarCandidato(candidato.idCandidato); setIsViewModalOpen(true); }}> <Search size={18} /> </button>
+                                        <button title="Editar" className="p-2 rounded-full text-secondary hover:bg-secondary-fixedDim/30 transition-all" onClick={() => onEdit(candidato)}> <Pencil size={18} /> </button>
+                                        <button title="Excluir" className="p-2 rounded-full text-error hover:bg-error-container/30 transition-all" onClick={() => { setCandidatoSelecionadoId(candidato.idCandidato); setIsDialogOpen(true); }}> <Trash2 size={18} /> </button>
+                                    </td>
+                                </tr>
+                            );
+                        })}
+                    </tbody>
+                </table>
+
+                {candidatos.length === 0 && (
+                    <div className="p-8 text-center text-neutral-onVariant">
+                        Nenhum candidato encontrado.
+                    </div>
+                )}
+            </div>
 
             <Dialog
                 isOpen={isDialogOpen}
@@ -232,7 +230,6 @@ export default function CandidatoList({ onEdit }: CandidatoListProps) {
                     />
                 )}
             </Modal>
-
         </div>
     );
 }
