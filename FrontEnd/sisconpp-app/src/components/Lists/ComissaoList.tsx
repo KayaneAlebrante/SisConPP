@@ -33,7 +33,7 @@ export default function ComissaoList({ onEdit }: ComissaoListProps) {
 
     useEffect(() => {
         fetchComissoes();
-    }, [comissaoAtribuicao, comissaoUsuario, modalDeleteComissao]); // Refetch ao fechar modais internos
+    }, [comissaoAtribuicao, comissaoUsuario, modalDeleteComissao]); 
 
     const handleConfirmDelete = async (idComissao: number) => {
         try {

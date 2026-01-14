@@ -24,7 +24,6 @@ export default function ConcursoForm({ onClose, concursoToEdit }: ConcursoFormPr
     });
     const [loading, setLoading] = useState(false);
 
-    // Estilos Padronizados
     const inputClass = "w-full rounded-xl border border-outline bg-surface-containerHigh p-2.5 text-neutral-onSurface focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all text-sm";
     const labelClass = "block text-sm font-semibold text-neutral-onSurface mb-1.5 flex items-center gap-1";
 

@@ -8,6 +8,7 @@ import { Comissao } from "../types/Comissao";
 
 export default function ComissaoPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [refreshList, setRefreshList] = useState(false);
     const [comissaoToEdit, setComissaoToEdit] = useState<Comissao | undefined>(undefined);
 
     const openModal = () => {
@@ -18,6 +19,7 @@ export default function ComissaoPage() {
     const closeModal = () => {
         setIsModalOpen(false);
         setComissaoToEdit(undefined);
+        setRefreshList(prev => !prev);
     };
 
     const handleEdit = (comissao: Comissao) => {
@@ -31,7 +33,7 @@ export default function ComissaoPage() {
 
             <main className="flex-1 p-6 md:p-8 flex flex-col overflow-y-auto max-h-screen">
                 <div className="w-full bg-surface-containerLowest rounded-2xl shadow-sm border border-outline-variant flex flex-col">
-                    
+
                     <div className="p-6 border-b border-outline-variant flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <div className="flex items-center gap-3">
                             <div className="p-3 bg-primary-container rounded-xl text-primary-onContainer shadow-sm">
@@ -53,7 +55,8 @@ export default function ComissaoPage() {
                     </div>
 
                     <div className="w-full">
-                        <ComissaoList 
+                        <ComissaoList
+                            key={refreshList.toString()}
                             onEdit={handleEdit}
                         />
                     </div>
@@ -61,7 +64,7 @@ export default function ComissaoPage() {
             </main>
 
             <Modal isOpen={isModalOpen} onClose={closeModal}>
-                <ComissaoForm onClose={closeModal} comissaoToEdit={comissaoToEdit}/>
+                <ComissaoForm onClose={closeModal} comissaoToEdit={comissaoToEdit} />
             </Modal>
         </div>
     );

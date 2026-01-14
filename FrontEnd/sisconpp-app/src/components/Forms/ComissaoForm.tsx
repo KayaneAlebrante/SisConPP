@@ -11,7 +11,6 @@ interface ComissaoFormProps {
 }
 
 export default function ComissaoForm({ onClose, comissaoToEdit }: ComissaoFormProps) {
-    // Simplificamos o estado para focar nos dados que realmente enviamos
     const [formData, setFormData] = useState<Partial<Comissao>>({
         idComissao: 0,
         nomeComissao: '',
@@ -21,7 +20,6 @@ export default function ComissaoForm({ onClose, comissaoToEdit }: ComissaoFormPr
     const [concursos, setConcursos] = useState<Concurso[]>([]);
     const [loading, setLoading] = useState(false);
 
-    // --- Estilos Padronizados ---
     const inputClass = "w-full rounded-xl border border-outline bg-surface-containerHigh p-2.5 text-neutral-onSurface focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all text-sm";
     const labelClass = "block text-sm font-semibold text-neutral-onSurface mb-1.5";
 
@@ -61,10 +59,9 @@ export default function ComissaoForm({ onClose, comissaoToEdit }: ComissaoFormPr
         setLoading(true);
 
         try {
-            // Monta o objeto garantindo que ele tenha a estrutura necessária
             const payload = {
                 ...formData,
-                usuarios: [] // API pode exigir este campo vazio na criação
+                usuarios: [] 
             } as Comissao;
 
             if (formData.idComissao && formData.idComissao > 0) {
@@ -74,6 +71,8 @@ export default function ComissaoForm({ onClose, comissaoToEdit }: ComissaoFormPr
                 await criarComissao(payload);
                 toast.success("Comissão cadastrada com sucesso!");
             }
+
+          
             onClose();
         } catch (error) {
             console.error('Erro ao salvar Comissão:', error);
@@ -85,11 +84,11 @@ export default function ComissaoForm({ onClose, comissaoToEdit }: ComissaoFormPr
 
     return (
         <div className="w-full text-neutral-onBackground">
-            
+
             {/* Cabeçalho */}
             <div className="mb-6">
                 <h1 className="text-2xl font-bold text-primary-dark flex items-center gap-2">
-                    <Users className="text-primary" /> 
+                    <Users className="text-primary" />
                     {comissaoToEdit ? 'Editar Comissão' : 'Nova Comissão'}
                 </h1>
                 <p className="text-sm text-neutral-onSurface opacity-70">
@@ -98,12 +97,12 @@ export default function ComissaoForm({ onClose, comissaoToEdit }: ComissaoFormPr
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
-                
+
                 {/* Nome da Comissão */}
                 <div>
                     <label className={labelClass}>
                         <span className="flex items-center gap-2">
-                            <Type size={16} className="text-primary"/> Nome da Comissão
+                            <Type size={16} className="text-primary" /> Nome da Comissão
                         </span>
                     </label>
                     <input
@@ -121,7 +120,7 @@ export default function ComissaoForm({ onClose, comissaoToEdit }: ComissaoFormPr
                 <div>
                     <label className={labelClass}>
                         <span className="flex items-center gap-2">
-                            <Trophy size={16} className="text-primary"/> Concurso Vinculado
+                            <Trophy size={16} className="text-primary" /> Concurso Vinculado
                         </span>
                     </label>
                     <select
@@ -150,7 +149,7 @@ export default function ComissaoForm({ onClose, comissaoToEdit }: ComissaoFormPr
                         <XCircle size={18} />
                         Cancelar
                     </button>
-                    
+
                     <button
                         type="submit"
                         disabled={loading}
