@@ -18,7 +18,7 @@ router.get( "/individual/:candidatoId", authMiddleware, permitirFuncoes(["SECRET
         await relatoriosController.relatorioIndividualDetalhado(req, res);
 });
 
-router.get( "/relatorioDetalhado/:categoriaId/:concursoIdConcurso/", authMiddleware, permitirFuncoes(["SECRETARIO"]), async (req: Request, res: Response) => {
+router.get( "/relatorioDetalhado/:categoriaId/:concursoIdConcurso/", async (req: Request, res: Response) => {
         await relatoriosController.gerarRelatorioPorCategoriaConcurso(req, res);
 });
 

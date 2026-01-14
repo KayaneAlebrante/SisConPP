@@ -290,121 +290,94 @@ export class RelatoriosService {
         };
     }
 
-  async gerarRelatorioPorCategoriaConcurso(
-  categoriaId: number,
-  concursoIdConcurso: number
-): Promise<(CandidatoResumo & { posicao: number })[]> {
-  const candidatos = await prisma.candidato.findMany({
-    where: { categoriaId, concursoIdConcurso },
-    include: {
-      Categoria: true,
-      Concurso: true,
-      CTG: true,
-      fichaCandidato: true,
-      avalicoes: {
-        include: {
-          Usuario: true,
-          BlocoProva: true,
-          ProvaPratica: true,
-          quesitosAvaliados: {
+    async gerarRelatorioPorCategoriaConcurso(
+        categoriaId: number,
+        concursoIdConcurso: number
+    ): Promise<(CandidatoResumo & { posicao: number })[]> {
+
+        const candidatos = await prisma.candidato.findMany({
+            where: { categoriaId, concursoIdConcurso },
             include: {
-              subQuesitosAvaliados: true
+                Categoria: true,
+                Concurso: true,
+                CTG: true,
+                fichaCandidato: true,
+                avalicoes: {
+                    include: {
+                        Usuario: true,
+                        BlocoProva: true,
+                        ProvaPratica: true
+                    }
+                }
             }
-          }
-        }
-      }
-    }
-  });
-
-  const relatorio: CandidatoResumo[] = candidatos.map((c) => {
-    const notaTeorica = c.fichaCandidato?.notaFinalProvaTeorica ?? 0;
-
-    // Agrupamento por avaliador
-    const mapaAvaliadores = new Map<number, {
-      nomeAvaliador: string;
-      totalAvaliador: number;
-      blocosMap: Map<string, number>;
-    }>();
-
-    (c.avalicoes ?? []).forEach((av) => {
-      if (!av.provaPraticaId && !av.blocoProvaId) return;
-
-      const idAvaliador = av.avaliadorId;
-      const nomeAvaliador = av.Usuario?.nomeCompleto ?? "Avaliador";
-
-      // Nome do agrupamento (Bloco ou Prova)
-      let nomeDoAgrupamento = "";
-      if (av.BlocoProva) {
-        nomeDoAgrupamento = av.BlocoProva.nomeBloco;
-      } else if (av.ProvaPratica) {
-        nomeDoAgrupamento = av.ProvaPratica.nomeProva;
-      } else {
-        nomeDoAgrupamento = "Atividade não identificada";
-      }
-
-      // Soma das notas dos quesitos e subquesitos
-      const notaDestaAvaliacao = (av.quesitosAvaliados ?? []).reduce((accQ, q) => {
-        const notaSub = (q.subQuesitosAvaliados ?? []).reduce(
-          (accS, sq) => accS + (sq.notaSubQuesito ?? 0),
-          0
-        );
-        return accQ + (q.notaQuesito ?? 0) + notaSub;
-      }, 0);
-
-      // Cria avaliador se não existir
-      if (!mapaAvaliadores.has(idAvaliador)) {
-        mapaAvaliadores.set(idAvaliador, {
-          nomeAvaliador,
-          totalAvaliador: 0,
-          blocosMap: new Map<string, number>()
         });
-      }
 
-      const dadosAvaliador = mapaAvaliadores.get(idAvaliador)!;
+        const relatorio: CandidatoResumo[] = candidatos.map((c) => {
+            const ficha = c.fichaCandidato;
 
-      // Soma ao total geral
-      dadosAvaliador.totalAvaliador += notaDestaAvaliacao;
+            // 🔹 NOTAS OFICIAIS (VÊM DA FICHA)
+            const notaTeorica = ficha?.notaFinalProvaTeorica ?? 0;
+            const notaPratica = ficha?.notaFinalProvasPraticas ?? 0;
+            const notaFinal = ficha?.notaCandidato ?? (notaTeorica + notaPratica);
 
-      // Soma ao bloco específico
-      const notaAtualDoBloco = dadosAvaliador.blocosMap.get(nomeDoAgrupamento) ?? 0;
-      dadosAvaliador.blocosMap.set(nomeDoAgrupamento, notaAtualDoBloco + notaDestaAvaliacao);
-    });
+            // 🔹 DETALHAMENTO POR AVALIADOR
+            const mapaAvaliadores = new Map<number, AvaliadorResumo>();
 
-    // Transforma Maps em arrays
-    const avaliadores: AvaliadorResumo[] = Array.from(mapaAvaliadores.values()).map((av) => {
-      const blocos: BlocoResumo[] = Array.from(av.blocosMap.entries()).map(([nome, nota]) => ({
-        nomeBloco: nome,
-        notaFinalBloco: nota
-      }));
+            (c.avalicoes ?? []).forEach((av) => {
+                if (!av.avaliadorId) return;
 
-      return {
-        nomeAvaliador: av.nomeAvaliador,
-        blocos,
-        totalAvaliador: av.totalAvaliador
-      };
-    });
+                const idAvaliador = av.avaliadorId;
+                const nomeAvaliador = av.Usuario?.nomeCompleto ?? "Avaliador";
 
-    const notaPratica = avaliadores.reduce((acc, a) => acc + a.totalAvaliador, 0);
-    const notaFinal = notaTeorica + notaPratica;
+                const nomeBloco =
+                    av.BlocoProva?.nomeBloco ??
+                    av.ProvaPratica?.nomeProva ??
+                    "Bloco";
 
-    return {
-      candidatoId: c.idCandidato,
-      nomeCandidato: c.nomeCompleto,
-      CTG: c.CTG?.nomeCTG ?? "",
-      categoria: c.Categoria?.nomeCategoria ?? "",
-      concurso: c.Concurso?.nomeConcurso ?? "",
-      notaProvaTeorica: notaTeorica,
-      notaProvasPraticas: notaPratica,
-      notaFinal,
-      avaliadores
-    };
-  });
+                // ✅ NOTA FINAL JÁ CONSOLIDADA DA AVALIAÇÃO
+                const notaBloco = Number(av.notaFinal ?? 0);
 
-  // Ordena por nota final
-  const ordenado = relatorio.sort((a, b) => b.notaFinal - a.notaFinal);
-console.dir(ordenado, { depth: null, colors: true });
-  return ordenado.map((c, idx) => ({ ...c, posicao: idx + 1 }));
-}
+                if (!mapaAvaliadores.has(idAvaliador)) {
+                    mapaAvaliadores.set(idAvaliador, {
+                        nomeAvaliador,
+                        blocos: [],
+                        totalAvaliador: 0
+                    });
+                }
+
+                const avaliador = mapaAvaliadores.get(idAvaliador)!;
+
+                avaliador.blocos.push({
+                    nomeBloco,
+                    notaFinalBloco: notaBloco
+                });
+
+                avaliador.totalAvaliador += notaBloco;
+            });
+
+            return {
+                candidatoId: c.idCandidato,
+                nomeCandidato: c.nomeCompleto,
+                CTG: c.CTG?.nomeCTG ?? "",
+                categoria: c.Categoria?.nomeCategoria ?? "",
+                concurso: c.Concurso?.nomeConcurso ?? "",
+                notaProvaTeorica: notaTeorica,
+                notaProvasPraticas: notaPratica,
+                notaFinal,
+                avaliadores: Array.from(mapaAvaliadores.values())
+            };
+        });
+
+        // 🔹 ORDENAÇÃO E CLASSIFICAÇÃO
+        const ordenado = relatorio.sort((a, b) => b.notaFinal - a.notaFinal);
+
+        return ordenado.map((c, idx) => ({
+            ...c,
+            posicao: idx + 1
+        }));
+    }
+
+
 }
 
 const relatorios = new RelatoriosService(prisma);

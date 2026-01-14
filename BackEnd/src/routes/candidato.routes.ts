@@ -13,7 +13,7 @@ router.post("/fichaCandidato",authMiddleware, permitirFuncoes(["SECRETARIO"]), a
     await CandidatoController.criarFichaCandidato(req, res);
 });
 
-router.get("/fichaCandidato/:id", permitirFuncoes(["SECRETARIO", "AVALIADOR"]), authMiddleware, async (req: Request, res: Response) => {
+router.get("/fichaCandidato/:id",  authMiddleware, permitirFuncoes(["SECRETARIO", "AVALIADOR"]), async (req: Request, res: Response) => {
     await CandidatoController.buscarIdFicha(req, res);
 });
 

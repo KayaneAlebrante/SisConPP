@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { PlusCircle, User } from "lucide-react"; // Ícone User para Auxiliares
+import { PlusCircle, User } from "lucide-react";
 import SideNavBar from "../components/SideNavBar/SideNavBar";
 import AuxiliaresList from "../components/Lists/AuxiliaresList";
 import Modal from "../components/Modal/Modal";
