@@ -14,7 +14,7 @@ router.get( "/ranking/:concursoId/:categoriaId", authMiddleware, permitirFuncoes
         await relatoriosController.rankingPorCategoria(req, res);
 });
 
-router.get( "/individual/:candidatoId",  async (req: Request, res: Response) => {
+router.get( "/individual/:candidatoId", authMiddleware, permitirFuncoes(["SECRETARIO"]), async (req: Request, res: Response) => {
         await relatoriosController.relatorioIndividualDetalhado(req, res);
 });
 

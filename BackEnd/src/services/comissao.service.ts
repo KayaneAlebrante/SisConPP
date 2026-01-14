@@ -33,7 +33,6 @@ class ComissaoService {
     }
 
     async atualizarComissao(comissaoId: number, nomeComissao: any) {
-        console.log(comissaoId, nomeComissao);
         try {
             const comissao = await this.prisma.comissao.update({
                 where: { idComissao: comissaoId },
@@ -42,7 +41,6 @@ class ComissaoService {
                 }
             });
 
-            console.log(comissao);
             return comissao;
         } catch (error) {
             console.error("Erro ao editar comissão:", error);
@@ -83,7 +81,6 @@ class ComissaoService {
                     }
                 },
             })
-            console.log(comissoes);
             return comissoes;
         } catch (error) {
             console.error("Erro ao consultar comissões:", error);
